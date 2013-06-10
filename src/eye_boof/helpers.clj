@@ -67,7 +67,9 @@
   [img]
   {:pre [(c/image? img)]}
   (let [b ^ImageBase (:mat img)]
-    (ConvertBufferedImage/convertTo_U8 b nil)))
+    (if (> (c/dimension img) 1)
+      (ConvertBufferedImage/convertTo_U8 b nil)
+      (ConvertBufferedImage/convertTo b nil))))
 
 (defn view 
   "Shows the images on a grid-panel window."
