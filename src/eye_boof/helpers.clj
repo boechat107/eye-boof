@@ -1,7 +1,7 @@
-(ns image-processing.helpers 
+(ns eye-boof.helpers
   (:require 
-    [image-processing.core-new :as c]
-    [image-processing.processing :as pr]
+    [eye-boof.core :as c]
+    [eye-boof.processing :as pr]
     [seesaw.core :as w]
     )
   (:import 

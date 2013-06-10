@@ -1,7 +1,7 @@
-(ns image-processing.processing
+(ns eye-boof.processing 
   (:require 
-    [image-processing.core-new :as c]
-    [image-processing.rgb-color :as rgb]
+    [eye-boof.core :as c]
+    [eye-boof.rgb-color :as rgb]
     [incanter.core :as ic]
     )
   )

@@ -1,4 +1,4 @@
-(ns image-processing.core-new
+(ns eye-boof.core
   (:require 
     [incanter.core :as ic])
   (:import 
