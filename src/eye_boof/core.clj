@@ -46,6 +46,11 @@
   [img]
   (= :argb (:type img)))
 
+(defn one-dim?
+  "Returns true if the image has just one channel."
+  [img]
+  (instance? ImageUInt8 (:mat img)))
+
 (defn nrows
   "Returns the number of rows of an Image."
   ^long [img]
@@ -59,7 +64,9 @@
 (defn dimension 
   "Returns the number of the dimensions of the image's color space."
   ^long [img]
-  ((:type img) color-dimensions))
+  (let [dim ((:type img) color-dimensions)]
+;   (assert (== dim ))
+   dim ))
 
 (defn new-channel-matrix 
   "Returns a matrix used to represent a color channel data."
@@ -94,9 +101,14 @@
   "Returns a channel data structure of a given image. If the channel number is not
   specified, all channels are returned as a vector."
   ([img] 
-   (:mat img))
+   (let [chs (:mat img)]
+     (if (one-dim? img)
+     chs
+     (mapv #(.getBand chs %) (range (.getNumBands chs))))))
   ([img ch]
-   ((:mat img) ch)))
+   (if (one-dim? img) 
+     (:mat img)
+     (.getBand (:mat img) ch))))
 
 (defmacro mult-aget
   "Returns the value of an element of multiple dimensional arrays. Uses type hints to 
@@ -118,13 +130,11 @@
    `(mult-aget ~'ints ~ach (+ ~x (* ~y ~nc)))))
 
 (defn get-pixel*
-  "Returns the value of the pixel [x, y]. If no channel is specified, a vector is
-  returned; otherwise, a scalar is returned.
-  For a better performance, use the macro get-pixel."
-  (^long [img x y ch]
-   (mult-aget ints ((:mat img) ch) (+ (* y (ncols img)) x)))
-  (^long [img idx ch]
-   (mult-aget ints ((:mat img) ch) idx)))
+  "Returns the value of the pixel [x, y] for a given image channel."
+  (^long [ch x y]
+   (mult-aget ints ch/data (+ ch/startIndex (+ (* y ch/stride) x))))
+  (^long [ch idx]
+   (mult-aget ints ch/data idx)))
 
 (defmacro mult-aset
   "Sets the value of an element of a multiple dimensional array. Uses type hints to 
@@ -152,16 +162,15 @@
    `(mult-aset ~'ints ~ach (+ ~x (* ~y ~ncols)))))
 
 (defn set-pixel!*
-  "Sets the value of the [x, y] pixel. For a better performance, use the macro
-  set-pixel!."
-  ([img x y ch val]
-   (mult-aset ints ((:mat img) ch)
-                 (+ x (* y (ncols img))) 
-                 val))
+  "Sets the value of the [x, y] pixel for a given channel."
+  ([ch x y val]
+   (mult-aset ints ch/data
+              (+ ch/startIndex (+ (* y ch/stride) x))
+              val))
   ([img idx ch val]
-   (mult-aset ints ((:mat img) ch)
-                 idx 
-                 val)))
+   (mult-aset ints ch/data
+              idx 
+              val)))
 
 (defmacro for-idx
   "Iterates over all pixels of img, binding the pixel's index to idx.
