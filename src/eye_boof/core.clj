@@ -124,10 +124,10 @@
 (defmacro get-pixel
   "Returns a primitive integer value from a channel's array ach. If coordinates 
   [x, y] and ncols are provided, the array is handled as 2D matrix."
-  ([ach idx]
-   `(mult-aget ~'ints ~ach ~idx))
-  ([ach x y nc]
-   `(mult-aget ~'ints ~ach (+ ~x (* ~y ~nc)))))
+  [ch idx]
+  `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
+     (-> (mult-aget ~'bytes (.data ch#) ~idx)
+         (bit-and ~0xff))))
 
 (defn get-pixel*
   "Returns the value of the pixel [x, y] for a given image channel."
@@ -137,8 +137,7 @@
        ))
   (^long [^ImageUInt8 ch idx]
    (-> (mult-aget bytes (.data ch) idx)
-       (bit-and 0xff)
-       )))
+       (bit-and 0xff))))
 
 (defmacro mult-aset
   "Sets the value of an element of a multiple dimensional array. Uses type hints to 
@@ -160,10 +159,9 @@
 (defmacro set-pixel! 
   "Sets the value of a pixel for a given channel's array. If coordinates [x, y] and
   ncols are provided, the array is handled as 2D matrix."
-  ([ach idx val]
-   `(mult-aset ~'ints ~ach ~idx ~val))
-  ([ach x y ncols val]
-   `(mult-aset ~'ints ~ach (+ ~x (* ~y ~ncols)))))
+  [ch idx val]
+   `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
+      (mult-aset ~'bytes (.data ch#) ~idx ~val)))
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
