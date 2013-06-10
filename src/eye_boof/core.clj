@@ -101,14 +101,14 @@
   "Returns a channel data structure of a given image. If the channel number is not
   specified, all channels are returned as a vector."
   ([img] 
-   (let [chs (:mat img)]
+   (let [chs ^MultiSpectral (:mat img)]
      (if (one-dim? img)
      chs
      (mapv #(.getBand chs %) (range (.getNumBands chs))))))
   ([img ch]
    (if (one-dim? img) 
      (:mat img)
-     (.getBand (:mat img) ch))))
+     (.getBand ^MultiSpectral (:mat img) ch))))
 
 (defmacro mult-aget
   "Returns the value of an element of multiple dimensional arrays. Uses type hints to 
@@ -131,10 +131,14 @@
 
 (defn get-pixel*
   "Returns the value of the pixel [x, y] for a given image channel."
-  (^long [ch x y]
-   (mult-aget ints ch/data (+ ch/startIndex (+ (* y ch/stride) x))))
-  (^long [ch idx]
-   (mult-aget ints ch/data idx)))
+  (^long [^ImageUInt8 ch x y]
+   (-> (mult-aget bytes (.data ch) (+ (.startIndex ch) (+ (* y (.stride ch)) x)))
+       (bit-and 0xff)
+       ))
+  (^long [^ImageUInt8 ch idx]
+   (-> (mult-aget bytes (.data ch) idx)
+       (bit-and 0xff)
+       )))
 
 (defmacro mult-aset
   "Sets the value of an element of a multiple dimensional array. Uses type hints to 
@@ -163,12 +167,13 @@
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
-  ([ch x y val]
-   (mult-aset ints ch/data
-              (+ ch/startIndex (+ (* y ch/stride) x))
+  ;; fixme: set array of bytes
+  ([^ImageUInt8 ch x y val]
+   (mult-aset bytes (.data ch)
+              (+ (.startIndex ch) (+ (* y (.stride ch)) x))
               val))
-  ([img idx ch val]
-   (mult-aset ints ch/data
+  ([^ImageUInt8 ch idx val]
+   (mult-aset bytes (.data ch)
               idx 
               val)))
 
