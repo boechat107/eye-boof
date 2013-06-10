@@ -1,7 +1,16 @@
 (ns eye-boof.core-test
-  (:use clojure.test
-        eye-boof.core))
+  (:use clojure.test)
+  (:require 
+    [eye-boof.core :as c]
+    [eye-boof.helpers :as h]
+    [eye-boof.processing :as p]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(defn time-test
+  []
+  (let [img (time (h/load-file-image "test/cnh.png"))
+        gray (time (p/rgb-to-gray img))
+        ]
+    (time (h/view img gray))
+    nil
+    )
+  )
