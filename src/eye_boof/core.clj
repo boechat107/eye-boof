@@ -72,8 +72,8 @@
   "Returns a matrix used to represent a color channel data."
   [nrows ncols dim] 
   (if (> dim 1)
-    (ImageUInt8. ncols nrows)
-    (MultiSpectral. (.getClass ImageUInt8) ncols nrows dim)))
+    (MultiSpectral. ImageUInt8 ncols nrows dim)
+    (ImageUInt8. ncols nrows)))
 
 (defn make-image
   "Returns an instance of Image for a given image data, its number of columns of
@@ -103,7 +103,7 @@
   ([img] 
    (let [chs ^MultiSpectral (:mat img)]
      (if (one-dim? img)
-     chs
+     (:mat img)
      (mapv #(.getBand chs %) (range (.getNumBands chs))))))
   ([img ch]
    (if (one-dim? img) 
