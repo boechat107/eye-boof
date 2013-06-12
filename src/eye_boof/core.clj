@@ -2,7 +2,7 @@
   (:require 
     [incanter.core :as ic])
   (:import 
-    [boofcv.struct.image ImageBase ImageUInt8 MultiSpectral]))
+    [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -70,10 +70,16 @@
 
 (defn new-channel-matrix 
   "Returns a matrix used to represent a color channel data."
-  [nrows ncols dim] 
+  ^ImageUInt8 [nrows ncols dim] 
   (if (> dim 1)
     (MultiSpectral. ImageUInt8 ncols nrows dim)
     (ImageUInt8. ncols nrows)))
+
+(defn new-float-channel
+  ^ImageFloat32 [nrows ncols dim]
+  (if (> dim 1)
+    (MultiSpectral. ImageFloat32 ncols nrows dim)
+    (ImageFloat32. ncols nrows)))
 
 (defn make-image
   "Returns an instance of Image for a given image data, its number of columns of
@@ -105,7 +111,7 @@
      (if (one-dim? img)
      (:mat img)
      (mapv #(.getBand chs %) (range (.getNumBands chs))))))
-  ([img ch]
+  (^ImageUInt8 [img ch]
    (if (one-dim? img) 
      (:mat img)
      (.getBand ^MultiSpectral (:mat img) ch))))
