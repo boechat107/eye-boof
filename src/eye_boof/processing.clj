@@ -5,6 +5,7 @@
     )
   (:import 
     [boofcv.alg.filter.blur BlurImageOps]
+    [boofcv.alg.filter.derivative GradientSobel]
     )
   )
 
@@ -65,6 +66,50 @@
                (c/set-pixel! res-m idx)))))
     res))
 
+(defn convolve
+  "Applies a convolution mask over an image.
+  mask is an one dimensional collection or array with (* mask-size mask-size)
+  elements."
+  ;; todo: Write a macro for the loops over the mask elements. 
+  [img mask ^long mask-size]
+  (let [mask (if (c/doubles? mask) mask (into-array Double/TYPE mask))
+        nc (c/ncols img)
+        nr (c/nrows img)
+        res (c/new-image nr nc (:type img))
+        offset (long (/ mask-size 2))]
+    (dotimes [ch (c/dimension img)]
+      (let [res-m (c/get-channel res ch)
+            img-m (c/get-channel img ch)]
+        (c/for-xy 
+          [x y img]
+          (loop [xn (long 0), kv (double 0.0)]
+            ;; Loop over the x values of the mask.
+            (if (< xn mask-size)
+              (recur 
+                (inc xn)
+                (+ kv
+                   (loop [yn (long 0), kyv (double 0.0)]
+                     ;; Loop over the y values of the mask.
+                     (if (< yn mask-size)
+                       (recur (inc yn)
+                              (->> (c/get-pixel
+                                     img-m 
+                                     ;; Ensures that the coordinates are out of the
+                                     ;; image's bounds.
+                                     (-> (+ xn (- x offset))
+                                         (max 0)
+                                         (min (dec nc)))
+                                     (-> (+ yn (- y offset))
+                                         (max 0)
+                                         (min (dec nr))))
+                                   (* (c/mult-aget doubles mask (+ xn (* yn mask-size))))
+                                   (+ kyv)))
+                       kyv))))
+              (c/set-pixel! res-m
+                            (+ x (* y nc))
+                            (-> (max 0.0 kv) (min 255.0))))))))
+    res))
+
 (defn mean-blur
   "Returns a new image resulting from the application of a mean filter with a given
   radius."
@@ -76,51 +121,8 @@
         (BlurImageOps/mean img-m res-m rad nil)))
     res))
 
-; (defn convolve
-;   "Applies a convolution mask over an image.
-;   mask is an one dimensional collection or array with (* mask-size mask-size)
-;   elements."
-;   ;; todo: Write a macro for the loops over the mask elements. 
-;   [img mask ^long mask-size]
-;   (let [mask (if (c/doubles? mask) mask (into-array Double/TYPE mask))
-;         nc (c/ncols img)
-;         nr (c/nrows img)
-;         res (c/new-image nr nc (:type img))
-;         offset (long (/ mask-size 2))]
-;     (dotimes [ch (c/dimension img)]
-;       (let [res-m (c/get-channel res ch)
-;             img-m (c/get-channel img ch)]
-;         (c/for-xy 
-;           [x y img]
-;           (loop [xn (long 0), kv (double 0.0)]
-;             ;; Loop over the x values of the mask.
-;             (if (< xn mask-size)
-;               (recur 
-;                 (inc xn)
-;                 (+ kv
-;                    (loop [yn (long 0), kyv (double 0.0)]
-;                      ;; Loop over the y values of the mask.
-;                      (if (< yn mask-size)
-;                        (recur (inc yn)
-;                               (->> (c/get-pixel
-;                                      img-m 
-;                                      ;; Ensures that the coordinates are out of the
-;                                      ;; image's bounds.
-;                                      (-> (+ xn (- x offset))
-;                                          (max 0)
-;                                          (min (dec nc)))
-;                                      (-> (+ yn (- y offset))
-;                                          (max 0)
-;                                          (min (dec nr)))
-;                                      nc)
-;                                    (* (c/mult-aget doubles mask (+ xn (* yn mask-size))))
-;                                    (+ kyv)))
-;                        kyv))))
-;               (c/set-pixel! res-m
-;                             (+ x (* y nc))
-;                             (-> (max 0.0 kv) (min 255.0))))))))
-;     res))
-; 
+
+
 ; (defn erode
 ;   "Erodes a Image, a basic operation in the area of the mathematical morphology.
 ;    http://homepages.inf.ed.ac.uk/rbf/HIPR2/erode.htm
