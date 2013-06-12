@@ -3,6 +3,9 @@
     [eye-boof.core :as c]
     [incanter.core :as ic]
     )
+  (:import 
+    [boofcv.alg.filter.blur BlurImageOps]
+    )
   )
 
 (set! *warn-on-reflection* true)
@@ -60,6 +63,17 @@
           (->> (c/get-pixel img-m idx)
                threshold 
                (c/set-pixel! res-m idx)))))
+    res))
+
+(defn mean-blur
+  "Returns a new image resulting from the application of a mean filter with a given
+  radius."
+  [img ^long rad]
+  (let [res (c/new-image (c/nrows img) (c/ncols img) (:type img))]
+    (dotimes [ch (c/dimension img)]
+      (let [img-m (c/get-channel img ch)
+            res-m (c/get-channel res ch)]
+        (BlurImageOps/mean img-m res-m rad nil)))
     res))
 
 ; (defn convolve
