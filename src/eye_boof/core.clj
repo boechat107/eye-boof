@@ -130,10 +130,15 @@
 (defmacro get-pixel
   "Returns a primitive integer value from a channel's array ach. If coordinates 
   [x, y] and ncols are provided, the array is handled as 2D matrix."
-  [ch idx]
+  ([ch idx]
   `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
      (-> (mult-aget ~'bytes (.data ch#) ~idx)
          (bit-and ~0xff))))
+  ([ch x y]
+   `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
+     (-> (mult-aget ~'bytes (.data ch#)
+                    (+ (.startIndex ch#) (+ ~x (* ~y (.stride ch#)))))
+         (bit-and ~0xff)))))
 
 (defn get-pixel*
   "Returns the value of the pixel [x, y] for a given image channel."
