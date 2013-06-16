@@ -3,7 +3,8 @@
     [eye-boof.core :as c]
     [incanter.core :as ic]
     )
-  (:import 
+  (:import
+    [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
     [boofcv.alg.filter.derivative GradientSobel]
     )
