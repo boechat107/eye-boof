@@ -197,7 +197,8 @@
       (assoc :parent img)))
 
 (defmacro for-idx
-  "Iterates over all pixels of img, binding the pixel's index to idx.
+  "Iterates over all pixels of img, binding the pixel's index to idx. The iteration
+  runs over row after row.
   Ex.:
   (for-idx [idx img]
     body)"
@@ -205,8 +206,8 @@
   [[idx img] & body]
   `(let [nr# (nrows ~img)
          nc# (ncols ~img)]
-     (dotimes [x# nc#]
-       (dotimes [y# nr#]
+     (dotimes [y# nr#]
+       (dotimes [x# nc#]
          (let [~idx (+ x# (* y# nc#))]
            ~@body)))))
 
