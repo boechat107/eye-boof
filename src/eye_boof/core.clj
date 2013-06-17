@@ -190,7 +190,8 @@
   "Returns a sub-image from the given image, both sharing the same internal
   data-array. The parent image is carried in the :parent key of the returned image."
   [img x0 y0 x1 y1]
-  (-> (:mat img)
+  ;; todo: check reflection here
+  (-> ^ImageBase (:mat img)
       (.subimage x0 y0 x1 y1)
       (make-image (:type img))
       (assoc :parent img)))

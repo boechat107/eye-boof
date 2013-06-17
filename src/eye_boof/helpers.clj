@@ -55,6 +55,7 @@
 
 (defn load-file-image
   "Returns a RGB Image from a file image."
+  ;; Try and catch.
   [^String filepath]
   (let [buff (UtilImageIO/loadImage filepath)
         img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
