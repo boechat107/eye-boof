@@ -172,7 +172,7 @@
   ncols are provided, the array is handled as 2D matrix."
   [ch idx val]
    `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
-      (mult-aset ~'bytes (.data ch#) ~idx ~val)))
+      (mult-aset ~'bytes (.data ch#) ~idx (unchecked-byte ~val))))
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
