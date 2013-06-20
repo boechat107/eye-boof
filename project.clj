@@ -6,5 +6,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [incanter/incanter-core "1.5.1"]
                  [seesaw "1.4.3"]
-                 [org.boofcv/boofcv "0.13"]
-                 ])
+                 ;[org.boofcv/boofcv "0.13"]
+                 [boofcv "0.15"]
+                 ]
+  :local-repo "repo")
