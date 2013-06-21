@@ -12,7 +12,7 @@
 (def img-test 
   "A simple image created with imgpviewer. It is 4x4 image with one white pixel, one
   red, one green and one blue, the others are all black."
-  ;(h/load-file-image "test/img_test.png")
+  ;(h/load-file-image "test/img_test.png") ; argb image
   (let [img (c/new-image 4 4 :rgb)
         rch (c/get-channel img 0)
         gch (c/get-channel img 1)
@@ -24,10 +24,8 @@
     (c/set-pixel! rch 5 255)
     (c/set-pixel! gch 10 255)
     (c/set-pixel! bch 15 255)
-    img
-;    (h/save-to-file! img fname)
-;    (h/load-file-image fname)
-    ))
+    (h/save-to-file! img fname)
+    (h/load-file-image fname)))
 
 (deftest pixel-vals
   (let [rch (c/get-channel img-test 0)
@@ -41,9 +39,7 @@
     (is (== 0 (c/get-pixel bch 5)))
     (is (== 0 (c/get-pixel rch 10)))
     (is (== 255 (c/get-pixel gch 10)))
-    (is (== 0 (c/get-pixel bch 10)))
-    )
-  )
+    (is (== 0 (c/get-pixel bch 10)))))
 
 (defn time-test
   []

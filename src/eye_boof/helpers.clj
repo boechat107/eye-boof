@@ -56,27 +56,20 @@
   "Returns a RGB Image from a file image."
   [^String filepath]
   (let [buff (ImageIO/read (File. filepath))
-        nc (.getWidth buff)
-        img (c/new-image (.getHeight buff) nc :rgb)
-        rch (c/get-channel img 0)
-        gch (c/get-channel img 1)
-        bch (c/get-channel img 2)]
-;    (assert (== BufferedImage/TYPE_4BYTE_ABGR (.getType buff)))
-    (c/for-xy
-        [x y img]
-        (let [pix (.getRGB buff x y)
-              i (+ x (* y nc))]
-          (c/set-pixel! rch i (r<-intcolor pix))
-          (c/set-pixel! gch i (g<-intcolor pix))
-          (c/set-pixel! bch i (b<-intcolor pix))
-          )
-        )
-    img
-    ))
+        img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
+    (ConvertBufferedImage/orderBandsIntoRGB img buff)
+    (c/make-image 
+      img
+      (condp contains? (.getType buff)
+        #{BufferedImage/TYPE_INT_RGB, BufferedImage/TYPE_3BYTE_BGR
+          BufferedImage/TYPE_INT_BGR}
+        :rgb
+        ;;;;
+        #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB}
+        :argb))))
 
 (defn to-buffered-image
   "Converts an ARGB Image to a BufferedImage."
-  ;; fixme: The resultant image is not good, perhaps because of the channels ordering.
   ^BufferedImage [img]
   {:pre [(c/image? img)]}
   (let [b ^ImageBase (:mat img)]
