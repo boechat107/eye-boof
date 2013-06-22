@@ -2,7 +2,8 @@
   (:use [clojure.test])
   (:require [eye-boof
              [binary-ops :as binop]
-             [core :as c]])
+             [core :as c]
+             [helpers :as h]])
   (:import [georegression.struct.point Point2D_I32]
            [boofcv.struct.image ImageSInt32]))
 
@@ -37,12 +38,9 @@
     img))
 
 (deftest contour-test
-  (let [labeled-img (ImageSInt32. (c/ncols example-img) (c/nrows example-img))]
-    (binop/contour example-img 4 labeled-img)
-    (is (= (-> labeled-img .data vec)
-           [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 4])
-        "Labeled image with 4-neighbours")
-    (binop/contour example-img 8 labeled-img)
-    (is (= (-> labeled-img .data vec)
-           [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 3])
-        "Labeled image with 8-neighbours")))
+  (is (= (-> (binop/labeled-img example-img 4) :mat .data vec)
+         [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 4])
+      "Labeled image with 4-neighbours")
+  (is (= (-> (binop/labeled-img example-img 8) :mat .data vec)
+         [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 3])
+      "Labeled image with 8-neighbours"))
