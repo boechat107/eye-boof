@@ -12,7 +12,8 @@
 (def color-dimensions
   {:rgb 3
    :argb 4
-   :gray 1})
+   :gray 1
+   :bw 1})
 
 (defn image?
   [obj]
@@ -20,7 +21,7 @@
 
 (defn valid-type?
   [type]
-  (some #(= type %) [:argb :rgb :gray]))
+  (some #(= type %) (keys color-dimensions)))
 
 (defn doubles?
   [x]
