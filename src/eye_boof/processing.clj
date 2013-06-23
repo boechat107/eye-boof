@@ -14,16 +14,16 @@
 (set! *unchecked-math* true)
 
 (defn rgb-to-gray
-  "Returns a new Image whose color space is the grayscale.
+  "Returns a new Image whose color space is the grayscale. Only ARGB or RGB images 
+  are accepted.
   Reference:
   http://en.wikipedia.org/wiki/Grayscale"
   [img]
-  {:pre [(= :rgb (:type img))]}
-  (let [nc (c/ncols img)
-        nr (c/nrows img)
-        res (c/new-image nr nc :gray)
+  {:pre [(contains? #{:rgb :argb} (:type img))]}
+  (let [res (c/new-image (c/nrows img) (c/ncols img) :gray)
         gray (c/get-channel res) 
-        [rch gch bch] (c/get-channel img)]
+        chs-vec (c/get-channel img)
+        [rch gch bch] (if (= :argb (:type img)) (subvec chs-vec 1) chs-vec)]
     (c/for-idx [idx img]
       (->> (* 0.2126 (c/get-pixel rch idx))
            (+ (* 0.7152 (c/get-pixel gch idx)))
