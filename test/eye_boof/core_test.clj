@@ -3,11 +3,7 @@
   (:require 
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
-    [eye-boof.processing :as p])
-  (:import 
-    [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]  
-    )
-  )
+    [eye-boof.processing :as p]))
 
 (def img-test 
   "A simple image created with imgpviewer. It is 4x4 image with one white pixel, one
