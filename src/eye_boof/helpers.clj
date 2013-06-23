@@ -10,6 +10,7 @@
     [java.awt.image BufferedImage]
     [boofcv.struct.image ImageBase ImageUInt8 MultiSpectral]
     [boofcv.core.image ConvertBufferedImage]
+    [boofcv.gui.binary VisualizeBinaryData]
     )
   )
 
@@ -68,14 +69,38 @@
         #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB}
         :argb))))
 
-(defn to-buffered-image
-  "Converts an ARGB Image to a BufferedImage."
-  ^BufferedImage [img]
-  {:pre [(c/image? img)]}
-  (let [b ^ImageBase (:mat img)]
-    (if (> (c/dimension img) 1)
-      (ConvertBufferedImage/convertTo_U8 b nil)
-      (ConvertBufferedImage/convertTo b nil))))
+;; (defn to-buffered-image
+;;   "Converts an ARGB Image to a BufferedImage."
+;;   ^BufferedImage [img]
+;;   {:pre [(c/image? img)]}
+;;   (let [b ^ImageBase (:mat img)]
+;;     (if (> (c/dimension img) 1)
+;;       (ConvertBufferedImage/convertTo_U8 b nil)
+;;       (ConvertBufferedImage/convertTo b nil))))
+
+(defmulti to-buffered-image
+  "Dispatch the blob to be converted to a buffered image"
+  (fn [blob & args]
+    (:type blob)))
+
+(defmethod to-buffered-image :argb
+  [blob & args]
+  (let [b ^ImageBase (:mat blob)]
+    (ConvertBufferedImage/convertTo_U8 b nil)))
+
+(defmethod to-buffered-image :rgb
+  [blob & args]
+  (let [b ^ImageBase (:mat blob)]
+    (ConvertBufferedImage/convertTo_U8 b nil)))
+
+(defmethod to-buffered-image :gray
+  [blob & args]
+  (let [b ^ImageBase (:mat blob)]
+    (ConvertBufferedImage/convertTo b nil)))
+
+(defmethod to-buffered-image :bw
+  [blob & args]
+  (VisualizeBinaryData/renderBinary (:mat blob) nil))
 
 (defn save-to-file!
   "Saves an image into a file."
@@ -84,19 +109,34 @@
    (-> (to-buffered-image img)
        (ImageIO/write ext (File. filepath)))))
 
+
+(defn- new-frame
+  "Creates a new frame for viewing the images."
+  []
+  (w/frame :title "Image Viewer" ))
+
+(defonce frame (atom (new-frame)))
+
 (defn view 
   "Shows the images on a grid-panel window."
-  [& imgs]
-  (let [buff-imgs (map #(if (instance? java.awt.image.BufferedImage %)
-                          %
-                          (to-buffered-image %))
-                       imgs)
-        grid (w/grid-panel
-               :border 5
-               :hgap 10 :vgap 10
-               :columns (min 6 (max 1 (count imgs))) 
-               :items (map #(w/label :icon %) buff-imgs))]
-    (-> (w/frame :title "Image Viewer" 
-                 :content grid)
-        w/pack!
-        w/show!)))
+  ([blob & options]
+     (let [imgs (if (seq? blob) blob (list blob))
+           buff-imgs (map #(if (instance? java.awt.image.BufferedImage %)
+                             %
+                             (apply to-buffered-image % options))
+                          imgs)
+           grid (w/grid-panel
+                 :border 5
+                 :hgap 10 :vgap 10
+                 :columns (min 6 (max 1 (count imgs))) 
+                 :items (map #(w/label :icon %) buff-imgs))]
+       (doto frame
+         (.setContentPane grid)
+         w/pack!
+         w/show!))))
+
+(defn view-new
+  "View the images in a new frame"
+  [blob & options]
+  (reset! frame (new-frame))
+  (apply view blob options))
