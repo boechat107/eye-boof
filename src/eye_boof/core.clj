@@ -98,6 +98,12 @@
   (-> (new-channel-matrix nrows ncols (type color-dimensions))
       (make-image type)))
 
+(defn new-gray-image
+  "Returns an empty grayscale image (single channel) with the given dimension."
+  [nr nc]
+  (-> (new-channel-matrix nr nc (:gray color-dimensions))
+      (make-image :gray)))
+
 ;(defn copy-image
 ;  "Returns a copy of a given image."
 ;  [img]
