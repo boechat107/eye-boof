@@ -11,6 +11,7 @@
     [boofcv.struct.image ImageBase ImageUInt8 MultiSpectral]
     [boofcv.core.image ConvertBufferedImage]
     [boofcv.gui.binary VisualizeBinaryData]
+    [eye_boof.core Image]
     )
   )
 
@@ -81,24 +82,24 @@
 (defmulti to-buffered-image
   "Dispatch the blob to be converted to a buffered image"
   (fn [blob & args]
-    (:type blob)))
+    [(type blob) (:type blob)]))
 
-(defmethod to-buffered-image :argb
+(defmethod to-buffered-image [Image :argb]
   [blob & args]
   (let [b ^ImageBase (:mat blob)]
     (ConvertBufferedImage/convertTo_U8 b nil)))
 
-(defmethod to-buffered-image :rgb
+(defmethod to-buffered-image [Image :rgb]
   [blob & args]
   (let [b ^ImageBase (:mat blob)]
     (ConvertBufferedImage/convertTo_U8 b nil)))
 
-(defmethod to-buffered-image :gray
+(defmethod to-buffered-image [Image :gray]
   [blob & args]
   (let [b ^ImageBase (:mat blob)]
     (ConvertBufferedImage/convertTo b nil)))
 
-(defmethod to-buffered-image :bw
+(defmethod to-buffered-image [Image :bw]
   [blob & args]
   (VisualizeBinaryData/renderBinary (:mat blob) nil))
 
@@ -130,7 +131,7 @@
                  :hgap 10 :vgap 10
                  :columns (min 6 (max 1 (count imgs))) 
                  :items (map #(w/label :icon %) buff-imgs))]
-       (doto frame
+       (doto @frame
          (.setContentPane grid)
          w/pack!
          w/show!))))
