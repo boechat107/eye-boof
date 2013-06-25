@@ -47,6 +47,10 @@
   [img]
   (= :argb (:type img)))
 
+(defn bw-type?
+  [img]
+  (= :bw (:type img)))
+
 (defn one-dim?
   "Returns true if the image has just one channel."
   [img]
