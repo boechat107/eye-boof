@@ -14,6 +14,56 @@
    [boofcv.gui.binary VisualizeBinaryData]))
 
 
+(defn logic-and [image1 image2]
+  {:pre [(every? c/bw-type? [image1 image2])]}
+  (let [result (c/new-image (c/ncols image1) (c/nrows image1) :bw)
+        chn-result (c/get-channel result)]
+    (BinaryImageOps/logicAnd (:mat image1) (:mat image2) chn-result)
+    result))
+
+(defn logic-or [image1 image2]
+  {:pre [(every? c/bw-type? [image1 image2])]}
+  (let [result (c/new-image (c/ncols image1) (c/nrows image1) :bw)
+        chn-result (c/get-channel result)]
+    (BinaryImageOps/logicOr (:mat image1) (:mat image2) chn-result)
+    result))
+
+(defn logic-xor [image1 image2]
+  {:pre [(every? c/bw-type? [image1 image2])]}
+  (let [result (c/new-image (c/ncols image1) (c/nrows image1) :bw)
+        chn-result (c/get-channel result)]
+    (BinaryImageOps/logicXor (:mat image1) (:mat image2) chn-result)
+    result))
+
+(defn erode [image rule]
+  {:pre [(c/bw-type? image)
+         (or (= 4 rule) (= 8 rule))]}
+  (let [result (c/new-image (c/ncols image) (c/nrows image) :bw)
+        chn-result (c/get-channel result)]
+    (if (= 4 rule)
+      (BinaryImageOps/erode4 image chn-result)
+      (BinaryImageOps/erode8 image chn-result))
+    result))
+
+(defn dilate [image rule]
+  {:pre [(c/bw-type? image)
+         (or (= 4 rule) (= 8 rule))]}
+  (let [result (c/new-image (c/ncols image) (c/nrows image) :bw)
+        chn-result (c/get-channel result)]
+    (if (= 4 rule)
+      (BinaryImageOps/dilate4 image chn-result)
+      (BinaryImageOps/dilate8 image chn-result))
+    result))
+
+(defn edge [image rule]
+  {:pre [(c/bw-type? image)
+         (or (= 4 rule) (= 8 rule))]}
+  (let [result (c/new-image (c/ncols image) (c/nrows image) :bw)
+        chn-result (c/get-channel result)]
+    (if (= 4 rule)
+      (BinaryImageOps/edge4 image chn-result)
+      (BinaryImageOps/edge4 image chn-result))
+    result))
 
 (defn contour
   "Returns a contour image, with the contours of the BW image features
