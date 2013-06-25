@@ -18,7 +18,7 @@
    0 1 1 0 1 0
    0 0 0 0 0 1"
   (let [img (c/new-image 6 6 :bw)
-        chn (c/get-channel img 1)]
+        chn (c/get-channel img)]
     (c/set-pixel!* chn 0 1 1)
     (c/set-pixel!* chn 0 2 1)
     (c/set-pixel!* chn 0 3 1)
