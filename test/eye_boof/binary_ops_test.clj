@@ -18,7 +18,7 @@
    0 1 1 0 1 0
    0 0 0 0 0 1"
   (let [img (c/new-image 6 6 :bw)
-        chn (c/get-channel img 1)]
+        chn (c/get-channel img)]
     (c/set-pixel!* chn 0 1 1)
     (c/set-pixel!* chn 0 2 1)
     (c/set-pixel!* chn 0 3 1)
@@ -38,9 +38,9 @@
     img))
 
 (deftest contour-test
-  (is (= (-> (binop/labeled-img example-img 4) :mat .data vec)
+  (is (= (-> (binop/labeled-image example-img 4) :mat .data vec)
          [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 4])
       "Labeled image with 4-neighbours")
-  (is (= (-> (binop/labeled-img example-img 8) :mat .data vec)
+  (is (= (-> (binop/labeled-image example-img 8) :mat .data vec)
          [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 3])
       "Labeled image with 8-neighbours"))
