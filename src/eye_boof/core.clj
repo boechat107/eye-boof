@@ -7,7 +7,7 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
 
-(defrecord Image [mat type])
+(defrecord Image [mat type origin])
 
 (def color-dimensions
   {:rgb 3
@@ -18,6 +18,10 @@
 (defn image?
   [obj]
   (instance? Image obj))
+
+(defn sub-image?
+  [obj]
+  (and (instance? Image obj) (:origin obj)))
 
 (defn valid-type?
   [type]
@@ -93,7 +97,7 @@
   the value of each pixel a double value."
   ([data-chs type]
    {:pre [(valid-type? type) (mat? data-chs)]}
-   (Image. data-chs type)))
+   (Image. data-chs type nil)))
 
 (defn new-image
   "Returns an empty image with the given dimension and color type."
@@ -199,13 +203,14 @@
 
 (defn sub-image
   "Returns a sub-image from the given image, both sharing the same internal
-  data-array. The parent image is carried in the :parent key of the returned image."
+  data-array.
+  The new sub-image has a field :origin that has the coordinates [x0 y0] of the
+  original image where the sub-image was taken."
   [img x0 y0 x1 y1]
-  ;; todo: check reflection here
   (-> ^ImageBase (:mat img)
       (.subimage x0 y0 x1 y1)
       (make-image (:type img))
-      (assoc :parent img)))
+      (assoc :origin [x0 y0])))
 
 (defmacro for-idx
   "Iterates over all pixels of img, binding the pixel's index to idx. The iteration
