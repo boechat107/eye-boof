@@ -204,8 +204,7 @@
   "If the given image is a sub-image, returns the top-left coordinates on the former
   image."
   [img]
-  (when (sub-image? img)
-    (:origin img)))
+  (:origin img))
 
 (defn sub-image
   "Returns a sub-image from the given image, both sharing the same internal
