@@ -207,10 +207,11 @@
   The new sub-image has a field :origin that has the coordinates [x0 y0] of the
   original image where the sub-image was taken."
   [img x0 y0 x1 y1]
-  (-> ^ImageBase (:mat img)
-      (.subimage x0 y0 x1 y1)
-      (make-image (:type img))
-      (assoc :origin [x0 y0])))
+  (let [orig (if (sub-image? img) (:origin img) [x0 y0])]
+    (-> ^ImageBase (:mat img)
+        (.subimage x0 y0 x1 y1)
+        (make-image (:type img))
+        (assoc :origin orig))))
 
 (defmacro for-idx
   "Iterates over all pixels of img, binding the pixel's index to idx. The iteration
