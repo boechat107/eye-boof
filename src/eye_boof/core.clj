@@ -191,7 +191,6 @@
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
-  ;; fixme: set array of bytes
   ([^ImageUInt8 ch x y val]
    (mult-aset bytes (.data ch)
               (+ (.startIndex ch) (+ (* y (.stride ch)) x))
@@ -213,10 +212,13 @@
   data-array.
   The new sub-image has a field :origin that has the coordinates [x0 y0] of the
   original image where the sub-image was taken."
-  [img x0 y0 x1 y1]
-  (let [orig (if (sub-image? img) (:origin img) [x0 y0])]
+  [img x0 y0 width height]
+  (let [[x00 y00] (:origin img)
+        orig (if (sub-image? img)
+               [(+ x00 x0) (+ y00 y0)]
+               [x0 y0])]
     (-> ^ImageBase (:mat img)
-        (.subimage x0 y0 x1 y1)
+        (.subimage x0 y0 (+ x0 width) (+ y0 height))
         (make-image (:type img))
         (assoc :origin orig))))
 
