@@ -144,7 +144,9 @@
 
 (defmacro get-pixel
   "Returns a primitive integer value from a channel's array ach. If coordinates 
-  [x, y] and ncols are provided, the array is handled as 2D matrix."
+  [x, y] and ncols are provided, the array is handled as 2D matrix.
+  Warning: idx is relative to the original or parent image, so it is dangerous to use it
+  for sub-images, give preference to x and y indexing."
   ([ch idx]
   `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
      (-> (mult-aget ~'bytes (.data ch#) ~idx)

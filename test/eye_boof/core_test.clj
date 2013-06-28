@@ -37,6 +37,25 @@
     (is (== 255 (c/get-pixel gch 10)))
     (is (== 0 (c/get-pixel bch 10)))))
 
+(deftest sub-images
+  (let [w 3
+        h 3
+        si (c/sub-image img-test 0 0 h w)
+        [rch gch bch] (c/get-channel si)
+        ssi (c/sub-image si 1 1 2 2)
+        [r g b] (c/get-channel ssi)]
+    (is (== w (c/ncols si)))
+    (is (== h (c/nrows si)))
+    (is (== 255 (c/get-pixel rch 1 1)))
+    (is (== 255 (c/get-pixel gch 2 2)))
+    (is (= [0 0] (c/get-parent-point si)))
+    (is (== 2 (c/ncols ssi)))
+    (is (== 2 (c/nrows ssi)))
+    (is (== 255 (c/get-pixel r 0 0)))
+    (is (== 255 (c/get-pixel g 1 1)))
+    (is (== 0 (c/get-pixel b 1 1)))
+    (is (= [1 1] (c/get-parent-point ssi)))))
+
 (defn time-test
   []
   (let [img (time (h/load-file-image "test/cnh.png"))
