@@ -104,7 +104,7 @@
   (VisualizeBinaryData/renderBinary (:mat blob) nil))
 
 (defn save-to-file!
-  "Saves an image into a file."
+  "Saves an image into a file. The default extension is PNG."
   ([img filepath] (save-to-file! img filepath "png"))
   ([img ^String filepath ^String ext]
    (-> (to-buffered-image img)

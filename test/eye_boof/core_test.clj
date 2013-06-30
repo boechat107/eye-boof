@@ -35,7 +35,13 @@
     (is (== 0 (c/get-pixel bch 5)))
     (is (== 0 (c/get-pixel rch 10)))
     (is (== 255 (c/get-pixel gch 10)))
-    (is (== 0 (c/get-pixel bch 10)))))
+    (is (== 0 (c/get-pixel bch 10)))
+    (is (= (c/channel-to-vec img-test 0)
+           [255 0 0 0 0 255 0 0 0 0 0 0 0 0 0 0]))
+    (is (= (c/channel-to-vec img-test 1)
+           [255 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0]))
+    (is (= (c/channel-to-vec img-test 2)
+           [255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255]))))
 
 (deftest sub-images
   (let [w 3
