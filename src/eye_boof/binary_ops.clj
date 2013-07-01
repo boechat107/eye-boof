@@ -1,20 +1,20 @@
 (ns eye-boof.binary-ops
   (:require [eye-boof
              [core :as c]
-             [processing :as p]
-             [image-features :as feats]])
+             [processing :as p]])
 
   (:require [eye-boof
              [helpers :as h]])
 
   (:import
-   [eye_boof.image_features ImageFeatures]
    [boofcv.alg.filter.binary BinaryImageOps]
    [boofcv.struct.image ImageSInt32]
    [boofcv.gui.binary VisualizeBinaryData]))
 
 
-(defn logic-and [image1 image2]
+(defn logic-and
+  "Applies bit-and to the pixels of two BW images"
+  [image1 image2]
   {:pre [(every? c/bw-type? [image1 image2])]}
   (let [result (c/new-image (c/ncols image1) (c/nrows image1) :bw)
         chn-result (c/get-channel result)]
@@ -70,8 +70,7 @@
    according to the 4-connected or 8-connected rule."
   [img rule]
   {:pre [(= :bw (:type img))]}
-  (let [contours (BinaryImageOps/contour (:mat img) rule nil)]
-    (ImageFeatures. contours :contours)))
+  (BinaryImageOps/contour (:mat img) rule nil))
 
 (defrecord LabeledImage [mat])
 
@@ -81,23 +80,36 @@
   {:pre [(= :bw (:type img))]}
   (let [result (ImageSInt32. (c/ncols img) (c/nrows img))]
     (BinaryImageOps/contour (:mat img) rule result)
-    (LabeledImage. result)))
+    result))
 
-(defmethod h/to-buffered-image [ImageFeatures :contours]
-  [blob & {:keys [color-internal color-external image width height]
-           :or {color-internal 0x0000FF color-external 0xFF0000}}]
-  (assert (or image (and width height))
-          "I need an 'img' or 'width/height' to know the size for plotting contours")
+(defn bufferedImage<-contours
+  [contours & {:keys [color-internal color-external image width height]
+               :or {color-internal 0x0000FF color-external 0xFF0000}}]
+  {:pre [(or image (and width height))]}
   (let [[width height] (if (nil? image)
                          [width height]
                          [(c/ncols image) (c/nrows image)])]
-  (VisualizeBinaryData/renderContours (feats/features blob) color-external color-internal width height nil)))
+    (VisualizeBinaryData/renderContours contours color-external color-internal width height nil)))
 
-(defmethod h/to-buffered-image [LabeledImage nil]
-  [blob & {:keys [colors]}]
-  (let [labeled-img ^ImageSInt32 (:mat blob)
-        colors (or colors (apply max (.data labeled-img)))]
-    (VisualizeBinaryData/renderLabeled labeled-img colors nil)))
+;; (defn view-contours [contours img & opts]
+;;   (h/view (apply bufferedImage<-contours contours :img img opts)))
+
+(defn bufferedImage<-labeled-image
+  "Renders a labeled image to a BufferedImage.
+   Color-count indicates the amount of random colors to use"
+  ([labeled-img]
+     (bufferedImage<-labeled-image labeled-img (apply max (.data labeled-img))))
+  ([labeled-img color-count]
+     (VisualizeBinaryData/renderLabeled labeled-img color-count nil)))
+
+;; (defn view-labeled-image
+;;   ([labeled-img]
+;;      (h/view (bufferedImage<-labeled-image labeled-img)))
+;;   ([labeled-img color-count]
+;;      (h/view (bufferedImage<-labeled-image labeled-img color-count))))
+
+
+
 
 ;;(TODO) implement tests and visualizations for the contours and
 ;;labeled
