@@ -19,6 +19,9 @@
   [obj]
   (instance? Image obj))
 
+(defn type? [img]
+  (:type img))
+
 (defn sub-image?
   [obj]
   (and (instance? Image obj) (:origin obj)))
