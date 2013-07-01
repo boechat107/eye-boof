@@ -70,38 +70,21 @@
         #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB}
         :argb))))
 
-;; (defn to-buffered-image
-;;   "Converts an ARGB Image to a BufferedImage."
-;;   ^BufferedImage [img]
-;;   {:pre [(c/image? img)]}
-;;   (let [b ^ImageBase (:mat img)]
-;;     (if (> (c/dimension img) 1)
-;;       (ConvertBufferedImage/convertTo_U8 b nil)
-;;       (ConvertBufferedImage/convertTo b nil))))
 
-(defmulti to-buffered-image
-  "Dispatch the blob to be converted to a buffered image"
-  (fn [blob & args]
-    [(type blob) (:type blob)]))
-
-(defmethod to-buffered-image [Image :argb]
-  [blob & args]
-  (let [b ^ImageBase (:mat blob)]
-    (ConvertBufferedImage/convertTo_U8 b nil)))
-
-(defmethod to-buffered-image [Image :rgb]
-  [blob & args]
-  (let [b ^ImageBase (:mat blob)]
-    (ConvertBufferedImage/convertTo_U8 b nil)))
-
-(defmethod to-buffered-image [Image :gray]
-  [blob & args]
-  (let [b ^ImageBase (:mat blob)]
-    (ConvertBufferedImage/convertTo b nil)))
-
-(defmethod to-buffered-image [Image :bw]
-  [blob & args]
-  (VisualizeBinaryData/renderBinary (:mat blob) nil))
+(defn to-buffered-image
+  "Converts an ARGB Image to a BufferedImage."
+  ^BufferedImage [img]
+  {:pre [(c/image? img)]}
+  (let [b ^ImageBase (:mat img)]
+    (case (c/type? img)
+      :argb
+      (throw (Exception.  "Not implemented yet in boofcV"))
+      :rgb
+      (ConvertBufferedImage/convertTo_U8 b nil)
+      :gray
+      (ConvertBufferedImage/convertTo b nil)
+      :bw
+      (VisualizeBinaryData/renderBinary b nil))))
 
 (defn save-to-file!
   "Saves an image into a file. The default extension is PNG."
@@ -120,11 +103,10 @@
 
 (defn view 
   "Shows the images on a grid-panel window."
-  ([blob & options]
-     (let [imgs (if (seq? blob) blob (list blob))
-           buff-imgs (map #(if (instance? java.awt.image.BufferedImage %)
+  ([& imgs]
+     (let [buff-imgs (map #(if (instance? java.awt.image.BufferedImage %)
                              %
-                             (apply to-buffered-image % options))
+                             (to-buffered-image %))
                           imgs)
            grid (w/grid-panel
                  :border 5
@@ -138,6 +120,6 @@
 
 (defn view-new
   "View the images in a new frame"
-  [blob & options]
+  [& imgs]
   (reset! frame (new-frame))
-  (apply view blob options))
+  (view imgs))
