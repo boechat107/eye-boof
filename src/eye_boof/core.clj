@@ -190,9 +190,11 @@
 (defmacro set-pixel! 
   "Sets the value of a pixel for a given channel's array. If coordinates [x, y] and
   ncols are provided, the array is handled as 2D matrix."
-  [ch idx val]
+  ([ch idx val]
    `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
       (mult-aset ~'bytes (.data ch#) ~idx (unchecked-byte ~val))))
+  ([ch x y val]
+   (set-pixel! ~ch (+ (.startIndex ~ch) (+ (* ~y (.stride ~ch)) ~x)) ~val)))
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
