@@ -18,6 +18,10 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
 
+(defn is-buffImg?
+  [obj]
+  (instance? BufferedImage obj))
+
 (defn argb<-intcolor
   "Convert the 32 bits color to ARGB. It returns a vector [a r g b]."
   [color]
