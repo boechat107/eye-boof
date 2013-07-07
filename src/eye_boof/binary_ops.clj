@@ -65,6 +65,9 @@
       (BinaryImageOps/edge4 image chn-result))
     result))
 
+;;(TODO) implement this function
+;; (defn remove-point-noise [])
+
 (defn contour
   "Returns a contour image, with the contours of the BW image features
    according to the 4-connected or 8-connected rule."
@@ -72,7 +75,15 @@
   {:pre [(= :bw (:type img))]}
   (BinaryImageOps/contour (:mat img) rule nil))
 
-(defrecord LabeledImage [mat])
+;;(TODO) implement this function
+;; (defn relabel [])
+
+;;(TODO) implement this function
+;; (defn label-to-binary [])
+
+;;(TODO) implement this function
+;; (defn label-to-cluster [])
+
 
 (defn labeled-image
   "Returns a labeled image, i.e an Image with the features numbered "
