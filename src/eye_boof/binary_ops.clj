@@ -76,7 +76,7 @@
 
 (defn labeled-image
   "Returns a labeled image, i.e an Image with the features numbered "
-  [img rule]
+  ^ImageSInt32 [img rule]
   {:pre [(= :bw (:type img))]}
   (let [result (ImageSInt32. (c/ncols img) (c/nrows img))]
     (BinaryImageOps/contour (:mat img) rule result)
