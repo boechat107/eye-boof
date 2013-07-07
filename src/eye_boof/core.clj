@@ -46,13 +46,17 @@
   [img]
   (some #(= % (:type img)) [:argb :rgb]))
 
-(defn gray-type?
-  [img]
-  (= :gray (:type img)))
-
 (defn argb-type?
   [img]
   (= :argb (:type img)))
+
+(defn rgb-type?
+  [img]
+  (= :argb (:type img)))
+
+(defn gray-type?
+  [img]
+  (= :gray (:type img)))
 
 (defn bw-type?
   [img]
