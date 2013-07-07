@@ -7,6 +7,7 @@
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
     [boofcv.alg.filter.derivative GradientSobel]
+    [boofcv.alg.filter.binary ThresholdImageOps]
     )
   )
 
@@ -66,6 +67,15 @@
                threshold 
                (c/set-pixel! res-m idx)))))
     res))
+
+(defn threshold
+  [img threshold & {:keys [down]}]
+  (let [result (c/new-image (c/nrows img) (c/ncols img) :bw)
+        res-chan (c/get-channel result 1)]
+    
+    (ThresholdImageOps/threshold (c/new-channel-matrix (c/nrows img) (c/ncols img) 1)
+                                 nil threshold (boolean down))
+    result))
 
 (defn convolve
   "Applies a convolution mask over an image.
