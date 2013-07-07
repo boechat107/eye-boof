@@ -17,7 +17,7 @@
     (c/set-pixel! rch 0 255)
     (c/set-pixel! gch 0 255)
     (c/set-pixel! bch 0 255)
-    (c/set-pixel! rch 5 255)
+    (c/set-pixel! rch 1 1 255)
     (c/set-pixel! gch 10 255)
     (c/set-pixel! bch 15 255)
     (h/save-to-file! img fname)
@@ -61,6 +61,16 @@
     (is (== 255 (c/get-pixel g 1 1)))
     (is (== 0 (c/get-pixel b 1 1)))
     (is (= [1 1] (c/get-parent-point ssi)))))
+
+(defn time-set-pixel
+  []
+  (let [ch (c/new-channel-matrix 1000 1000 1)]
+    (time (dotimes [y 1000]
+            (dotimes [x 1000]
+              (c/set-pixel!* ch x y 10))))
+    (time (dotimes [y 1000]
+            (dotimes [x 1000]
+              (c/set-pixel! ch x y 10))))))
 
 (defn time-test
   []
