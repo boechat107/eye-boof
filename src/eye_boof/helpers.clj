@@ -58,10 +58,13 @@
   [^BufferedImage buff]
   (.getDataElements (.getRaster buff) 0 0 (.getWidth buff) (.getHeight buff) nil))
 
+(defn load-file-buffImg [^String filepath]
+  (ImageIO/read (File. filepath)))
+
 (defn load-file-image
   "Returns a RGB Image from a file image."
   [^String filepath]
-  (let [buff (ImageIO/read (File. filepath))
+  (let [buff (load-file-buffImg filepath)
         img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
     (ConvertBufferedImage/orderBandsIntoRGB img buff)
     (c/make-image 
