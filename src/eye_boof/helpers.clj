@@ -81,17 +81,19 @@
 (defn to-buffered-image
   "Converts an ARGB Image to a BufferedImage."
   ^BufferedImage [img]
-  {:pre [(c/image? img)]}
-  (let [b ^ImageBase (:mat img)]
-    (case (c/type? img)
-      :argb
-      (throw (Exception.  "Not implemented yet in boofcV"))
-      :rgb
-      (ConvertBufferedImage/convertTo_U8 b nil)
-      :gray
-      (ConvertBufferedImage/convertTo b nil)
-      :bw
-      (VisualizeBinaryData/renderBinary b nil))))
+  {:pre [(or (c/image? img) (is-buffImg? img))]}
+  (if (is-buffImg? img)
+    img
+    (let [b ^ImageBase (:mat img)]
+      (case (c/type img)
+        :argb
+        (throw (Exception.  "Not implemented yet in boofcV"))
+        :rgb
+        (ConvertBufferedImage/convertTo_U8 b nil)
+        :gray
+        (ConvertBufferedImage/convertTo b nil)
+        :bw
+        (VisualizeBinaryData/renderBinary b nil)))))
 
 (defn save-to-file!
   "Saves an image into a file. The default extension is PNG."
