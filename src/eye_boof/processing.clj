@@ -73,8 +73,8 @@
   (let [result (c/new-image (c/nrows img) (c/ncols img) :bw)
         res-chan (c/get-channel result 1)]
     
-    (ThresholdImageOps/threshold (c/new-channel-matrix (c/nrows img) (c/ncols img) 1)
-                                 nil threshold (boolean down))
+    (ThresholdImageOps/threshold (:mat img) res-chan
+                                 threshold (boolean down))
     result))
 
 (defn convolve
