@@ -58,7 +58,8 @@
   [^BufferedImage buff]
   (.getDataElements (.getRaster buff) 0 0 (.getWidth buff) (.getHeight buff) nil))
 
-(defn load-file-buffImg [^String filepath]
+(defn load-file-buffImg
+  ^BufferedImage [^String filepath]
   (ImageIO/read (File. filepath)))
 
 (defn load-file-image
@@ -81,19 +82,16 @@
 (defn to-buffered-image
   "Converts an ARGB Image to a BufferedImage."
   ^BufferedImage [img]
-  {:pre [(or (c/image? img) (is-buffImg? img))]}
-  (if (is-buffImg? img)
-    img
-    (let [b ^ImageBase (:mat img)]
-      (case (c/type img)
-        :argb
-        (throw (Exception.  "Not implemented yet in boofcV"))
-        :rgb
-        (ConvertBufferedImage/convertTo_U8 b nil)
-        :gray
-        (ConvertBufferedImage/convertTo b nil)
-        :bw
-        (VisualizeBinaryData/renderBinary b nil)))))
+  (let [b ^ImageBase (:mat img)]
+    (case (c/type img)
+      :argb
+      (throw (Exception.  "Not implemented yet in boofcV"))
+      :rgb
+      (ConvertBufferedImage/convertTo_U8 b nil)
+      :gray
+      (ConvertBufferedImage/convertTo b nil)
+      :bw
+      (VisualizeBinaryData/renderBinary b nil))))
 
 (defn save-to-file!
   "Saves an image into a file. The default extension is PNG."
@@ -112,23 +110,23 @@
 
 (defn view 
   "Shows the images on a grid-panel window."
-  ([& imgs]
-     (let [buff-imgs (map #(if (instance? java.awt.image.BufferedImage %)
-                             %
-                             (to-buffered-image %))
-                          imgs)
-           grid (w/grid-panel
-                 :border 5
-                 :hgap 10 :vgap 10
-                 :columns (min 6 (max 1 (count imgs))) 
-                 :items (map #(w/label :icon %) buff-imgs))]
-       (doto @frame
-         (.setContentPane grid)
-         w/pack!
-         w/show!))))
+  [& imgs]
+  (let [buff-imgs (map #(if (instance? java.awt.image.BufferedImage %)
+                          %
+                          (to-buffered-image %))
+                       imgs)
+        grid (w/grid-panel
+               :border 5
+               :hgap 10 :vgap 10
+               :columns (min 6 (max 1 (count imgs))) 
+               :items (map #(w/label :icon %) buff-imgs))]
+    (doto @frame
+      (.setContentPane grid)
+      w/pack!
+      w/show!)))
 
 (defn view-new
   "View the images in a new frame"
   [& imgs]
   (reset! frame (new-frame))
-  (view imgs))
+  (apply view imgs))
