@@ -86,7 +86,7 @@
 (defn to-buffered-image
   "Converts an ARGB Image to a BufferedImage."
   ^BufferedImage [img]
-  (let [b ^ImageBase (:mat img)]
+  (let [^ImageBase b (:mat img)]
     (case (c/type img)
       :argb
       (throw (Exception.  "Not implemented yet in boofcV"))

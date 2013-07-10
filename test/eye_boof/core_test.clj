@@ -62,6 +62,12 @@
     (is (== 0 (c/get-pixel b 1 1)))
     (is (= [1 1] (c/get-parent-point ssi)))))
 
+(deftest img-scaling
+  (let [orig (h/load-file-image "resources/boofcv.jpg")
+        bigger (time (p/scale orig 1.5 1.5))
+        smaller (time (p/scale orig 0.5 0.5))]
+    (h/view* orig bigger smaller)))
+
 (defn time-set-pixel
   []
   (let [ch (c/new-channel-matrix 1000 1000 1)]

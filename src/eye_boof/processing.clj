@@ -1,15 +1,15 @@
 (ns eye-boof.processing 
   (:require 
     [eye-boof.core :as c]
-    [incanter.core :as ic]
-    )
+    [eye-boof.helpers :as h]
+    [incanter.core :as ic])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
     [boofcv.alg.filter.derivative GradientSobel]
     [boofcv.alg.filter.binary ThresholdImageOps]
-    )
-  )
+    [java.awt.geom AffineTransform]
+    [java.awt.image BufferedImage AffineTransformOp]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -136,9 +136,15 @@
 
 (defn scale
   "Returns a new image as a scaled version of the input image."
-  [img factor]
-  
-  )
+  [img xfactor yfactor]
+  (let [buff (h/to-buffered-image img)
+        out-buff (BufferedImage. (* (c/ncols img) xfactor)
+                                 (* (c/nrows img) yfactor)
+                                 (.getType buff))]
+    (-> (AffineTransformOp. (doto (AffineTransform.) (.scale xfactor yfactor))
+                            AffineTransformOp/TYPE_BICUBIC)
+        (.filter buff out-buff)
+        (h/to-img))))
 
 ; (defn erode
 ;   "Erodes a Image, a basic operation in the area of the mathematical morphology.
