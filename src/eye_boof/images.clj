@@ -8,7 +8,9 @@
   {'ImageSInt8  bytes
    'ImageSInt16 shorts
    'ImageSInt32 ints
-   'ImageSInt64 longs})
+   'ImageSInt64 longs
+   'ImageUInt8  bytes
+   'ImageUInt16 shorts})
 
 (defmacro get-pixel
   "Returns a primitive integer value from a channel's array ach. If coordinates 
