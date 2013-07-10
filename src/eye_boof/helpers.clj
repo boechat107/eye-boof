@@ -62,11 +62,10 @@
   ^BufferedImage [^String filepath]
   (ImageIO/read (File. filepath)))
 
-(defn load-file-image
-  "Returns a RGB Image from a file image."
-  [^String filepath]
-  (let [buff (load-file-buffImg filepath)
-        img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
+(defn to-img
+  "Retuns an eye-boof Image from a given BufferedImage."
+  [^BufferedImage buff]
+  (let [img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
     (ConvertBufferedImage/orderBandsIntoRGB img buff)
     (c/make-image 
       img
@@ -78,6 +77,11 @@
         #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB}
         :argb))))
 
+(defn load-file-image
+  "Returns a RGB Image from a file image."
+  [^String filepath]
+  (-> (load-file-buffImg filepath)
+      (to-img)))
 
 (defn to-buffered-image
   "Converts an ARGB Image to a BufferedImage."
