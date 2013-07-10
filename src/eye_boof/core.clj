@@ -210,9 +210,7 @@
       (mult-aset ~'bytes (.data ch#) ~idx (unchecked-byte ~val))))
   ([ch x y val]
    `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
-      (mult-aset ~'bytes (.data ch#)
-                 (+ (.startIndex ch#) (+ (* ~y (.stride ch#)) ~x))
-                 (unchecked-byte ~val)))))
+      (.unsafe_set ch# ~x ~y ~val))))
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."

@@ -70,7 +70,9 @@
               (c/set-pixel!* ch x y 10))))
     (time (dotimes [y 1000]
             (dotimes [x 1000]
-              (c/set-pixel! ch x y 10))))))
+              (c/set-pixel! ch x y 10))))
+    (time (dotimes [idx 1000000]
+            (c/set-pixel!* ch idx 10)))))
 
 (defn time-test
   []
