@@ -130,3 +130,5 @@
   [& imgs]
   (reset! frame (new-frame))
   (apply view imgs))
+
+(def view* view-new)
