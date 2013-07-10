@@ -98,9 +98,9 @@
       (VisualizeBinaryData/renderBinary b nil))))
 
 (defn create-buffered-image
-  ([width height] 
+  (^BufferedImage [width height] 
    (create-buffered-image width height BufferedImage/TYPE_INT_RGB))
-  ([width height c-type]
+  (^BufferedImage [width height c-type]
    (BufferedImage. width height c-type)))
 
 (defn save-to-file!
