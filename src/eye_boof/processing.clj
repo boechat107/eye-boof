@@ -32,6 +32,8 @@
            (c/set-pixel! gray idx)))
     res))
 
+(def to-gray rgb-to-gray)
+
 (defn gray-to-rgb
   "Repeats the only grayscale channel for each color channel and returns a new RGB
   Image."
@@ -132,7 +134,11 @@
         (BlurImageOps/mean img-m res-m rad nil)))
     res))
 
-
+(defn scale
+  "Returns a new image as a scaled version of the input image."
+  [img factor]
+  
+  )
 
 ; (defn erode
 ;   "Erodes a Image, a basic operation in the area of the mathematical morphology.
