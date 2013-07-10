@@ -138,9 +138,8 @@
   "Returns a new image as a scaled version of the input image."
   [img xfactor yfactor]
   (let [buff (h/to-buffered-image img)
-        out-buff (BufferedImage. (* (c/ncols img) xfactor)
-                                 (* (c/nrows img) yfactor)
-                                 (.getType buff))]
+        out-buff (h/create-buffered-image (* (c/ncols img) xfactor)
+                                          (* (c/nrows img) yfactor))]
     (-> (AffineTransformOp. (doto (AffineTransform.) (.scale xfactor yfactor))
                             AffineTransformOp/TYPE_BICUBIC)
         (.filter buff out-buff)

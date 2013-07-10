@@ -97,6 +97,12 @@
       :bw
       (VisualizeBinaryData/renderBinary b nil))))
 
+(defn create-buffered-image
+  ([width height] 
+   (create-buffered-image width height BufferedImage/TYPE_INT_RGB))
+  ([width height c-type]
+   (BufferedImage. width height c-type)))
+
 (defn save-to-file!
   "Saves an image into a file. The default extension is PNG."
   ([img filepath] (save-to-file! img filepath "png"))
