@@ -134,6 +134,17 @@
         (BlurImageOps/mean img-m res-m rad nil)))
     res))
 
+(defn gaussian-blur
+  "Returns a new image as an output of a gaussian blur.
+  http://boofcv.org/javadoc/boofcv/alg/filter/blur/BlurImageOps.html#gaussian(boofcv.struct.image.ImageUInt8, boofcv.struct.image.ImageUInt8, double, int, boofcv.struct.image.ImageUInt8)"
+  [img ^double sigma ^long radius]
+  (let [res (c/new-image (c/nrows img) (c/ncols img) (:type img))]
+    (dotimes [ch (c/dimension img)]
+      (let [img-m (c/get-channel img ch)
+            res-m (c/get-channel res ch)]
+        (BlurImageOps/gaussian img-m res-m sigma radius nil)))
+    res))
+
 (defn scale
   "Returns a new image as a scaled version of the input image."
   ([img factor] (scale img factor factor))
