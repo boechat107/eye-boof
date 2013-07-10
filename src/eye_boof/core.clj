@@ -80,9 +80,11 @@
 (defn dimension 
   "Returns the number of the dimensions of the image's color space."
   ^long [img]
-  (let [dim ((:type img) color-dimensions)]
-;   (assert (== dim ))
-   dim ))
+  {:pos [#(== % ((:type img) color-dimensions))]}
+  (let [chs (:mat img)]
+    (if (instance? MultiSpectral chs)
+      (.getNumBands ^MultiSpectral chs)
+      1)))
 
 (defn new-channel-matrix 
   "Returns a matrix used to represent a color channel data."
