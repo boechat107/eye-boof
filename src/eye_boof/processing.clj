@@ -136,14 +136,15 @@
 
 (defn scale
   "Returns a new image as a scaled version of the input image."
-  [img xfactor yfactor]
-  (let [buff (h/to-buffered-image img)
-        out-buff (h/create-buffered-image (* (c/ncols img) xfactor)
-                                          (* (c/nrows img) yfactor))]
-    (-> (AffineTransformOp. (doto (AffineTransform.) (.scale xfactor yfactor))
-                            AffineTransformOp/TYPE_BICUBIC)
-        (.filter buff out-buff)
-        (h/to-img))))
+  ([img factor] (scale img factor factor))
+  ([img xfactor yfactor]
+   (let [buff (h/to-buffered-image img)
+         out-buff (h/create-buffered-image (* (c/ncols img) xfactor)
+                                           (* (c/nrows img) yfactor))]
+     (-> (AffineTransformOp. (doto (AffineTransform.) (.scale xfactor yfactor))
+                             AffineTransformOp/TYPE_BICUBIC)
+         (.filter buff out-buff)
+         (h/to-img)))))
 
 ; (defn erode
 ;   "Erodes a Image, a basic operation in the area of the mathematical morphology.
