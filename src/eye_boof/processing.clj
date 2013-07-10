@@ -8,6 +8,7 @@
     [boofcv.alg.filter.blur BlurImageOps]
     [boofcv.alg.filter.derivative GradientSobel]
     [boofcv.alg.filter.binary ThresholdImageOps]
+    [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
     [java.awt.geom AffineTransform]
     [java.awt.image BufferedImage AffineTransformOp]))
 
@@ -144,6 +145,11 @@
             res-m (c/get-channel res ch)]
         (BlurImageOps/gaussian img-m res-m sigma radius nil)))
     res))
+
+(defn canny-edge
+  "
+  http://boofcv.org/index.php?title=Example_Canny_Edge"
+  )
 
 (defn scale
   "Returns a new image as a scaled version of the input image."
