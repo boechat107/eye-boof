@@ -19,7 +19,7 @@
   [obj]
   (instance? Image obj))
 
-(defn type [img]
+(defn get-type [img]
   (:type img))
 
 (defn sub-image?

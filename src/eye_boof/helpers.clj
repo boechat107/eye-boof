@@ -86,7 +86,7 @@
   "Converts an ARGB Image to a BufferedImage."
   ^BufferedImage [img]
   (let [^ImageBase b (:mat img)]
-    (case (c/type img)
+    (case (c/get-type img)
       :argb
       (throw (Exception.  "Not implemented yet in boofcV"))
       :rgb
