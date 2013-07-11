@@ -1,7 +1,6 @@
 (ns eye-boof.helpers
   (:require 
     [eye-boof.core :as c]
-    [eye-boof.processing :as pr]
     [seesaw.core :as w]
     )
   (:import 
