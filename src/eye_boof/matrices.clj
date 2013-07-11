@@ -1,4 +1,4 @@
-(ns eye-boof.images
+(ns eye-boof.matrices
   (:require [eye-boof.core :as eyec])
   (:import [boofcv.struct.image ImageSInt8 ImageSInt16 ImageSInt32 ImageSInt64]))
 
