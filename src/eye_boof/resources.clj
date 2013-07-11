@@ -4,7 +4,8 @@
 
 
 (def boofcv-logo
-  (h/load-file-image "resources/boofcv.jpg"))
+  (delay
+   (h/load-file-image "resources/boofcv.jpg")))
 
 (def img-small-connected
   "Sample binary Image with the following pixels set on"
