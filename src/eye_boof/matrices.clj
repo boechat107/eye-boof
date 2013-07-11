@@ -23,12 +23,12 @@
      (if-let [internal-type (get image-data-type type)]
        `(let [ch# ~(vary-meta ch assoc :tag type)]
           (eyec/mult-aget ~internal-type (.data ch#) ~idx))
-       (throw (Exception. "Type not recognized"))))
+       (throw (Exception. (str "Type" type " not recognized")))))
   ([type ch x y]
      (if-let [internal-type (get image-data-type type)]
        `(let [ch# ~(vary-meta ch assoc :tag type)]
           (eyec/mult-aget ~internal-type (.data ch#) (+ (.startIndex ch#) (+ ~x (* ~y (.stride ch#))))))
-       (throw (Exception. "Type not recognized")))))
+       (throw (Exception. (str "Type " type "not recognized"))))))
 
 
 (defmacro set-pixel! 
@@ -40,9 +40,9 @@
      (if-let [internal-type (get image-data-type type)]
        `(let [ch# ~(vary-meta ch assoc :tag type)]
           (eyec/mult-aset ~internal-type (.data ch#) ~idx (unchecked-byte ~val)))
-       (throw (Exception. "Type not recognized"))))
+       (throw (Exception. (str "Type " type "not recognized")))))
   ([type ch x y val]
      (if-let [internal-type (get image-data-type type)]
        `(let [ch# ~(vary-meta ch assoc :tag type)]
           (eyec/mult-aset ~internal-type (.data ch#) (+ (.startIndex ~ch) (+ (* ~y (.stride ~ch)) ~x)) (unchecked-byte ~val)))
-       (throw (Exception. "Type not recognized")))))
+       (throw (Exception. (str "Type " type "not recognized"))))))
