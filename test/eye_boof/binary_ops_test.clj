@@ -36,3 +36,16 @@
         "Contours8: correct amount of external contours")))
 
 
+;;if you want to view some examples (very small for being debugable =)
+#_(
+   ;;8-connected labeled image
+   (h/view (binop/bufferedImage<-labeled-image (binop/labeled-image img-small-connected 4)))
+   ;;8-connected labeled image
+   (h/view (binop/bufferedImage<-labeled-image (binop/labeled-image img-small-connected 8)))
+   
+   ;;4-connected contours
+   (h/view (binop/bufferedImage<-contours (binop/contour img-small-connected 4) :image img-small-connected))
+   ;;8-connected contours
+   (h/view (binop/bufferedImage<-contours (binop/contour img-small-connected 8) :image img-small-connected))
+
+   )
