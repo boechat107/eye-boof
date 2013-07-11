@@ -1,5 +1,6 @@
 (ns eye-boof.test.binary-ops-test
-  (:use [clojure.test])
+  (:use [clojure.test]
+        [eye-boof.resources :only (img-small-connected)])
   (:require [eye-boof
              [binary-ops :as binop]
              [core :as c]
@@ -7,40 +8,10 @@
   (:import [georegression.struct.point Point2D_I32]
            [boofcv.struct.image ImageSInt32]))
 
-
-
-(def example-img
-  "Sample binary Image with the following pixels set on
-   0 1 1 1 0 0
-   0 1 1 1 0 0
-   0 1 1 1 0 0
-   0 0 0 0 0 0
-   0 1 1 0 1 0
-   0 0 0 0 0 1"
-  (let [img (c/new-image 6 6 :bw)
-        chn (c/get-channel img)]
-    (c/set-pixel!* chn 0 1 1)
-    (c/set-pixel!* chn 0 2 1)
-    (c/set-pixel!* chn 0 3 1)
-    (c/set-pixel!* chn 1 1 1)
-    (c/set-pixel!* chn 1 2 1)
-    (c/set-pixel!* chn 1 3 1)
-    (c/set-pixel!* chn 2 1 1)
-    (c/set-pixel!* chn 2 2 1)
-    (c/set-pixel!* chn 2 3 1)
-    
-    (c/set-pixel!* chn 4 4 1)
-    (c/set-pixel!* chn 5 5 1)
-
-    (c/set-pixel!* chn 4 1 1)
-    (c/set-pixel!* chn 4 2 1)
-
-    img))
-
 (deftest contour-test
-  (is (= (-> (binop/labeled-image example-img 4) :mat .data vec)
-         [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 4])
+  (is (= (-> (binop/labeled-image img-small-connected 4) .data vec)
+         [0 0 0 0 1 1 1 2 2 2 0 1 1 1 2 0 2 0 1 1 0 2 2 2 0 0 0 0 0 0 0 0 3 3 0 0 4 4 0 3 3 0 0 4 4 0 0 0 5])
       "Labeled image with 4-neighbours")
-  (is (= (-> (binop/labeled-image example-img 8) :mat .data vec)
-         [0 0 0 0 0 0 1 1 1 0 2 0 1 1 1 0 2 0 1 1 1 0 0 0 0 0 0 0 3 0 0 0 0 0 0 3])
+  (is (= (-> (binop/labeled-image img-small-connected 8) .data vec)
+         [0 0 0 0 1 1 1 2 2 2 0 1 1 1 2 0 2 0 1 1 0 2 2 2 0 0 0 0 0 0 0 0 3 3 0 0 4 4 0 3 3 0 0 4 4 0 0 0 3])
       "Labeled image with 8-neighbours"))
