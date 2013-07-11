@@ -3,7 +3,9 @@
   (:require 
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
-    [eye-boof.processing :as p]))
+    [eye-boof.processing :as p])
+  (:import [boofcv.struct.image ImageUInt8]))
+
 
 (def img-test 
   "A simple image created with imgpviewer. It is 4x4 image with one white pixel, one
@@ -78,7 +80,9 @@
             (dotimes [x 1000]
               (c/set-pixel! ch x y 10))))
     (time (dotimes [idx 1000000]
-            (c/set-pixel!* ch idx 10)))))
+            (c/set-pixel!* ch idx 10)))
+    (time (dotimes [idx 1000000]
+            (aset-byte (.data ch) idx 10)))))
 
 (defn time-test
   []
