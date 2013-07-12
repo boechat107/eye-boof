@@ -1,4 +1,5 @@
 (ns eye-boof.canny-test
+  (:use clojure.test)
   (:require 
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
@@ -44,4 +45,14 @@
       (VisualizeBinaryData/renderExternal contours nil nc nr nil)
       "contour from canny binary")))
 
-(canny-edge img 5 0.1 0.3)
+(deftest canny 
+  (let [bin-edges (p/canny-edge img 5 0.1 0.3)
+        nc (c/ncols img)
+        nr (c/nrows img)]
+    (h/view* bin-edges)
+    (ShowImages/showWindow
+      (VisualizeBinaryData/renderExternal 
+        (BinaryImageOps/contour (:mat bin-edges) 8 nil) nil nc nr nil)
+      "contour from canny binary")))
+
+;(canny-edge img 5 0.1 0.3)

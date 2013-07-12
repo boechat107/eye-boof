@@ -150,16 +150,17 @@
 (defn canny-edge
   "Returns a binary image where edges are represented as 1 and the rest of pixels
   are zeros.
+  blur-int      Blur intensity 
+  thr-low       Lower threshold value
+  thr-high      Higher threshold value
   http://boofcv.org/index.php?title=Example_Canny_Edge"
   [img blur-int thr-low thr-high]
   (let [img (if (> (c/dimension img) 1) (to-gray img) img)
         nr (c/nrows img)
         nc (c/ncols img)
         res (c/new-image nr nc :bw)
-        canny (FactoryEdgeDetectors/canny blur-int true true ImageUInt8 ImageSInt16)
-        img-m (c/get-channel img 0) 
-        res-m (c/get-channel res 0)
-        _ (.process canny img-m thr-low thr-high res-m)]
+        canny (FactoryEdgeDetectors/canny blur-int true true ImageUInt8 ImageSInt16)]
+    (.process canny (:mat img) thr-low thr-high (:mat res))
     res))
 
 (defn scale
