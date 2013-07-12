@@ -30,6 +30,15 @@
   [type]
   (some #(= type %) (keys color-dimensions)))
 
+(defn dimension 
+  "Returns the number of the dimensions of the image's color space."
+  ^long [img]
+  {:pos [#(== % ((:type img) color-dimensions))]}
+  (let [chs (:mat img)]
+    (if (instance? MultiSpectral chs)
+      (.getNumBands ^MultiSpectral chs)
+      1)))
+
 (defn doubles?
   [x]
   (= (type x) (Class/forName "[D")))
@@ -78,15 +87,6 @@
   "Returns the number of rows of an Image."
   ^long [img]
   (let [b ^ImageBase (:mat img)] (.getWidth b)))
-
-(defn dimension 
-  "Returns the number of the dimensions of the image's color space."
-  ^long [img]
-  {:pos [#(== % ((:type img) color-dimensions))]}
-  (let [chs (:mat img)]
-    (if (instance? MultiSpectral chs)
-      (.getNumBands ^MultiSpectral chs)
-      1)))
 
 (defn new-channel-matrix 
   "Returns a matrix used to represent a color channel data."
