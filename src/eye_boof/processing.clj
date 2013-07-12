@@ -9,6 +9,7 @@
     [boofcv.alg.filter.derivative GradientSobel]
     [boofcv.alg.filter.binary ThresholdImageOps]
     [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
+    [boofcv.alg.feature.detect.edge CannyEdge]
     [java.awt.geom AffineTransform]
     [java.awt.image BufferedImage AffineTransformOp]))
 
@@ -149,6 +150,14 @@
 (defn canny-edge
   "
   http://boofcv.org/index.php?title=Example_Canny_Edge"
+  [img blur-int thr-low thr-high]
+  (let [img (if (> (c/dimension img) 1) (to-gray img) img)
+        res (c/new-image (c/nrows img) (c/ncols img) (:type img))
+        canny (FactoryEdgeDetectors/canny blur-int true true ImageUInt8 ImageUInt8)
+        img-m (c/get-channel img 0) 
+        res-m (c/get-channel res 0)]
+    (.process canny img-m thr-low thr-high res-m)
+    res)
   )
 
 (defn scale
