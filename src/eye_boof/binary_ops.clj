@@ -1,7 +1,7 @@
 (ns eye-boof.binary-ops
-  (:require [eye-boof
-             [core :as c]
-             [processing :as p]])
+  (:require
+    [eye-boof 
+     [core :as c]])
 
   (:require [eye-boof
              [helpers :as h]])
@@ -125,3 +125,17 @@
 ;;(TODO) implement tests and visualizations for the contours and
 ;;labeled
 ;;http://boofcv.org/index.php?title=Tutorial_Binary_Image
+
+(defn render-binary
+  "Returns a grayscale image where the 1s of the binary image are translated to 255.
+  It is util to visualize the image."
+  [img]
+  {:pre [(== 1 (c/dimension img))]}
+  (let [ch (c/get-channel img 0)
+        out (c/new-image (c/nrows img) (c/ncols img) (:type img))
+        out-m (c/get-channel out 0)]
+    (c/for-xy [x y img]
+      (if (zero? (c/get-pixel ch x y))
+        (c/set-pixel! out-m x y 0)
+        (c/set-pixel! out-m x y 255)))
+    out))

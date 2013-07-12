@@ -3,6 +3,7 @@
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
     [eye-boof.processing :as p]
+    [eye-boof.binary-ops :as bi]
     [incanter.core :as ic])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
@@ -32,7 +33,7 @@
         _ (.process canny img-m thr-low thr-high res-m)
         edge (.getContours canny)
         contours (BinaryImageOps/contour res-m 8 nil)]
-    (h/view* img)
+    (h/view* img (bi/render-binary res))
     (ShowImages/showWindow
       (VisualizeBinaryData/renderBinary res-m nil)
       "binary edges from canny")
