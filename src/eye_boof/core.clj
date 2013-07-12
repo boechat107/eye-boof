@@ -56,11 +56,13 @@
 
 (defn gray-type?
   [img]
-  (= :gray (:type img)))
+  (and (= :gray (:type img))
+       (== 1 (dimension img))))
 
 (defn bw-type?
   [img]
-  (= :bw (:type img)))
+  (and (= :bw (:type img))
+       (== 1 (dimension img))))
 
 (defn one-dim?
   "Returns true if the image has just one channel."
