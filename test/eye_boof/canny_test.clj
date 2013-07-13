@@ -5,7 +5,8 @@
     [eye-boof.helpers :as h]
     [eye-boof.processing :as p]
     [eye-boof.binary-ops :as bi]
-    [incanter.core :as ic])
+    [eye-boof.features :as ft]
+    )
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
@@ -65,8 +66,8 @@
         g2 (.createGraphics buff)]
     (.setStroke g2 (BasicStroke. 2))
     (doseq [contour (bi/contour bin-edges 8)]
-      (.setColor g2 (Color. (rand-int 200) (rand-int 200) (rand-int 200)))
-      (VisualizeShapes/drawPolygon 
-        (ShapeFittingOps/fitPolygon (.external contour) true 2 0.1 100)
-        true g2))
+      (let [poly (ft/fit-polygon contour false 2 0.1 100)]
+        (when (> (ft/aprox-area poly) 200)
+          (.setColor g2 (Color. (rand-int 200) (rand-int 200) (rand-int 200)))
+          (VisualizeShapes/drawPolygon poly true g2))))
     (h/view* bin-edges buff)))
