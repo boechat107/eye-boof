@@ -13,13 +13,15 @@
     [boofcv.alg.filter.binary ThresholdImageOps BinaryImageOps]
     [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
     [boofcv.alg.feature.detect.edge CannyEdge]
+    [boofcv.alg.feature.shapes ShapeFittingOps]
     [boofcv.gui.image ShowImages]
     [boofcv.gui.binary VisualizeBinaryData]
+    [boofcv.gui.feature VisualizeShapes]
+    [java.awt Color Graphics2D BasicStroke]
     [java.awt.geom AffineTransform]
     [java.awt.image BufferedImage AffineTransformOp]))
 
-(def img (p/scale (h/load-file-image "test/black_plate.jpg")
-                  0.2 0.2))
+(def img (h/load-file-image "test/black_plate.jpg"))
 
 (defn canny-edge
   " http://boofcv.org/index.php?title=Example_Canny_Edge"
@@ -27,14 +29,14 @@
   (let [img (if (> (c/dimension img) 1) (p/to-gray img) img)
         nr (c/nrows img)
         nc (c/ncols img)
-        res (c/new-image (c/nrows img) (c/ncols img) (:type img))
+        res (c/new-image (c/nrows img) (c/ncols img) :bw)
         canny (FactoryEdgeDetectors/canny blur-int true true ImageUInt8 ImageSInt16)
         img-m (c/get-channel img 0) 
         res-m (c/get-channel res 0)
         _ (.process canny img-m thr-low thr-high res-m)
         edge (.getContours canny)
         contours (BinaryImageOps/contour res-m 8 nil)]
-    (h/view* img (bi/render-binary res))
+    (h/view* img res)
     (ShowImages/showWindow
       (VisualizeBinaryData/renderBinary res-m nil)
       "binary edges from canny")
@@ -55,4 +57,16 @@
         (BinaryImageOps/contour (:mat bin-edges) 8 nil) nil nc nr nil)
       "contour from canny binary")))
 
-;(canny-edge img 5 0.1 0.3)
+(deftest fitting-polygons
+  (let [bin-edges (p/canny-edge img 5 0.1 0.3)
+        nc (c/ncols img)
+        nr (c/nrows img)
+        buff (BufferedImage. nc nr (BufferedImage/TYPE_INT_RGB))
+        g2 (.createGraphics buff)]
+    (.setStroke g2 (BasicStroke. 2))
+    (doseq [contour (bi/contour bin-edges 8)]
+      (.setColor g2 (Color. (rand-int 200) (rand-int 200) (rand-int 200)))
+      (VisualizeShapes/drawPolygon 
+        (ShapeFittingOps/fitPolygon (.external contour) true 2 0.1 100)
+        true g2))
+    (h/view* bin-edges buff)))
