@@ -65,7 +65,7 @@
         buff (BufferedImage. nc nr (BufferedImage/TYPE_INT_RGB))
         g2 (.createGraphics buff)]
     (.setStroke g2 (BasicStroke. 2))
-    (doseq [contour (bi/contour bin-edges 8)]
+    (doseq [contour (bi/contours bin-edges 8)]
       (let [poly (ft/fit-polygon contour false 2 0.1 100)]
         (when (> (ft/aprox-area poly) 200)
           (.setColor g2 (Color. (rand-int 200) (rand-int 200) (rand-int 200)))
