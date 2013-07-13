@@ -2,12 +2,10 @@
   (:require
     [eye-boof 
      [core :as c]])
-
   (:require [eye-boof
              [helpers :as h]])
-
   (:import
-   [boofcv.alg.filter.binary BinaryImageOps]
+   [boofcv.alg.filter.binary Contour BinaryImageOps]
    [boofcv.struct.image ImageSInt32]
    [boofcv.gui.binary VisualizeBinaryData]))
 
@@ -68,12 +66,17 @@
 ;;(TODO) implement this function
 ;; (defn remove-point-noise [])
 
-(defn contour
-  "Returns a contour image, with the contours of the BW image features
-   according to the 4-connected or 8-connected rule."
+(defn contours
+  "Returns the contours of a binary image, according to the 4-connected or
+  8-connected rule."
   [img rule]
   {:pre [(= :bw (:type img))]}
   (BinaryImageOps/contour (:mat img) rule nil))
+
+(defn ext-pts-contour
+  "Returns the list of external points Point2D_I32 of a binary blob."
+  [^Contour contour]
+  (.external contour))
 
 ;;(TODO) implement this function
 ;; (defn relabel [])
