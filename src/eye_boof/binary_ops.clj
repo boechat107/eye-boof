@@ -63,8 +63,12 @@
       (BinaryImageOps/edge4 image chn-result))
     result))
 
-;;(TODO) implement this function
-;; (defn remove-point-noise [])
+(defn remove-point-noise
+  [img]
+  {:pre [(c/bw-type? img)]}
+  (let [out (c/new-image img :bw)]
+    (BinaryImageOps/removePointNoise (:mat img) (:mat out))
+    out))
 
 (defn contours
   "Returns the contours of a binary image, according to the 4-connected or
