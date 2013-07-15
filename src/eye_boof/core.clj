@@ -134,6 +134,17 @@
     (set! (.data chn) (into-array Byte/TYPE seq))
     (make-image chn :bw)))
 
+(defn into-gray
+  "Given a sequence of byte values, creates a gray image with width 'width'
+   e.g.
+      => (into-gray 2 [10 20 30 40])
+      ;=> #eye_boof.core.Image{:mat ... :type :gray, ...} "
+  [width seq]
+  {:pre [(= 0 (mod (count seq) width))]}
+  (let [chn (ImageUInt8. width (quot (count seq) width))]
+    (set! (.data chn) (into-array Byte/TYPE seq))
+    (make-image chn :gray)))
+
 ;(defn copy-image
 ;  "Returns a copy of a given image."
 ;  [img]
