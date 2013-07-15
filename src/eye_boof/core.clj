@@ -113,7 +113,7 @@
 (defn new-image
   "Returns an empty image with the given size and color type. If an img is given,
   the returned image should have the same size."
-  ([img type] (new-image (ncols img) (nrows img) type))
+  ([img type] (new-image (nrows img) (ncols img) type))
   ([nrows ncols type]
    {:pre [(contains? color-dimensions type)]}
    (-> (new-channel-matrix nrows ncols (type color-dimensions))
