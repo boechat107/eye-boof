@@ -27,11 +27,11 @@
         gray (c/get-channel res) 
         chs-vec (c/get-channel img)
         [rch gch bch] (if (= :argb (:type img)) (subvec chs-vec 1) chs-vec)]
-    (c/for-idx [idx img]
-      (->> (* 0.2126 (c/get-pixel rch idx))
-           (+ (* 0.7152 (c/get-pixel gch idx)))
-           (+ (* 0.0722 (c/get-pixel bch idx)))
-           (c/set-pixel! gray idx)))
+    (c/for-xy [x y img]
+      (->> (* 0.2126 (c/get-pixel rch x y))
+           (+ (* 0.7152 (c/get-pixel gch x y)))
+           (+ (* 0.0722 (c/get-pixel bch x y)))
+           (c/set-pixel! gray x y)))
     res))
 
 (def to-gray rgb-to-gray)
@@ -66,10 +66,10 @@
     (dotimes [ch (c/dimension img)]
       (let [img-m (c/get-channel img ch)
             res-m (c/get-channel res ch)]
-        (c/for-idx [idx img]
-          (->> (c/get-pixel img-m idx)
+        (c/for-xy [x y img]
+          (->> (c/get-pixel img-m x y)
                threshold 
-               (c/set-pixel! res-m idx)))))
+               (c/set-pixel! res-m x y)))))
     res))
 
 (defn threshold
