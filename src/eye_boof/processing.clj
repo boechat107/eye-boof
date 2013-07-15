@@ -54,15 +54,15 @@
     res))
 
 (defn binarize
-  "Returns a new Image where each pixel value is set to 0 or 255. If the original
+  "Returns a new Image where each pixel value is set to 0 or 1. If the original
   pixel value is below the threshold, the value is set to 0; otherwise, the value is
-  set to 255."
+  set to 1"
   [img th]
   (let [th (long th)
         nr (c/nrows img)
         nc (c/ncols img)
-        res (c/new-image nr nc (:type img))
-        threshold (fn [^long n] (if (> n th) 255 0))]
+        res (c/new-image nr nc :bw)
+        threshold (fn [^long n] (if (> n th) 1 0))]
     (dotimes [ch (c/dimension img)]
       (let [img-m (c/get-channel img ch)
             res-m (c/get-channel res ch)]

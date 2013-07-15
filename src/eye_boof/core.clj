@@ -111,11 +111,13 @@
    (Image. data-chs type nil)))
 
 (defn new-image
-  "Returns an empty image with the given dimension and color type."
-  [nrows ncols type]
-  {:pre [(contains? color-dimensions type)]}
-  (-> (new-channel-matrix nrows ncols (type color-dimensions))
-      (make-image type)))
+  "Returns an empty image with the given size and color type. If an img is given,
+  the returned image should have the same size."
+  ([img type] (new-image (ncols img) (nrows img) type))
+  ([nrows ncols type]
+   {:pre [(contains? color-dimensions type)]}
+   (-> (new-channel-matrix nrows ncols (type color-dimensions))
+       (make-image type))))
 
 (defn new-gray-image
   "Returns an empty grayscale image (single channel) with the given dimension."
