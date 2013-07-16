@@ -100,6 +100,12 @@
     (BinaryImageOps/contour (:mat img) rule result)
     result))
 
+(defn cluster-to-binary
+  "Returns a binary image from a list of clusters or blobs."
+  [blobs width height]
+  (let [out (c/new-image height width :bw)]
+    (BinaryImageOps/clusterToBinary blobs (:mat out))))
+
 (defn bufferedImage<-contours
   [contours & {:keys [color-internal color-external image width height]
                :or {color-internal 0x0000FF color-external 0xFF0000}}]

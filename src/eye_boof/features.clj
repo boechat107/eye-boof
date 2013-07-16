@@ -55,3 +55,15 @@
     (let [[tl br] (bounding-box pts)]
       (* (- (x br) (x tl))
          (- (y br) (y tl))))))
+
+(defn blob-width
+  "Returns the width of a blob or contour."
+  [^Contour c]
+  (let [sx (sort-by x (.external c))]
+    (- (last sx) (first sx))))
+
+(defn blob-height
+  "Returns the width of a blob or contour."
+  [^Contour c]
+  (let [sy (sort-by y (.external c))]
+    (- (last sy) (first sy))))
