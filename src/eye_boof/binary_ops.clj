@@ -100,9 +100,8 @@
     (BinaryImageOps/contour (:mat img) rule result)
     result))
 
-(defn contours-to-binary
-  "Returns a binary image from a list of contours or blobs. Similar to BoofCV
-  clursterToBinary function."
+(defn clusters-to-binary
+  "Returns a binary image from a list of clusters or blobs."
   [blobs width height]
   (let [out (c/new-image height width :bw)]
     (BinaryImageOps/clusterToBinary blobs (:mat out))
