@@ -77,6 +77,16 @@
   {:pre [(= :bw (:type img))]}
   (BinaryImageOps/contour (:mat img) rule nil))
 
+(defn get-external-contour
+  "Returns a list of the external points of a Contour."
+  [^Contour c]
+  (.external c))
+
+(defn get-internal-contour
+  "Returns a list of lists of internal points of a Contour."
+  [^Contour c]
+  (.internal c))
+
 (defn clusters 
   "Returns a list of clusters of a binary image, according to the 4-connected or
   8-connected rule. Each cluster is composed of a list of Point2D_I32."
