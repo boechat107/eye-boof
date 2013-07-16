@@ -38,7 +38,7 @@
   [pts]
   (= (count pts) 4))
 
-(defn bounding-box
+(defn bounding-box*
   "Returns two points [tl br], top-left and bottom-right, of the bounding box of the
   given list of points."
   [pts]
@@ -47,6 +47,11 @@
           sx (sort-by #(x %) pts)]
       [(Point2D_I32. (x (first sx)) (y (first sy)))
        (Point2D_I32. (x (last sx)) (y (last sy)))])))
+
+(defn bounding-box
+  "Like bounding-box*, but expects a blob or contour as argument." 
+  [^Contour c]
+  (bounding-box* (.external c)))
 
 (defn aprox-area
   "Returns the area of a bounding box around the given list of Points."
@@ -59,11 +64,11 @@
 (defn blob-width
   "Returns the width of a blob or contour."
   [^Contour c]
-  (let [sx (sort-by x (.external c))]
+  (let [sx (sort-by #(x %) (.external c))]
     (- (last sx) (first sx))))
 
 (defn blob-height
   "Returns the width of a blob or contour."
   [^Contour c]
-  (let [sy (sort-by y (.external c))]
+  (let [sy (sort-by #(y %) (.external c))]
     (- (last sy) (first sy))))
