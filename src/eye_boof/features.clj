@@ -72,3 +72,8 @@
   [^Contour c]
   (let [sy (sort-by #(y %) (.external c))]
     (- (last sy) (first sy))))
+
+(defn blob-size
+  "Returns the number of points that composes the given Contour."
+  [^Contour c]
+  (+ (count (.external c)) (count (.internal c))))

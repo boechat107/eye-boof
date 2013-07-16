@@ -1,6 +1,4 @@
 (ns eye-boof.core
-  (:require 
-    [incanter.core :as ic])
   (:import 
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]))
 
