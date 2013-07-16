@@ -77,10 +77,14 @@
   {:pre [(= :bw (:type img))]}
   (BinaryImageOps/contour (:mat img) rule nil))
 
-(defn ext-pts-contour
-  "Returns the list of external points Point2D_I32 of a binary blob."
-  [^Contour contour]
-  (.external contour))
+(defn clusters 
+  "Returns a list of clusters of a binary image, according to the 4-connected or
+  8-connected rule. Each cluster is composed of a list of Point2D_I32."
+  [img rule]
+  {:pre [(= :bw (:type img))]}
+  (let [^ImageSInt32 labels (ImageSInt32. (c/ncols img) (c/nrows img))
+        contours (BinaryImageOps/contour (:mat img) rule labels)]
+    (BinaryImageOps/labelToClusters labels (count contours) nil)))
 
 ;;(TODO) implement this function
 ;; (defn relabel [])
