@@ -124,10 +124,12 @@
                           %
                           (to-buffered-image %))
                        imgs)
+        n-imgs (count imgs)
+        img-col 6 
         grid (w/grid-panel
                :border 5
                :hgap 10 :vgap 10
-               :columns (min 6 (max 1 (count imgs))) 
+               :columns (min img-col n-imgs)
                :items (map #(w/label :icon %) buff-imgs))]
     (doto @frame
       (.setContentPane grid)
