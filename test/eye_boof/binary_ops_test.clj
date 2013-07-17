@@ -54,8 +54,12 @@
 (def bin-img
   (let [img (c/new-image 5 5 :bw)
         ch (:mat img)]
-    (c/set-pixel! ch 1 1 1)
+    (c/set-pixel! ch 0 0 1)
+    (c/set-pixel! ch 1 0 1)
+    (c/set-pixel! ch 2 0 1)
+    (c/set-pixel! ch 0 1 1)
     (c/set-pixel! ch 2 1 1)
+    (c/set-pixel! ch 0 2 1)
     (c/set-pixel! ch 1 2 1)
     (c/set-pixel! ch 2 2 1)
     (c/set-pixel! ch 4 3 1)
@@ -66,10 +70,10 @@
 (deftest clusters
   (let [clusters (sort-by count (bi/clusters bin-img 8))
         img-copy (bi/clusters-to-binary clusters 5 5)
-        filt-img (bi/clusters-to-binary [(first clusters)] 5 5)]
+        filt-img (bi/clusters-to-binary (filter #(< (count %) 4) clusters) 5 5)]
     (is (== 2 (count clusters)))
     (is (== 3 (count (first clusters))))
-    (is (== 4 (count (second clusters))))
+    (is (== 8 (count (second clusters))))
     (is (= (c/channel-to-vec bin-img 0) (c/channel-to-vec img-copy 0)))
     (is (= [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 1] 
            (c/channel-to-vec filt-img 0)))))
