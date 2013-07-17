@@ -60,10 +60,10 @@
   "Returns the width of a blob or cluster."
   [pts]
   (let [sx (sort-by #(x %) pts)]
-    (- (x (last sx)) (x (first sx)))))
+    (inc (- (x (last sx)) (x (first sx))))))
 
 (defn blob-height
   "Returns the width of a blob or cluster."
   [pts]
   (let [sy (sort-by #(y %) pts)]
-    (- (y (last sy)) (y (first sy)))))
+    (inc (- (y (last sy)) (y (first sy))))))
