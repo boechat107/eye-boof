@@ -158,7 +158,7 @@
   "Returns a grayscale image where the 1s of the binary image are translated to 255.
   It is util to visualize the image."
   [img]
-  {:pre [(== 1 (c/dimension img))]}
+  {:pre [(= :bw (:type img))]}
   (let [ch (c/get-channel img 0)
         out (c/new-image (c/nrows img) (c/ncols img) (:type img))
         out-m (c/get-channel out 0)]
@@ -166,4 +166,16 @@
       (if (zero? (c/get-pixel ch x y))
         (c/set-pixel! out-m x y 0)
         (c/set-pixel! out-m x y 255)))
+    out))
+
+(defn invert-pixels
+  "Changes 1 to 0 and 0 to 1 of the given image, returning a new one."
+  [img]
+  {:pre [(= :bw (:type img))]}
+  (let [out (c/new-image img :bw)
+        orig (:mat img)
+        dest (:mat out)]
+    (c/for-xy [x y img]
+      (when (zero? (c/get-pixel orig x y))
+        (c/set-pixel! dest x y 1)))
     out))
