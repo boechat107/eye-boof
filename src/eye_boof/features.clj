@@ -21,6 +21,9 @@
   [pt]
   `(pt-getter ~pt y))
 
+(defmacro get-feature [feature fn from]
+  `(apply ~fn (map #(~from %) ~feature)))
+
 (defn pts-to-vec
   "Returns a sequence of vectors [x y] from the given list of Points."
   [pts]
@@ -38,6 +41,16 @@
   [pts]
   (= (count pts) 4))
 
+;;(TODELETE)
+;; ss-ocr.license-plate> (def asd (doall (repeatedly 1000000 #(rand-int 10000))))
+;; #'ss-ocr.license-plate/asd
+;; ss-ocr.license-plate> (time (last (sort asd)))
+;; "Elapsed time: 2189.537332 msecs"
+;; 9999
+;; ss-ocr.license-plate> (time (apply max asd))
+;; "Elapsed time: 207.637494 msecs"
+;; 9999
+
 (defn bounding-box
   "Returns two points [tl br], top-left and bottom-right, of the bounding box of the
   given list of points."
@@ -45,8 +58,10 @@
   (when (> (count pts) 2)
     (let [sy (sort-by #(y %) pts)
           sx (sort-by #(x %) pts)]
-      [(Point2D_I32. (x (first sx)) (y (first sy)))
-       (Point2D_I32. (x (last sx)) (y (last sy)))])))
+      [(Point2D_I32. (get-feature pts min x)
+                     (get-feature pts min y))
+       (Point2D_I32. (get-feature pts max x)
+                     (get-feature pts max y))])))
 
 (defn aprox-area
   "Returns the area of a bounding box around the given list of Points."
@@ -59,11 +74,9 @@
 (defn blob-width
   "Returns the width of a blob or cluster."
   [pts]
-  (let [sx (sort-by #(x %) pts)]
-    (inc (- (x (last sx)) (x (first sx))))))
+  (inc (- (get-feature pts max x) (get-feature pts min x))))
 
 (defn blob-height
   "Returns the width of a blob or cluster."
   [pts]
-  (let [sy (sort-by #(y %) pts)]
-    (inc (- (y (last sy)) (y (first sy))))))
+  (inc (- (get-feature pts max y) (get-feature pts min y))))
