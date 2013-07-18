@@ -83,7 +83,9 @@
       (to-img)))
 
 (defn to-buffered-image
-  "Converts an ARGB Image to a BufferedImage."
+  "Converts an Image to a BufferedImage.
+  Note that if img is a bw image, the output is a BufferedImage where 1s in img are
+  255."
   ^BufferedImage [img]
   (let [^ImageBase b (:mat img)]
     (case (c/get-type img)
