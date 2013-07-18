@@ -10,6 +10,7 @@
     [boofcv.alg.filter.binary ThresholdImageOps]
     [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
     [boofcv.alg.feature.detect.edge CannyEdge]
+    [boofcv.alg.misc GPixelMath]
     [java.awt.geom AffineTransform]
     [java.awt.image BufferedImage AffineTransformOp]))
 
@@ -35,6 +36,15 @@
     res))
 
 (def to-gray rgb-to-gray)
+
+(defn average-channels
+  "Retuns a grayscale image where the pixels' value are the average of the channels
+  of the given image."
+  [img]
+  {:pre [(> (c/dimension img) 1)]}
+  (let [gray (c/new-channel-matrix (c/nrows img) (c/ncols img) 1)]
+    (GPixelMath/averageBand (:mat img) gray)
+    (c/make-image gray :gray)))
 
 (defn gray-to-rgb
   "Repeats the only grayscale channel for each color channel and returns a new RGB

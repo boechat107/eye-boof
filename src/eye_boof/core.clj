@@ -88,7 +88,7 @@
 
 (defn new-channel-matrix 
   "Returns a matrix used to represent a color channel data."
-  ^ImageUInt8 [nrows ncols dim] 
+  [nrows ncols dim] 
   (if (> dim 1)
     (MultiSpectral. ImageUInt8 ncols nrows dim)
     (ImageUInt8. ncols nrows)))
