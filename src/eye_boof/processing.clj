@@ -64,22 +64,20 @@
     res))
 
 (defn binarize
-  "Returns a new Image where each pixel value is set to 0 or 1. If the original
-  pixel value is below the threshold, the value is set to 0; otherwise, the value is
-  set to 1"
-  [img th]
-  (let [th (long th)
-        nr (c/nrows img)
+  "Returns a new Image where each pixel value of the its first channel is set to 0 or
+  1. If the original pixel value is below the threshold, the value is set to 0;
+  otherwise, the value is set to 1."
+  [img ^long th]
+  (let [nr (c/nrows img)
         nc (c/ncols img)
         res (c/new-image nr nc :bw)
-        threshold (fn [^long n] (if (> n th) 1 0))]
-    (dotimes [ch (c/dimension img)]
-      (let [img-m (c/get-channel img ch)
-            res-m (c/get-channel res ch)]
-        (c/for-xy [x y img]
-          (->> (c/get-pixel img-m x y)
-               threshold 
-               (c/set-pixel! res-m x y)))))
+        threshold (fn [^long n] (if (> n th) 1 0))
+        img-m (c/get-channel img 0)
+        res-m (c/get-channel res 0)]
+    (c/for-xy [x y img]
+      (->> (c/get-pixel img-m x y)
+           threshold 
+           (c/set-pixel! res-m x y)))
     res))
 
 (defn threshold
