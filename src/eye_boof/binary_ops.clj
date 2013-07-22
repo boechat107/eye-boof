@@ -9,6 +9,8 @@
    [boofcv.struct.image ImageSInt32]
    [boofcv.gui.binary VisualizeBinaryData]))
 
+(set! *warn-on-reflection* true)
+(set! *unchecked-math* true)
 
 (defn logic-and
   "Applies bit-and to the pixels of two BW images"
@@ -128,7 +130,11 @@
   (let [[width height] (if (nil? image)
                          [width height]
                          [(c/ncols image) (c/nrows image)])]
-    (VisualizeBinaryData/renderContours contours color-external color-internal width height nil)))
+    (VisualizeBinaryData/renderContours contours
+                                        color-external 
+                                        color-internal
+                                        width height
+                                        nil)))
 
 ;; (defn view-contours [contours img & opts]
 ;;   (h/view (apply bufferedImage<-contours contours :img img opts)))

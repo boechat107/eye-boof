@@ -169,9 +169,9 @@
 (defn canny-edge
   "Returns a binary image where edges are represented as 1 and the rest of pixels
   are zeros.
-  blur-int      Blur intensity 
-  thr-low       Lower threshold value
-  thr-high      Higher threshold value
+  blur-int      Blur intensity (suggested 2)
+  thr-low       Lower threshold value (suggested 0.1)
+  thr-high      Higher threshold value (suggested 0.3)
   http://boofcv.org/index.php?title=Example_Canny_Edge"
   [img blur-int thr-low thr-high]
   (let [img (if (> (c/dimension img) 1) (to-gray img) img)
