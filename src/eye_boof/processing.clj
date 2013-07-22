@@ -2,7 +2,7 @@
   (:require 
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
-    [incanter.core :as ic])
+    [eye-boof.image-statistics :as stat])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
@@ -80,11 +80,22 @@
            (c/set-pixel! res-m x y)))
     res))
 
+(defn mean-binarize
+  "Like binarize, but uses the mean intensity value of the given image as threshold."
+  [img]
+  (let [out-ch (c/new-channel-matrix (c/nrows img) (c/ncols img) 1)
+        img-ch (c/get-channel img 0)
+        mean (stat/mean img)]
+    (c/for-xy
+      [x y img]
+      (->> (if (< (c/get-pixel img-ch x y) mean) 0 1)
+           (c/set-pixel! out-ch x y)))
+    (c/make-image out-ch :bw)))
+
 (defn threshold
   [img threshold & {:keys [down]}]
   (let [result (c/new-image (c/nrows img) (c/ncols img) :bw)
         res-chan (c/get-channel result 1)]
-    
     (ThresholdImageOps/threshold (:mat img) res-chan
                                  threshold (boolean down))
     result))
