@@ -1,8 +1,6 @@
 # Todo
 
-[ ] Function that returns another function to get the pixels' value.
-It needs to bind the channels in some way, i.e., we need to avoid getting 
-the channel every time.
+[ ] Compare origins and stride.
 
 [x] check the image file loading with the new version of boofcv
 
