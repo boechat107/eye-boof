@@ -2,7 +2,8 @@
   (:require 
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
-    [eye-boof.image-statistics :as stat])
+    [eye-boof.image-statistics :as stat]
+    [incanter.core :as ic])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
@@ -181,6 +182,23 @@
         canny (FactoryEdgeDetectors/canny blur-int true true ImageUInt8 ImageSInt16)]
     (.process canny (:mat img) thr-low thr-high (:mat res))
     res))
+
+(defn sobel-edge
+  [img]
+  (let [img (if (> (c/dimension img) 1) (to-gray img) img)
+        w (c/ncols img)
+        h (c/nrows img)
+        out-ch (c/new-channel-matrix h w 1)
+        dx (ImageSInt16. w h)
+        dy (ImageSInt16. w h)
+        sq (fn [^long n] (* n n))]
+    (GradientSobel/process (:mat img) dx dy nil)
+    (c/for-xy 
+      [x y img]
+      (->> (ic/sqrt (+ (sq (c/get-pixel dx x y))
+                       (sq (c/get-pixel dy x y))))
+           (c/set-pixel! out-ch x y)))
+    (c/make-image out-ch :gray)))
 
 (defn scale
   "Returns a new image as a scaled version of the input image."
