@@ -19,8 +19,8 @@
 (defn mean
   "Returns the mean pixel intensity of the channel ch (default 0) of the given
   image."
-  ([img] (mean img 0))
-  ([img ch]
+  (^double [img] (mean img 0))
+  (^double [img ch]
    (ImageStatistics/mean (c/get-channel img ch))))
 
 
