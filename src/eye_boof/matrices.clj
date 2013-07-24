@@ -1,9 +1,36 @@
 (ns eye-boof.matrices
-  (:require [eye-boof.core :as eyec])
   (:import [boofcv.struct.image ImageSInt8 ImageSInt16 ImageSInt32 ImageSInt64]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
+
+(defmacro mult-aget
+  "Returns the value of an element of multiple dimensional arrays. Uses type hints to 
+  improve the performance of aget.
+  Reference:
+  http://clj-me.cgrand.net/2009/10/15/multidim-arrays/"
+  ([hint array idx]
+   `(aget ~(vary-meta array assoc :tag hint) ~idx))
+  ([hint array idx & idxs]
+   `(let [a# (aget ~(vary-meta array assoc :tag 'objects) ~idx)]
+      (mult-aget ~hint a# ~@idxs))))
+
+(defmacro mult-aset
+  "Sets the value of an element of a multiple dimensional array. Uses type hints to 
+  improve the performance of aset. (Only for double and int arrays for now)
+  Reference:
+  http://clj-me.cgrand.net/2009/10/15/multidim-arrays/"
+  [hint array & idxsv]
+  (let [hints '{doubles double ints int bytes byte longs long}
+        [v idx & sxdi] (reverse idxsv)
+        idxs (reverse sxdi)
+        v (if-let [h (hints hint)] (list h v) v)
+        nested-array (if (seq idxs)
+                       `(mult-aget ~'objects ~array ~@idxs)
+                       array)
+        a-sym (with-meta (gensym "a") {:tag hint})]
+    `(let [~a-sym ~nested-array]
+       (aset ~a-sym ~idx ~v))))
 
 (def image-data-type
   {'ImageSInt8  bytes
@@ -23,13 +50,13 @@
   ([type mat idx]
      (if-let [internal-type (get image-data-type type)]
        `(let [mat# ~(vary-meta mat assoc :tag type)]
-          (eyec/mult-aget ~internal-type (.data mat#) ~idx))
+          (mult-aget ~internal-type (.data mat#) ~idx))
        (throw (Exception. (str "Type" type " not recognized")))))
   ([type mat x y]
      (if-let [internal-type (get image-data-type type)]
        `(let [mat# ~(vary-meta mat assoc :tag type)]
-          (eyec/mult-aget ~internal-type (.data mat#) (+ (.startIndex mat#) (+ ~x (* ~y (.stride mat#))))))
-       (throw (Exception. (str "Type " type "not recognized"))))))
+          (.unsafe_get mat# ~x ~y))
+       (throw (Exception. (str "Type " type " not recognized"))))))
 
 ;; For compatibility.
 (defmacro get-pixel
@@ -44,12 +71,12 @@
   ([type mat idx val]
      (if-let [internal-type (get image-data-type type)]
        `(let [mat# ~(vary-meta mat assoc :tag type)]
-          (eyec/mult-aset ~internal-type (.data mat#) ~idx (unchecked-byte ~val)))
+          (mult-aset ~internal-type (.data mat#) ~idx (unchecked-byte ~val)))
        (throw (Exception. (str "Type " type "not recognized")))))
   ([type mat x y val]
      (if-let [internal-type (get image-data-type type)]
        `(let [mat# ~(vary-meta mat assoc :tag type)]
-          (eyec/mult-aset ~internal-type (.data mat#) (+ (.startIndex ~mat) (+ (* ~y (.stride ~mat)) ~x)) (unchecked-byte ~val)))
+          (.unsafe_set mat# ~x ~y ~val))
        (throw (Exception. (str "Type " type "not recognized"))))))
 
 ;; For compatibility.

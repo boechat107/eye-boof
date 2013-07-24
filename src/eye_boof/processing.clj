@@ -137,7 +137,7 @@
                                      (-> (+ yn (- y offset))
                                          (max 0)
                                          (min (dec nr))))
-                                   (* (c/mult-aget doubles mask (+ xn (* yn mask-size))))
+                                   (* (m/mult-aget doubles mask (+ xn (* yn mask-size))))
                                    (+ kyv)))
                        kyv))))
               (c/set-pixel! res-m

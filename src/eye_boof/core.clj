@@ -1,4 +1,6 @@
 (ns eye-boof.core
+  (:require
+    [eye-boof.matrices :as m])
   (:import 
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]))
 
@@ -164,68 +166,33 @@
      (:mat img)
      (.getBand ^MultiSpectral (:mat img) ch))))
 
-(defmacro mult-aget
-  "Returns the value of an element of multiple dimensional arrays. Uses type hints to 
-  improve the performance of aget.
-  Reference:
-  http://clj-me.cgrand.net/2009/10/15/multidim-arrays/"
-  ([hint array idx]
-   `(aget ~(vary-meta array assoc :tag hint) ~idx))
-  ([hint array idx & idxs]
-   `(let [a# (aget ~(vary-meta array assoc :tag 'objects) ~idx)]
-      (mult-aget ~hint a# ~@idxs))))
-
 (defmacro get-pixel
   "Returns a primitive integer value from a channel's array ach. If coordinates 
   [x, y] and ncols are provided, the array is handled as 2D matrix.
   Warning: idx is relative to the original or parent image, so it is dangerous to use it
   for sub-images, give preference to x and y indexing."
   ([ch idx]
-  `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
-     (-> (mult-aget ~'bytes (.data ch#) ~idx)
-         (bit-and ~0xff))))
+   `(-> (m/mget ~(symbol "ImageUInt8") ~ch ~idx)
+        (bit-and ~0xff)))
   ([ch x y]
-   `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
-     (-> (mult-aget ~'bytes (.data ch#)
-                    (+ (.startIndex ch#) (+ ~x (* ~y (.stride ch#)))))
-         (bit-and ~0xff)))))
+   `(-> (m/mget ~(symbol "ImageUInt8") ~ch ~x ~y)
+        (bit-and ~0xff))))
 
 (defn get-pixel*
   "Returns the value of the pixel [x, y] for a given image channel."
   (^long [^ImageUInt8 ch x y]
-   (-> (mult-aget bytes (.data ch) (+ (.startIndex ch) (+ (* y (.stride ch)) x)))
-       (bit-and 0xff)
-       ))
+   (.unsafe_get ch x y))
   (^long [^ImageUInt8 ch idx]
-   (-> (mult-aget bytes (.data ch) idx)
+   (-> (m/mult-aget bytes (.data ch) idx)
        (bit-and 0xff))))
-
-(defmacro mult-aset
-  "Sets the value of an element of a multiple dimensional array. Uses type hints to 
-  improve the performance of aset. (Only for double and int arrays for now)
-  Reference:
-  http://clj-me.cgrand.net/2009/10/15/multidim-arrays/"
-  [hint array & idxsv]
-  (let [hints '{doubles double ints int bytes byte longs long}
-        [v idx & sxdi] (reverse idxsv)
-        idxs (reverse sxdi)
-        v (if-let [h (hints hint)] (list h v) v)
-        nested-array (if (seq idxs)
-                       `(mult-aget ~'objects ~array ~@idxs)
-                       array)
-        a-sym (with-meta (gensym "a") {:tag hint})]
-    `(let [~a-sym ~nested-array]
-       (aset ~a-sym ~idx ~v))))
 
 (defmacro set-pixel! 
   "Sets the value of a pixel for a given channel's array. If coordinates [x, y] and
   ncols are provided, the array is handled as 2D matrix."
   ([ch idx val]
-   `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
-      (mult-aset ~'bytes (.data ch#) ~idx (unchecked-byte ~val))))
+   `(m/mset! ~(symbol "ImageUInt8") ~ch ~idx ~val))
   ([ch x y val]
-   `(let [ch# ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)]
-      (.unsafe_set ch# ~x ~y ~val))))
+   `(m/mset! ~(symbol "ImageUInt8") ~ch ~x ~y ~val)))
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
@@ -234,7 +201,7 @@
          y (int y)]
      (.unsafe_set ch x y val)))
   ([^ImageUInt8 ch idx val]
-   (mult-aset bytes (.data ch)
+   (m/mult-aset bytes (.data ch)
               idx 
               val)))
 
