@@ -3,7 +3,7 @@
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
     [eye-boof.image-statistics :as stat]
-    [incanter.core :as ic])
+    [eye-boof.matrices :as m])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
@@ -184,6 +184,8 @@
     res))
 
 (defn sobel-edge
+  "Returns a grayscale image where the X Sobel derivative and Y Sobel derivative are 
+  combined like (sqrt (+ dx^2 dy^2)). The edges of the picture can be seen as white."
   [img]
   (let [img (if (> (c/dimension img) 1) (to-gray img) img)
         w (c/ncols img)
@@ -191,12 +193,12 @@
         out-ch (c/new-channel-matrix h w 1)
         dx (ImageSInt16. w h)
         dy (ImageSInt16. w h)
-        sq (fn [^long n] (* n n))]
-    (GradientSobel/process (:mat img) dx dy nil)
+        sq (fn ^long [^long n] (* n n))]
+    (GradientSobel/process (c/get-channel img 0) dx dy nil)
     (c/for-xy 
       [x y img]
-      (->> (ic/sqrt (+ (sq (c/get-pixel dx x y))
-                       (sq (c/get-pixel dy x y))))
+      (->> (Math/sqrt (+ (sq (m/mget ImageSInt16 dx x y))
+                         (sq (m/mget ImageSInt16 dy x y))))
            (c/set-pixel! out-ch x y)))
     (c/make-image out-ch :gray)))
 
