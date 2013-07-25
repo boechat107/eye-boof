@@ -7,7 +7,7 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
 
-(defrecord Image [mat type origin])
+(defrecord Image [mat type])
 
 (def color-dimensions
   {:rgb 3
@@ -108,7 +108,7 @@
   the value of each pixel a double value."
   ([data-chs type]
    {:pre [(valid-type? type) (mat? data-chs)]}
-   (Image. data-chs type nil)))
+   (Image. data-chs type)))
 
 (defn new-image
   "Returns an empty image with the given size and color type. If an img is given,
@@ -216,18 +216,11 @@
 
 (defn sub-image
   "Returns a sub-image from the given image, both sharing the same internal
-  data-array.
-  The new sub-image has a field :origin that has the coordinates [x0 y0] of the
-  original image where the sub-image was taken."
+  data-array."
   [img x0 y0 width height]
-  (let [[x00 y00] (:origin img)
-        orig (if (sub-image? img)
-               [(+ x00 x0) (+ y00 y0)]
-               [x0 y0])]
-    (-> ^ImageBase (:mat img)
-        (.subimage x0 y0 (+ x0 width) (+ y0 height))
-        (make-image (:type img))
-        (assoc :origin orig))))
+  (-> ^ImageBase (:mat img)
+      (.subimage x0 y0 (+ x0 width) (+ y0 height))
+      (make-image (:type img))))
 
 (defn channel-to-vec
   "Returns an integer clojure vector of the pixels' value of a specific channel."

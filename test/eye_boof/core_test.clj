@@ -56,13 +56,13 @@
     (is (== h (c/nrows si)))
     (is (== 255 (c/get-pixel rch 1 1)))
     (is (== 255 (c/get-pixel gch 2 2)))
-    (is (= [0 0] (:origin si) (c/get-parent-point si)))
+    (is (= [0 0] (c/get-parent-point si)))
     (is (== 2 (c/ncols ssi)))
     (is (== 2 (c/nrows ssi)))
     (is (== 255 (c/get-pixel r 0 0)))
     (is (== 255 (c/get-pixel g 1 1)))
     (is (== 0 (c/get-pixel b 1 1)))
-    (is (= [1 1] (:origin ssi) (c/get-parent-point ssi)))))
+    (is (= [1 1] (c/get-parent-point ssi)))))
 
 (deftest img-scaling
   (let [orig (h/load-file-image "resources/boofcv.jpg")
