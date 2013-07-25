@@ -1,6 +1,10 @@
 # Todo
 
-[ ] Compare origins and stride.
+[ ] protocol: to-image
+
+[ ] processing: template functions
+
+[x] Compare origins and stride.
 
 [x] check the image file loading with the new version of boofcv
 
