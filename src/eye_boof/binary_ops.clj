@@ -6,7 +6,7 @@
              [helpers :as h]])
   (:import
    [boofcv.alg.filter.binary Contour BinaryImageOps]
-   [boofcv.struct.image ImageSInt32]
+   [boofcv.struct.image ImageUInt8 ImageSInt32]
    [boofcv.gui.binary VisualizeBinaryData]))
 
 (set! *warn-on-reflection* true)
