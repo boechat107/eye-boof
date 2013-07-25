@@ -206,10 +206,13 @@
               val)))
 
 (defn get-parent-point
-  "If the given image is a sub-image, returns the top-left coordinates on the former
-  image."
+  "Returns the coordinates [x, y] of the first pixel of img in its parent image. 
+  If img is not a sub-image, [x, y] = [0, 0]."
   [img]
-  (:origin img))
+  (let [ch (get-channel img 0)
+        start-idx (.startIndex ch)
+        stride (.stride ch)]
+    [(rem start-idx stride) (quot start-idx stride)]))
 
 (defn sub-image
   "Returns a sub-image from the given image, both sharing the same internal
