@@ -33,12 +33,12 @@
        (aset ~a-sym ~idx ~v))))
 
 (def image-data-type
-  {'ImageSInt8  bytes
-   'ImageSInt16 shorts
-   'ImageSInt32 ints
-   'ImageSInt64 longs
-   'ImageUInt8  bytes
-   'ImageUInt16 shorts})
+  '{ImageSInt8 [boofcv.struct.image.ImageSInt8 bytes]
+    ImageSInt16 [boofcv.struct.image.ImageSInt16 shorts]
+    ImageSInt32 [boofcv.struct.image.ImageSInt32 ints]
+    ImageSInt64 [boofcv.struct.image.ImageSInt64 longs]
+    ImageUInt8 [boofcv.struct.image.ImageUInt8 bytes]
+    ImageUInt16 [boofcv.struct.image.ImageUInt16 shorts]})
 
 (defmacro mget
   "Returns a primitive integer value from a matrix's array mat. If coordinates [x, y],
@@ -48,13 +48,13 @@
   e.g.
     => (get-pixel ImageSInt8 img 2)"
   ([type mat idx]
-     (if-let [internal-type (get image-data-type type)]
-       `(let [mat# ~(vary-meta mat assoc :tag type)]
+     (if-let [[boof-type internal-type] (get image-data-type type)]
+       `(let [mat# ~(vary-meta mat assoc :tag boof-type)]
           (mult-aget ~internal-type (.data mat#) ~idx))
        (throw (Exception. (str "Type" type " not recognized")))))
   ([type mat x y]
-     (if-let [internal-type (get image-data-type type)]
-       `(let [mat# ~(vary-meta mat assoc :tag type)]
+     (if-let [[boof-type internal-type] (get image-data-type type)]
+       `(let [mat# ~(vary-meta mat assoc :tag boof-type)]
           (.unsafe_get mat# ~x ~y))
        (throw (Exception. (str "Type " type " not recognized"))))))
 
@@ -69,13 +69,13 @@
    e.g.
       (set-pixel! ImageSInt8 asd 2 2 4)"
   ([type mat idx val]
-     (if-let [internal-type (get image-data-type type)]
-       `(let [mat# ~(vary-meta mat assoc :tag type)]
+     (if-let [[boof-type internal-type] (get image-data-type type)]
+       `(let [mat# ~(vary-meta mat assoc :tag boof-type)]
           (mult-aset ~internal-type (.data mat#) ~idx (unchecked-byte ~val)))
        (throw (Exception. (str "Type " type "not recognized")))))
   ([type mat x y val]
-     (if-let [internal-type (get image-data-type type)]
-       `(let [mat# ~(vary-meta mat assoc :tag type)]
+     (if-let [[boof-type internal-type] (get image-data-type type)]
+       `(let [mat# ~(vary-meta mat assoc :tag boof-type)]
           (.unsafe_set mat# ~x ~y ~val))
        (throw (Exception. (str "Type " type "not recognized"))))))
 

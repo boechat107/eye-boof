@@ -172,10 +172,10 @@
   Warning: idx is relative to the original or parent image, so it is dangerous to use it
   for sub-images, give preference to x and y indexing."
   ([ch idx]
-   `(-> (m/mget ~(symbol "ImageUInt8") ~ch ~idx)
+   `(-> (m/mget ~'ImageUInt8 ~ch ~idx)
         (bit-and ~0xff)))
   ([ch x y]
-   `(-> (m/mget ~(symbol "ImageUInt8") ~ch ~x ~y)
+   `(-> (m/mget ~'ImageUInt8 ~ch ~x ~y)
         (bit-and ~0xff))))
 
 (defn get-pixel*
@@ -190,9 +190,9 @@
   "Sets the value of a pixel for a given channel's array. If coordinates [x, y] and
   ncols are provided, the array is handled as 2D matrix."
   ([ch idx val]
-   `(m/mset! ~(symbol "ImageUInt8") ~ch ~idx ~val))
+   `(m/mset! ~'ImageUInt8 ~ch ~idx ~val))
   ([ch x y val]
-   `(m/mset! ~(symbol "ImageUInt8") ~ch ~x ~y ~val)))
+   `(m/mset! ~'ImageUInt8 ~ch ~x ~y ~val)))
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
