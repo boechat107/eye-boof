@@ -138,10 +138,12 @@
       w/pack!
       w/show!)))
 
-(defn view-new
+(defn view*
   "View the images in a new frame"
   [& imgs]
   (reset! frame (new-frame))
   (apply view imgs))
 
-(def view* view-new)
+(defn view-new [& imgs]
+  (println "'view-new' is depreacted, please start using 'view*'")
+  (apply view* imgs))
