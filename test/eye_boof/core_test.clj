@@ -3,8 +3,7 @@
   (:require 
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
-    [eye-boof.processing :as p])
-  (:import [boofcv.struct.image ImageUInt8]))
+    [eye-boof.processing :as p]))
 
 
 (def img-test 
@@ -68,7 +67,7 @@
   (let [orig (h/load-file-image "resources/boofcv.jpg")
         bigger (time (p/scale orig 1.5 1.5))
         smaller (time (p/scale orig 0.5 0.5))]
-    (h/view* orig bigger smaller)))
+    #_(h/view* orig bigger smaller)))
 
 (defn time-set-pixel
   []
@@ -91,7 +90,7 @@
         bin (time (p/binarize gray 100))
         blur (time (p/mean-blur img 1))
         ]
-    (time (h/view img blur))
+    #_(time (h/view img blur))
     nil
     )
   )
