@@ -33,12 +33,12 @@
        (aset ~a-sym ~idx ~v))))
 
 (def image-data-type
-  '{ImageSInt8 [boofcv.struct.image.ImageSInt8 bytes]
-    ImageSInt16 [boofcv.struct.image.ImageSInt16 shorts]
-    ImageSInt32 [boofcv.struct.image.ImageSInt32 ints]
-    ImageSInt64 [boofcv.struct.image.ImageSInt64 longs]
-    ImageUInt8 [boofcv.struct.image.ImageUInt8 bytes]
-    ImageUInt16 [boofcv.struct.image.ImageUInt16 shorts]})
+  '{:sint8 [boofcv.struct.image.ImageSInt8 bytes]
+    :sint16 [boofcv.struct.image.ImageSInt16 shorts]
+    :sint32 [boofcv.struct.image.ImageSInt32 ints]
+    :sint64 [boofcv.struct.image.ImageSInt64 longs]
+    :uint8 [boofcv.struct.image.ImageUInt8 bytes]
+    :uint16 [boofcv.struct.image.ImageUInt16 shorts]})
 
 (defmacro mget
   "Returns a primitive integer value from a matrix's array mat. If coordinates [x, y],
