@@ -212,8 +212,8 @@
     (GradientSobel/process (c/get-channel img 0) dx dy nil)
     (c/for-xy 
       [x y img]
-      (->> (Math/sqrt (+ (sq (m/mget ImageSInt16 dx x y))
-                         (sq (m/mget ImageSInt16 dy x y))))
+      (->> (Math/sqrt (+ (sq (m/mget :sint16 dx x y))
+                         (sq (m/mget :sint16 dy x y))))
            (c/set-pixel! out-ch x y)))
     (c/make-image out-ch :gray)))
 
