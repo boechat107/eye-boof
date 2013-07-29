@@ -171,6 +171,17 @@
         (BlurImageOps/mean img-m res-m rad nil)))
     res))
 
+(defn median-blur
+  "Returns a new image resulting from the application of a median filter with a given
+  radius."
+  [img ^long rad]
+  (let [res (c/new-image (c/nrows img) (c/ncols img) (:type img))]
+    (dotimes [ch (c/dimension img)]
+      (let [img-m (c/get-channel img ch)
+            res-m (c/get-channel res ch)]
+        (BlurImageOps/median img-m res-m rad)))
+    res))
+
 (defn gaussian-blur
   "Returns a new image as an output of a gaussian blur.
   http://boofcv.org/javadoc/boofcv/alg/filter/blur/BlurImageOps.html#gaussian(boofcv.struct.image.ImageUInt8, boofcv.struct.image.ImageUInt8, double, int, boofcv.struct.image.ImageUInt8)"
