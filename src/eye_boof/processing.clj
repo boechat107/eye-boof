@@ -31,6 +31,15 @@
         (f ch-img out-ch)))
     output))
 
+(defmacro mult-ops
+  [[img img-ch out-ch] & body]
+  `(let [out# (c/new-image (c/nrows ~img) (c/ncols ~img) (:type ~img))]
+     (dotimes [ch# (c/dimension ~img)]
+       (let [~img-ch (c/get-channel ~img ch#)
+             ~out-ch (c/get-channel out# ch#)]
+         ~@body))
+     out#))
+
 (defn rgb-to-gray
   "Returns a new Image whose color space is the grayscale. Only ARGB or RGB images 
   are accepted.
@@ -177,32 +186,22 @@
   "Returns a new image resulting from the application of a mean filter with a given
   radius."
   [img ^long rad]
-  (mult-chs-ops 
-    img
-    (fn [^ImageUInt8 img-ch ^ImageUInt8 out-ch] 
-      (BlurImageOps/mean img-ch out-ch rad nil))))
+  (mult-ops [img img-ch out-ch]
+            (BlurImageOps/mean img-ch out-ch rad nil)))
 
 (defn median-blur
   "Returns a new image resulting from the application of a median filter with a given
   radius."
   [img ^long rad]
-  (let [res (c/new-image (c/nrows img) (c/ncols img) (:type img))]
-    (dotimes [ch (c/dimension img)]
-      (let [img-m (c/get-channel img ch)
-            res-m (c/get-channel res ch)]
-        (BlurImageOps/median img-m res-m rad)))
-    res))
+  (mult-ops [img img-ch out-ch]
+            (BlurImageOps/median img-ch out-ch rad)))
 
 (defn gaussian-blur
   "Returns a new image as an output of a gaussian blur.
   http://boofcv.org/javadoc/boofcv/alg/filter/blur/BlurImageOps.html#gaussian(boofcv.struct.image.ImageUInt8, boofcv.struct.image.ImageUInt8, double, int, boofcv.struct.image.ImageUInt8)"
   [img ^double sigma ^long radius]
-  (let [res (c/new-image (c/nrows img) (c/ncols img) (:type img))]
-    (dotimes [ch (c/dimension img)]
-      (let [img-m (c/get-channel img ch)
-            res-m (c/get-channel res ch)]
-        (BlurImageOps/gaussian img-m res-m sigma radius nil)))
-    res))
+  (mult-ops [img img-ch out-ch]
+            (BlurImageOps/gaussian img-ch out-ch sigma radius nil)))
 
 (defn canny-edge
   "Returns a binary image where edges are represented as 1 and the rest of pixels
