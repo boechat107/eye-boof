@@ -216,6 +216,14 @@
   (mult-ops [img ich och]
             (EnhanceImageOps/sharpen8 ich och)))
 
+_#(defn eq-local-histogram
+  "Equalizes the local image histogram on a per pixel basis."
+  [img]
+  (mult-ops)
+  )
+
+#_(defn eq-histogram)
+
 (defn canny-edge
   "Returns a binary image where edges are represented as 1 and the rest of pixels
   are zeros.
