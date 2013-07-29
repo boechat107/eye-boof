@@ -18,6 +18,19 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
 
+(defn- mult-chs-ops
+  "Template function to apply an operation on a multispectral image and return an
+  image of the same type.
+  f is a funtion whose arguments are a channel of the input image and a channel of
+  the output image."
+  [img f]
+  (let [output (c/new-image (c/nrows img) (c/ncols img) (:type img))]
+    (dotimes [ch (c/dimension img)]
+      (let [ch-img (c/get-channel img ch)
+            out-ch (c/get-channel output ch)]
+        (f ch-img out-ch)))
+    output))
+
 (defn rgb-to-gray
   "Returns a new Image whose color space is the grayscale. Only ARGB or RGB images 
   are accepted.
@@ -164,12 +177,10 @@
   "Returns a new image resulting from the application of a mean filter with a given
   radius."
   [img ^long rad]
-  (let [res (c/new-image (c/nrows img) (c/ncols img) (:type img))]
-    (dotimes [ch (c/dimension img)]
-      (let [img-m (c/get-channel img ch)
-            res-m (c/get-channel res ch)]
-        (BlurImageOps/mean img-m res-m rad nil)))
-    res))
+  (mult-chs-ops 
+    img
+    (fn [^ImageUInt8 img-ch ^ImageUInt8 out-ch] 
+      (BlurImageOps/mean img-ch out-ch rad nil))))
 
 (defn median-blur
   "Returns a new image resulting from the application of a median filter with a given
