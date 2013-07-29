@@ -9,6 +9,7 @@
     [boofcv.alg.filter.blur BlurImageOps]
     [boofcv.alg.filter.derivative GradientSobel]
     [boofcv.alg.filter.binary ThresholdImageOps]
+    [boofcv.alg.enhance EnhanceImageOps]
     [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
     [boofcv.alg.feature.detect.edge CannyEdge]
     [boofcv.alg.misc GPixelMath]
@@ -202,6 +203,18 @@
   [img ^double sigma ^long radius]
   (mult-ops [img img-ch out-ch]
             (BlurImageOps/gaussian img-ch out-ch sigma radius nil)))
+
+(defn sharpen-4
+  "Applies a Laplacian-4 based sharpen filter to the image and returns a new one."
+  [img]
+  (mult-ops [img ich och]
+            (EnhanceImageOps/sharpen4 ich och)))
+
+(defn sharpen-8
+  "Applies a Laplacian-8 based sharpen filter to the image and returns a new one."
+  [img]
+  (mult-ops [img ich och]
+            (EnhanceImageOps/sharpen8 ich och)))
 
 (defn canny-edge
   "Returns a binary image where edges are represented as 1 and the rest of pixels
