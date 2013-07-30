@@ -22,9 +22,32 @@
 (defn get-type [img]
   (:type img))
 
+(defn get-channel
+  "Returns a channel data structure of a given image. If the channel number is not
+  specified, all channels are returned as a vector."
+  ([img] 
+   (let [chs ^MultiSpectral (:mat img)]
+     (if (one-dim? img)
+     (:mat img)
+     (mapv #(.getBand chs %) (range (.getNumBands chs))))))
+  (^ImageUInt8 [img ch]
+   (if (one-dim? img) 
+     (:mat img)
+     (.getBand ^MultiSpectral (:mat img) ch))))
+
+(defn get-parent-point
+  "Returns the coordinates [x, y] of the first pixel of img in its parent image. 
+  If img is not a sub-image, [x, y] = [0, 0]."
+  [img]
+  (let [ch (get-channel img 0)
+        start-idx (.startIndex ch)
+        stride (.stride ch)]
+    [(rem start-idx stride) (quot start-idx stride)]))
+
 (defn sub-image?
   [obj]
-  (and (instance? Image obj) (:origin obj)))
+  (and (instance? Image obj) 
+       (not (= [0 0] (get-parent-point obj)))))
 
 (defn valid-type?
   [type]
@@ -153,19 +176,6 @@
 ;  (->> (mapv #(aclone ^ints %) (:mat img)) 
 ;       (assoc img :mat)))
 
-(defn get-channel
-  "Returns a channel data structure of a given image. If the channel number is not
-  specified, all channels are returned as a vector."
-  ([img] 
-   (let [chs ^MultiSpectral (:mat img)]
-     (if (one-dim? img)
-     (:mat img)
-     (mapv #(.getBand chs %) (range (.getNumBands chs))))))
-  (^ImageUInt8 [img ch]
-   (if (one-dim? img) 
-     (:mat img)
-     (.getBand ^MultiSpectral (:mat img) ch))))
-
 (defmacro get-pixel
   "Returns a primitive integer value from a channel's array ach. If coordinates 
   [x, y] and ncols are provided, the array is handled as 2D matrix.
@@ -204,15 +214,6 @@
    (m/mult-aset bytes (.data ch)
               idx 
               val)))
-
-(defn get-parent-point
-  "Returns the coordinates [x, y] of the first pixel of img in its parent image. 
-  If img is not a sub-image, [x, y] = [0, 0]."
-  [img]
-  (let [ch (get-channel img 0)
-        start-idx (.startIndex ch)
-        stride (.stride ch)]
-    [(rem start-idx stride) (quot start-idx stride)]))
 
 (defn sub-image
   "Returns a sub-image from the given image, both sharing the same internal
