@@ -36,10 +36,8 @@
   (width [mat])
   (height [mat])
   (dimension [mat])
-  (mget [mat x y])
-  (mget [mat idx])
-  (mset! [mat x y v])
-  (mset! [mat idx v])
+  (mget [mat idx] [mat x y])
+  (mset! [mat idx v] [mat x y v])
   (parent-point [mat])
   (to-vec [mat]))
 
@@ -47,8 +45,12 @@
   {:width (fn [mat] (.getWidth mat))
    :height (fn [mat] (.getHeight mat))
    :dimension (fn [mat] 1)
-   :mget (fn [mat x y] (.unsafe_get mat x y))
-   :mset! (fn [mat x y v] (.unsafe_set mat x y v))
+   :mget (fn
+           ([mat x y] (.unsafe_get mat x y))
+           ([mat idx] (mult-aget longs mat idx)))
+   :mset! (fn 
+            ([mat x y v] (.unsafe_set mat x y v))
+            ([mat idx v] (mult-aset longs mat idx v)))
    :parent-point (fn [mat]
                    (let [start-idx (.startIndex mat)
                          stride (.stride mat)]
@@ -59,10 +61,15 @@
                (vec (for [x (range (width mat)), y (range (height mat))] 
                       (mget mat x y)))))})
 
-(extend ImageUInt8 
-  boofcv.struct.image.ImageUInt8
+(extend boofcv.struct.image.ImageUInt8
+  ImageMatrix  
   (assoc single-ch-impl 
-         :mget (fn [mat x y] (-> (.unsafe_get mat x y) (bit-and 0xff)))
+         :mget (fn 
+                 ([mat x y] (-> (.unsafe_get mat x y) (bit-and 0xff)))
+                 ([mat idx] (-> (mult-aget bytes mat idx) (bit-and 0xff))))
+         :mset (fn 
+                 ([mat x y v] (.unsafe_set mat x y v))
+                 ([mat idx v] (mult-aset bytes mat idx v)))
          :to-vec (fn [mat] 
                    (if (= [0 0] (parent-point mat))
                      (mapv #(bit-and % 0xff) (seq (.data mat)))
