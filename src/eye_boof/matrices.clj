@@ -32,6 +32,60 @@
     `(let [~a-sym ~nested-array]
        (aset ~a-sym ~idx ~v))))
 
+(defprotocol ImageMatrix 
+  (width [mat])
+  (height [mat])
+  (dimension [mat])
+  (mget [mat x y])
+  (mget [mat idx])
+  (mset! [mat x y v])
+  (mset! [mat idx v])
+  (parent-point [mat])
+  (to-vec [mat]))
+
+(def single-ch-impl
+  {:width (fn [mat] (.getWidth mat))
+   :height (fn [mat] (.getHeight mat))
+   :dimension (fn [mat] 1)
+   :mget (fn [mat x y] (.unsafe_get mat x y))
+   :mset! (fn [mat x y v] (.unsafe_set mat x y v))
+   :parent-point (fn [mat]
+                   (let [start-idx (.startIndex mat)
+                         stride (.stride mat)]
+                     [(rem start-idx stride) (quot start-idx stride)]))
+   :to-vec (fn [mat]
+             (if (= [0 0] (parent-point mat))
+               (vec (seq (.data mat)))
+               (vec (for [x (range (width mat)), y (range (height mat))] 
+                      (mget mat x y)))))})
+
+(extend ImageUInt8 
+  boofcv.struct.image.ImageUInt8
+  (assoc single-ch-impl 
+         :mget (fn [mat x y] (-> (.unsafe_get mat x y) (bit-and 0xff)))
+         :to-vec (fn [mat] 
+                   (if (= [0 0] (parent-point mat))
+                     (mapv #(bit-and % 0xff) (seq (.data mat)))
+                     (vec (for [x (range (width mat)), y (range (height mat))] 
+                            (mget mat x y)))))))
+
+#_(extend-protocol ImageMatrix 
+  boofcv.struct.image.ImageUInt8
+  (width [mat] (.getWidth mat))
+  (height [mat] (.getHeight mat))
+  (dimension [mat] 1)
+  (mget [mat x y]
+    (-> (.unsafe_get mat x y) (bit-and 0xff)))
+  (mget [mat idx]
+    (-> (mult-aget bytes (.data mat) idx) (bit-and 0xff)))
+  (mset! [mat x y v] (.unsafe_set mat x y v))
+  (mset! [mat idx v] (mult-aset bytes mat idx v))
+  (parent-point [mat] 
+    (let [start-idx (.startIndex mat)
+          stride (.stride mat)]
+      [(rem start-idx stride) (quot start-idx stride)])))
+ 
+
 (def image-data-type
   '{:sint8 [boofcv.struct.image.ImageSInt8 bytes]
     :sint16 [boofcv.struct.image.ImageSInt16 shorts]
