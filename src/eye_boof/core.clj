@@ -19,6 +19,11 @@
   [obj]
   (instance? Image obj))
 
+(defn one-dim?
+  "Returns true if the image has just one channel."
+  [img]
+  (instance? ImageUInt8 (:mat img)))
+
 (defn get-type [img]
   (:type img))
 
@@ -95,11 +100,6 @@
   [img]
   (and (= :bw (:type img))
        (== 1 (dimension img))))
-
-(defn one-dim?
-  "Returns true if the image has just one channel."
-  [img]
-  (instance? ImageUInt8 (:mat img)))
 
 (defn nrows
   "Returns the number of rows of an Image."
