@@ -1,8 +1,12 @@
 # Todo
 
+[ ] boofcv affine transform 
+
+[ ] image matrices protocols
+
 [ ] protocol: to-image
 
-[ ] processing: template functions
+[x] processing: template functions
 
 [x] Compare origins and stride.
 
