@@ -119,9 +119,10 @@
 (defn threshold
   [img threshold & {:keys [down]}]
   (let [result (c/new-image (c/nrows img) (c/ncols img) :bw)
+        img-ch (c/get-channel img 0)
         res-chan (c/get-channel result 1)]
-    (ThresholdImageOps/threshold (:mat img) res-chan
-                                 threshold (boolean down))
+    (ThresholdImageOps/threshold img-ch res-chan
+                                 (int threshold) (boolean down))
     result))
 
 (defn invert 
@@ -216,11 +217,13 @@
   (mult-ops [img ich och]
             (EnhanceImageOps/sharpen8 ich och)))
 
-_#(defn eq-local-histogram
-  "Equalizes the local image histogram on a per pixel basis."
-  [img]
-  (mult-ops)
-  )
+(defn eq-local-histogram
+  "Equalizes the local image histogram on a per pixel basis.
+  rad is the radius of square local histogram."
+  [img ^long rad]
+  (mult-ops 
+    [img ich och]
+    (EnhanceImageOps/equalizeLocal ich rad och (int-array 255) (int-array 255))))
 
 #_(defn eq-histogram)
 
