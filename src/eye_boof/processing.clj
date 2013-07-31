@@ -225,7 +225,15 @@
     [img ich och]
     (EnhanceImageOps/equalizeLocal ich rad och (int-array 255) (int-array 255))))
 
-#_(defn eq-histogram)
+(defn eq-histogram
+  "Equalizes the histogram of a given image."
+  [img]
+  (mult-ops 
+    [img ich och]
+    (let [transf (int-array 255)]
+      (EnhanceImageOps/equalize (int-array (stat/histogram* ich 255))
+                                transf)
+      (EnhanceImageOps/applyTransform ich transf och))))
 
 (defn canny-edge
   "Returns a binary image where edges are represented as 1 and the rest of pixels
