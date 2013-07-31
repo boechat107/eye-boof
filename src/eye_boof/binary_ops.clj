@@ -1,9 +1,9 @@
 (ns eye-boof.binary-ops
   (:require
     [eye-boof 
-     [core :as c]])
-  (:require [eye-boof
-             [helpers :as h]])
+     [core :as c]
+     [helpers :as h]
+     ])
   (:import
    [boofcv.alg.filter.binary Contour BinaryImageOps]
    [boofcv.struct.image ImageSInt32]
@@ -37,13 +37,12 @@
 
 (defn erode [image rule]
   {:pre [(c/bw-type? image)
-         (or (= 4 rule) (= 8 rule))]}
-  (let [result (c/new-image (c/ncols image) (c/nrows image) :bw)
-        chn-result (c/get-channel result)]
-    (if (= 4 rule)
-      (BinaryImageOps/erode4 image chn-result)
-      (BinaryImageOps/erode8 image chn-result))
-    result))
+         (or (== 4 rule) (== 8 rule))]}
+  (let [img-ch (:mat image)]
+    (-> (if (== 4 rule)
+          (BinaryImageOps/erode4 img-ch nil)
+          (BinaryImageOps/erode8 img-ch nil))
+        (c/make-image :bw))))
 
 (defn dilate [image rule]
   {:pre [(c/bw-type? image)
