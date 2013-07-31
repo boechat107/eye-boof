@@ -48,7 +48,7 @@
       (VisualizeBinaryData/renderExternal contours nil nc nr nil)
       "contour from canny binary")))
 
-(deftest canny 
+(defn canny [] 
   (let [bin-edges (p/canny-edge img 5 0.1 0.3)
         nc (c/ncols img)
         nr (c/nrows img)]
@@ -58,7 +58,7 @@
         (BinaryImageOps/contour (:mat bin-edges) 8 nil) nil nc nr nil)
       "contour from canny binary")))
 
-(deftest fitting-polygons
+(defn fitting-polygons []
   (let [bin-edges (p/canny-edge img 5 0.1 0.3)
         nc (c/ncols img)
         nr (c/nrows img)
