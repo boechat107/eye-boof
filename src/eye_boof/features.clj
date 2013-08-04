@@ -1,4 +1,8 @@
 (ns eye-boof.features 
+  (:require [eye-boof
+             [core :as eyec]
+             [binary-ops :as binop]
+             [matrices :as eyem]])
   (:import 
     [boofcv.struct PointIndex_I32]
     [boofcv.alg.filter.binary Contour]
@@ -80,3 +84,64 @@
   "Returns the width of a blob or cluster."
   [pts]
   (inc (- (get-feature pts max y) (get-feature pts min y))))
+
+(defn extract-connected-features
+  "Extracts the connected features from a bw-img.
+   Optionally extract the background as a feature
+   => (feat/extract-connected-features img 4)
+   ;=> { 1 (Point1, Point2 ...)
+         2 (PointN, PointN+1 ...)
+         ...{
+
+   => (feat/extract-connected-features img 4 :background-feature true)
+   ;=> { 0 (Point1, Point2 ...)
+         1 (PointN, PointN+1 ...)
+         ...{ "
+  [bw-img rule & {:keys [background-feature]}]
+  (let [labeled-img (binop/labeled-image bw-img rule)]
+    (reduce (fn [result [x y]]
+              (let [label (eyem/get-pixel :sint32 labeled-img x y)]
+                (if (or (not= 0 label) background-feature)
+                  (update-in result [label] (partial cons (Point2D_I32. x y)))
+                  result)))
+            {}
+            (for [x (range (eyec/ncols bw-img))
+                  y (range (eyec/nrows bw-img)) ]
+              [x y]))))
+
+
+(defn crop [feat]
+  (let [x-offset (get-feature feat min :x)
+        y-offset (get-feature feat min :y)]
+    (map #(Point2D_I32. (- (.x %) x-offset)
+                        (- (.y %) y-offset))
+         feat)))
+
+(defn to-image
+  "Extract a 'feat' from an image and draws on a new cropped image"
+  ([img feat]
+     (let [feat (crop feat)
+           img-output (eyec/new-image (blob-height feat)
+                                      (blob-width feat)
+                                      (eyec/get-type img))]
+       (dotimes [c-chn (eyec/dimension img)]
+         (let [chn-input (eyec/get-channel img c-chn)
+               chn-output (eyec/get-channel img-output c-chn)]
+           (doseq [pt feat]
+             (eyec/set-pixel!* chn-output
+                               (:x pt)
+                               (:y pt)
+                               (eyec/get-pixel chn-input (:x pt) (:y pt))))))
+       img-output))
+  ([feat]
+     (let [feat (crop feat)
+           img-output (eyec/new-image (blob-height feat)
+                                      (blob-width feat)
+                                      :bw)
+           chn-output (eyec/get-channel img-output)]
+       (doseq [pt feat]
+         (eyec/set-pixel!* chn-output
+                           (:x pt)
+                           (:y pt)
+                           1))
+       img-output)))
