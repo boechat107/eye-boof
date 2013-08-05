@@ -111,10 +111,10 @@
 
 
 (defn crop [feat]
-  (let [x-offset (get-feature feat min :x)
-        y-offset (get-feature feat min :y)]
-    (map #(Point2D_I32. (- (.x %) x-offset)
-                        (- (.y %) y-offset))
+  (let [x-offset (get-feature feat min x)
+        y-offset (get-feature feat min y)]
+    (map #(Point2D_I32. (- (x %) x-offset)
+                        (- (y %) y-offset))
          feat)))
 
 (defn to-image
@@ -129,9 +129,9 @@
                chn-output (eyec/get-channel img-output c-chn)]
            (doseq [pt feat]
              (eyec/set-pixel!* chn-output
-                               (:x pt)
-                               (:y pt)
-                               (eyec/get-pixel chn-input (:x pt) (:y pt))))))
+                               (x pt)
+                               (y pt)
+                               (eyec/get-pixel chn-input (x pt) (y pt))))))
        img-output))
   ([feat]
      (let [feat (crop feat)
@@ -141,7 +141,14 @@
            chn-output (eyec/get-channel img-output)]
        (doseq [pt feat]
          (eyec/set-pixel!* chn-output
-                           (:x pt)
-                           (:y pt)
+                           (x pt)
+                           (y pt)
                            1))
        img-output)))
+
+(defn rectangle-as-feature
+  "Given a starting point (x0,y0) returns a rectangle as features with 'width' and 'height'"
+  [[x0 y0 w h]]
+  (for [x (range x0 (+ x0 w))
+        y (range y0 (+ y0 h))]
+    (Point2D_I32. x y)))
