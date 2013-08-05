@@ -99,15 +99,16 @@
          ...{ "
   [bw-img rule & {:keys [background-feature]}]
   (let [labeled-img (binop/labeled-image bw-img rule)]
-    (reduce (fn [result [x y]]
-              (let [label (eyem/get-pixel :sint32 labeled-img x y)]
-                (if (or (not= 0 label) background-feature)
-                  (update-in result [label] (partial cons (Point2D_I32. x y)))
-                  result)))
-            {}
-            (for [x (range (eyec/ncols bw-img))
-                  y (range (eyec/nrows bw-img)) ]
-              [x y]))))
+    (persistent!(reduce (fn [result [x y]]
+                          (let [label (eyem/get-pixel :sint32 labeled-img x y)]
+                 (if (or (not= 0 label) background-feature)
+                   (assoc! result label
+                           (conj (get result label []) (Point2D_I32. x y)))
+                   result)))
+                        (transient {})
+                        (for [x (range (eyec/ncols bw-img))
+                              y (range (eyec/nrows bw-img)) ]
+                          [x y])))))
 
 
 (defn crop [feat]
