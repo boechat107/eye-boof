@@ -12,7 +12,7 @@
     [boofcv.alg.enhance EnhanceImageOps]
     [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
     [boofcv.alg.feature.detect.edge CannyEdge]
-    [boofcv.alg.misc GPixelMath]
+    [boofcv.alg.misc PixelMath ImageStatistics]
     [java.awt.geom AffineTransform]
     [java.awt.image BufferedImage AffineTransformOp]))
 
@@ -67,7 +67,7 @@
   [img]
   {:pre [(> (c/dimension img) 1)]}
   (let [gray (c/new-channel-matrix (c/nrows img) (c/ncols img) 1)]
-    (GPixelMath/averageBand (:mat img) gray)
+    (PixelMath/averageBand ^MultiSpectral (:mat img) ^ImageUInt8 gray)
     (c/make-image gray :gray)))
 
 (defn gray-to-rgb
@@ -250,6 +250,41 @@
         canny (FactoryEdgeDetectors/canny blur-int true true ImageUInt8 ImageSInt16)]
     (.process canny (:mat img) thr-low thr-high (:mat res))
     res))
+
+(defn sobel-edges*
+  "Returns the X and Y Sobel derivatives as a vector of ImageSInt16."
+  [img]
+  (let [img (if (> (c/dimension img) 1) (to-gray img) img)
+        w (c/ncols img)
+        h (c/nrows img)
+        dx (ImageSInt16. w h)
+        dy (ImageSInt16. w h)]
+    (GradientSobel/process (c/get-channel img 0) dx dy nil)
+    [dx dy]))
+
+(defn sobel-edges 
+  "Returns the X and Y Sobel derivatives as a vector of images. The signed values 
+  were scaled to [0, 255]."
+  [img]
+  (let [[dx dy] (sobel-edges* img)
+        w (c/ncols img)
+        h (c/nrows img)
+        sx (c/new-channel-matrix h w 1)
+        sy (c/new-channel-matrix h w 1)
+        scaler! (fn [^ImageSInt16 mat ^ImageUInt8 out]
+                  (let [minv (ImageStatistics/min mat)
+                        _ (c/for-xy 
+                            [x y img]
+                            (->> (- (m/mget :sint16 mat x y) minv)
+                                 (c/set-pixel! out x y)))
+                        maxv (ImageStatistics/max out)]
+                    (c/for-xy 
+                      [x y img]
+                      (->> (/ (c/get-pixel out x y) maxv)
+                             (* 255)
+                             (c/set-pixel! out x y)))
+                    (c/make-image out :gray)))]
+    [(scaler! dx sx) (scaler! dy sy)]))
 
 (defn sobel-edge
   "Returns a grayscale image where the X Sobel derivative and Y Sobel derivative are 
