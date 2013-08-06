@@ -46,13 +46,12 @@
 
 (defn dilate [image rule]
   {:pre [(c/bw-type? image)
-         (or (= 4 rule) (= 8 rule))]}
-  (let [result (c/new-image (c/ncols image) (c/nrows image) :bw)
-        chn-result (c/get-channel result)]
-    (if (= 4 rule)
-      (BinaryImageOps/dilate4 image chn-result)
-      (BinaryImageOps/dilate8 image chn-result))
-    result))
+         (or (== 4 rule) (== 8 rule))]}
+  (let [img-ch (:mat image)]
+    (-> (if (== 4 rule)
+          (BinaryImageOps/dilate4 img-ch nil)
+          (BinaryImageOps/dilate8 img-ch nil))
+        (c/make-image :bw))))
 
 (defn edge [image rule]
   {:pre [(c/bw-type? image)
