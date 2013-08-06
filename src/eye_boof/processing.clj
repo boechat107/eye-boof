@@ -223,15 +223,15 @@
   [img ^long rad]
   (mult-ops 
     [img ich och]
-    (EnhanceImageOps/equalizeLocal ich rad och (int-array 255) (int-array 255))))
+    (EnhanceImageOps/equalizeLocal ich rad och (int-array 256) (int-array 256))))
 
 (defn eq-histogram
   "Equalizes the histogram of a given image."
   [img]
   (mult-ops 
     [img ich och]
-    (let [transf (int-array 255)]
-      (EnhanceImageOps/equalize (int-array (stat/histogram* ich 255))
+    (let [transf (int-array 256)]
+      (EnhanceImageOps/equalize (int-array (stat/histogram* ich 256))
                                 transf)
       (EnhanceImageOps/applyTransform ich transf och))))
 
