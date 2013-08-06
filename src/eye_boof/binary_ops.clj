@@ -53,6 +53,18 @@
           (BinaryImageOps/dilate8 img-ch nil))
         (c/make-image :bw))))
 
+(defn opening 
+  "Morphological operation called opening, just a erosion followed by a dilation.
+  http://en.wikipedia.org/wiki/Opening_(morphology)"
+  [img rule]
+  (-> (erode img rule) (dilate rule)))
+
+(defn closing 
+  "Morphological operation called closing, just a dilation followed by a erosion.
+  http://en.wikipedia.org/wiki/Closing_(morphology)"
+  [img rule]
+  (-> (dilate img rule) (erode rule)))
+
 (defn edge [image rule]
   {:pre [(c/bw-type? image)
          (or (= 4 rule) (= 8 rule))]}
