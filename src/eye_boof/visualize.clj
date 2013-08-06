@@ -3,6 +3,21 @@
     [eye-boof.helpers :as h]
     [seesaw.core :as w]))
 
+(def visualize-properties
+  {:cols 6
+   ;:scale-to-fit true
+   })
+
+(defmacro with-view-props
+  "Redefines view properties, e.g.
+      (v/with-view-props {:cols 1}
+          ...)"
+  [props & body]
+  `(with-redefs [visualize-properties (merge visualize-properties ~props)]
+     ~@body
+     )
+  )
+
 (defn- new-frame
   "Creates a new frame for viewing the images."
   []
@@ -17,12 +32,10 @@
                           %
                           (h/to-buffered-image %))
                        imgs)
-        n-imgs (count imgs)
-        img-col 6 
         grid (w/grid-panel
                :border 5
                :hgap 10 :vgap 10
-               :columns (min img-col n-imgs)
+               :columns (min (:cols visualize-properties) (count imgs))
                :items (map #(w/label :icon %) buff-imgs))]
     (doto @frame
       (.setContentPane grid)
