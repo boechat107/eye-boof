@@ -67,14 +67,6 @@
        (Point2D_I32. (get-feature pts max x)
                      (get-feature pts max y))])))
 
-(defn aprox-area
-  "Returns the area of a bounding box around the given list of Points."
-  [pts]
-  (when (> (count pts) 2)
-    (let [[tl br] (bounding-box pts)]
-      (* (- (x br) (x tl))
-         (- (y br) (y tl))))))
-
 (defn blob-width
   "Returns the width of a blob or cluster."
   [pts]
@@ -84,6 +76,13 @@
   "Returns the width of a blob or cluster."
   [pts]
   (inc (- (get-feature pts max y) (get-feature pts min y))))
+
+(defn aprox-area
+  "Returns the area of a bounding box around the given list of Points."
+  [pts]
+  (when (> (count pts) 2)
+    (* (blob-width pts)
+       (blob-height pts))))
 
 (defn extract-connected-features
   "Extracts the connected features from a bw-img.
