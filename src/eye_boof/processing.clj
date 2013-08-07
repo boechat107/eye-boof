@@ -307,7 +307,7 @@
 
 (defn scale-buffImg
   "Returns a new bufferedImage as a scaled version of the input bufferedImage."
-  ([buffImg factor] (buffImg-scale buffImg factor factor))
+  ([buffImg factor] (scale-buffImg buffImg factor factor))
   ([buffImg xfactor yfactor]
    (let [out-buff (h/create-buffered-image (* (.getWidth buffImg) xfactor)
                                            (* (.getHeight buffImg) yfactor))]
