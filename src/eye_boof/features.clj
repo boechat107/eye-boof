@@ -100,7 +100,14 @@
   Two blobs belong to the same group with theirs bounding box overlap."
   ([blobs tol] (group-by-box blobs tol tol))
   ([blobs ^long tol-x ^long tol-y]
-   (letfn [(group [ung-blobs ung-visited cur-group cur-bb groups]
+   (letfn [(make-tl-pt [x y]
+             ;; Make a top-left bounding-box point adding the tolerance.
+             (make-2d-point (- x tol-x) (- y tol-y)))
+           (make-br-pt [x y]
+             ;; Make a bottom-right bounding-box point adding the tolerance.
+             (make-2d-point (+ x tol-x) (+ y tol-y)))
+           (group [ung-blobs ung-visited cur-group cur-bb groups]
+             ;; Recursive function to group blobs.
              (let [b1 (first ung-blobs)
                    r (rest ung-blobs)]
                (cond 
@@ -115,7 +122,9 @@
                    (recur (rest ung-visited) 
                           nil
                           (cons b nil)
-                          (bounding-box b)
+                          (let [[tl br] (bounding-box b)]
+                            [(make-tl-pt (x tl) (y tl))
+                             (make-br-pt (x br) (y br))])
                           (cons cur-group groups)))
                  ;; An ungrouped-not-visited blob is inside the current bounding box,
                  ;; so it should be added to the current group and the current
@@ -126,10 +135,8 @@
                         (cons b1 cur-group)
                         (let [[b1-tl b1-br] (bounding-box b1)
                               [tl br] cur-bb]
-                          [(make-2d-point (- (min (x tl) (x b1-tl)) tol-x)
-                                          (- (min (y tl) (y b1-tl)) tol-y))
-                           (make-2d-point (+ (max (x br) (x b1-br)) tol-x)
-                                          (+ (max (y br) (y b1-br)) tol-y))])
+                          [(make-tl-pt (min (x tl) (x b1-tl)) (min (y tl) (y b1-tl)))
+                           (make-br-pt (max (x br) (x b1-br)) (max (y br) (y b1-br)))])
                         groups)
                  ;; An ungrouped-not-visited blob is not inside the bounding box and
                  ;; becomes an ungrouped-visited blob.

@@ -47,6 +47,12 @@
 (deftest boxing-blob
   (let [blobs (bi/clusters img-small-connected 8)
         box1 [(make-2d-point 2 0) (make-2d-point 3 1)]
-        box2 [(make-2d-point 2 0) (make-2d-point 4 1)]]
+        box2 [(make-2d-point 2 0) (make-2d-point 4 1)]
+        groups1 (group-by-box blobs 0)
+        groups2 (group-by-box blobs 0 2)
+        groups3 (group-by-box blobs 2 2)]
     (is (== 1 (count (keep #(pts-in-box? % box1) blobs))))
-    (is (== 2 (count (keep #(pts-in-box? % box2) blobs))))))
+    (is (== 2 (count (keep #(pts-in-box? % box2) blobs))))
+    (is (== 4 (count groups1)))
+    (is (== 2 (count groups2)))
+    (is (== 1 (count groups3)))))
