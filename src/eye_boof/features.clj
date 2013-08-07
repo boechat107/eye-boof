@@ -95,6 +95,48 @@
               (>= (y %) (y tl)) (<= (y %) (y br))) 
         pts))
 
+(defn group-by-box
+  "Groups close blobs in groups and returns a sequence of groups of blobs.
+  Two blobs belong to the same group with theirs bounding box overlap."
+  ([blobs tol] (group-by-box blobs tol tol))
+  ([blobs ^long tol-x ^long tol-y]
+   (letfn [(group [ung-blobs ung-visited cur-group cur-bb groups]
+             (let [b1 (first ung-blobs)
+                   r (rest ung-blobs)]
+               (cond 
+                 ;; There is no ungrouped and not visited blobs, neither ungrouped
+                 ;; and visited blobs.  
+                 (and (empty? ung-visited) (nil? b1))
+                 groups
+                 ;; All ungrouped blobs were visited, but some of them remain
+                 ;; ungrouped.
+                 (nil? b1) 
+                 (let [b (first ung-visited)]
+                   (recur (rest ung-visited) 
+                          nil
+                          (cons b nil)
+                          (bounding-box b)
+                          (cons cur-group groups)))
+                 ;; An ungrouped-not-visited blob is inside the current bounding box,
+                 ;; so it should be added to the current group and the current
+                 ;; bounding box should be recalculated.
+                 (pts-in-box? b1 cur-bb)
+                 (recur r
+                        ung-visited
+                        (cons b1 cur-group)
+                        (let [[b1-tl b1-br] (bounding-box b1)
+                              [tl br] cur-bb]
+                          [(make-2d-point (- (min (x tl) (x b1-tl)) tol-x)
+                                          (- (min (y tl) (y b1-tl)) tol-y))
+                           (make-2d-point (+ (max (x br) (x b1-br)) tol-x)
+                                          (+ (max (y br) (y b1-br)) tol-y))])
+                        groups)
+                 ;; An ungrouped-not-visited blob is not inside the bounding box and
+                 ;; becomes an ungrouped-visited blob.
+                 :else
+                 (recur r (cons b1 ung-visited) cur-group cur-bb groups))))]
+     (group nil blobs nil nil nil))))
+
 (defn extract-connected-features
   "Extracts the connected features from a bw-img.
    Optionally extract the background as a feature
