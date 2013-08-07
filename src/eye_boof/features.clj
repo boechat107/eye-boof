@@ -63,13 +63,12 @@
   "Returns two points [tl br], top-left and bottom-right, of the bounding box of the
   given list of points."
   [pts]
-  (when (> (count pts) 2)
-    (let [sy (sort-by #(y %) pts)
-          sx (sort-by #(x %) pts)]
-      [(Point2D_I32. (get-feature pts min x)
-                     (get-feature pts min y))
-       (Point2D_I32. (get-feature pts max x)
-                     (get-feature pts max y))])))
+  (let [sy (sort-by #(y %) pts)
+        sx (sort-by #(x %) pts)]
+    [(Point2D_I32. (get-feature pts min x)
+                   (get-feature pts min y))
+     (Point2D_I32. (get-feature pts max x)
+                   (get-feature pts max y))]))
 
 (defn blob-width
   "Returns the width of a blob or cluster."
