@@ -65,10 +65,10 @@
   [pts]
   (let [sy (sort-by #(y %) pts)
         sx (sort-by #(x %) pts)]
-    [(Point2D_I32. (get-feature pts min x)
-                   (get-feature pts min y))
-     (Point2D_I32. (get-feature pts max x)
-                   (get-feature pts max y))]))
+      [(make-2d-point (get-feature pts min x)
+                      (get-feature pts min y))
+       (make-2d-point (get-feature pts max x)
+                      (get-feature pts max y))])))
 
 (defn blob-width
   "Returns the width of a blob or cluster."
@@ -178,8 +178,8 @@
 (defn crop [feat]
   (let [x-offset (get-feature feat min x)
         y-offset (get-feature feat min y)]
-    (map #(Point2D_I32. (- (x %) x-offset)
-                        (- (y %) y-offset))
+    (map #(make-2d-point (- (x %) x-offset)
+                         (- (y %) y-offset))
          feat)))
 
 (defn to-image
@@ -216,4 +216,4 @@
   [[x0 y0 w h]]
   (for [x (range x0 (+ x0 w))
         y (range y0 (+ y0 h))]
-    (Point2D_I32. x y)))
+    (make-2d-point x y)))
