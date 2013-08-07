@@ -33,6 +33,10 @@
   [pts]
   (map #(vector (x %) (y %)) pts))
 
+(defn make-2d-point
+  [x y]
+  (Point2D_I32. x y))
+
 (defn fit-polygon
   "Returns a list of points PointIndex_I32 representing the vertexes of a fitted
   polygon on the given binary contour."
@@ -83,6 +87,13 @@
   (when (> (count pts) 2)
     (* (blob-width pts)
        (blob-height pts))))
+
+(defn pts-in-box?
+  "Returns true if some point of the blob is inside the box [top-left bottom-right]."
+  [pts [tl br]]
+  (some #(and (>= (x %) (x tl)) (<= (x %) (x br))
+              (>= (y %) (y tl)) (<= (y %) (y br))) 
+        pts))
 
 (defn extract-connected-features
   "Extracts the connected features from a bw-img.

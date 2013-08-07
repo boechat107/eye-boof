@@ -2,7 +2,9 @@
   (:use [clojure.test]
         [eye-boof.resources :only [img-small-connected]]
         [eye-boof.features])
-  (:require [eye-boof.core :as eyec])
+  (:require 
+    [eye-boof.core :as eyec]
+    [eye-boof.binary-ops :as bi :only [clusters]])
   (:import [georegression.struct.point Point2D_I32]))
 
 (deftest feat-properties-test
@@ -41,3 +43,10 @@
          4) "Extracting connected components with 8-rule")
   (is (= (count (extract-connected-features img-small-connected 8 :background-feature true))
          5) "Extracting connected components with 8-rule"))
+
+(deftest boxing-blob
+  (let [blobs (bi/clusters img-small-connected 8)
+        box1 [(make-2d-point 2 0) (make-2d-point 3 1)]
+        box2 [(make-2d-point 2 0) (make-2d-point 4 1)]]
+    (is (== 1 (count (keep #(pts-in-box? % box1) blobs))))
+    (is (== 2 (count (keep #(pts-in-box? % box2) blobs))))))
