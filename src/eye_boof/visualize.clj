@@ -3,7 +3,7 @@
     [eye-boof.helpers :as h]
     [seesaw.core :as w]))
 
-(def visualize-properties
+(def ^:dynamic *visualize-properties*
   {:cols 6
    ;:scale-to-fit true
    })
@@ -13,10 +13,8 @@
       (v/with-view-props {:cols 1}
           ...)"
   [props & body]
-  `(with-redefs [visualize-properties (merge visualize-properties ~props)]
-     ~@body
-     )
-  )
+  `(binding [*visualize-properties* (merge *visualize-properties* ~props)]
+     ~@body))
 
 (defn- new-frame
   "Creates a new frame for viewing the images."
@@ -35,7 +33,7 @@
         grid (w/grid-panel
                :border 5
                :hgap 10 :vgap 10
-               :columns (min (:cols visualize-properties) (count imgs))
+               :columns (min (:cols *visualize-properties*) (count imgs))
                :items (map #(w/label :icon %) buff-imgs))]
     (doto @frame
       (.setContentPane grid)
