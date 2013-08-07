@@ -149,6 +149,7 @@
             (map second))
        nil nil nil))))
 
+;;(TODO) considering deleting this in the future...
 (defn extract-connected-features
   "Extracts the connected features from a bw-img.
    Optionally extract the background as a feature
