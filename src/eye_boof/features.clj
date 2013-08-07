@@ -113,7 +113,7 @@
                  ;; There is no ungrouped and not visited blobs, neither ungrouped
                  ;; and visited blobs.  
                  (and (empty? ung-visited) (nil? b1))
-                 groups
+                 (if cur-group (cons cur-group groups) groups)
                  ;; All ungrouped blobs were visited, but some of them remain
                  ;; ungrouped.
                  (nil? b1) 
@@ -124,7 +124,7 @@
                           (let [[tl br] (bounding-box b)]
                             [(make-tl-pt (x tl) (y tl))
                              (make-br-pt (x br) (y br))])
-                          (cons cur-group groups)))
+                          (if cur-group (cons cur-group groups) groups)))
                  ;; An ungrouped-not-visited blob is inside the current bounding box,
                  ;; so it should be added to the current group and the current
                  ;; bounding box should be recalculated.
@@ -141,7 +141,13 @@
                  ;; becomes an ungrouped-visited blob.
                  :else
                  (recur r (cons b1 ung-visited) cur-group cur-bb groups))))]
-     (group nil blobs nil nil nil))))
+     (group
+       nil 
+       (->> blobs 
+            (map #(vector (bounding-box %) %))
+            (sort-by #(x (first (first %))))
+            (map second))
+       nil nil nil))))
 
 (defn extract-connected-features
   "Extracts the connected features from a bw-img.
