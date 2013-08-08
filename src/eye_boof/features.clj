@@ -95,11 +95,12 @@
         pts))
 
 (defn group-by-box
-  ;; FIXME: Blobs with the same top-left x coordinate are not grouped together.
+  ;; TODO: break the loop when we can be sure that the rest of blobs won't be inside
+  ;; the group's boundary.
   "Groups close blobs in groups and returns a sequence of groups of blobs.
   Two blobs belong to the same group with theirs bounding box overlap."
   ([blobs tol] (group-by-box blobs tol tol))
-  ([blobs ^long tol-x ^long tol-y]
+  ([blobs tol-x tol-y]
    (letfn [(make-tl-pt [x y]
              ;; Make a top-left bounding-box point adding the tolerance.
              (make-2d-point (- x tol-x) (- y tol-y)))
@@ -118,8 +119,9 @@
                  ;; All ungrouped blobs were visited, but some of them remain
                  ;; ungrouped.
                  (nil? b1) 
-                 (let [b (first ung-visited)]
-                   (recur (rest ung-visited) 
+                 (let [rev-ung-vis (reverse ung-visited)
+                       b (first rev-ung-vis)]
+                   (recur (rest rev-ung-vis) 
                           nil
                           (cons b nil)
                           (let [[tl br] (bounding-box b)]
@@ -147,7 +149,8 @@
        (->> blobs 
             (map #(vector (bounding-box %) %))
             (sort-by #(x (first (first %))))
-            (map second))
+            (map second)
+            reverse)
        nil nil nil))))
 
 ;;(TODO) considering deleting this in the future...
