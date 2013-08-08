@@ -68,7 +68,7 @@
       [(make-2d-point (get-feature pts min x)
                       (get-feature pts min y))
        (make-2d-point (get-feature pts max x)
-                      (get-feature pts max y))])))
+                      (get-feature pts max y))]))
 
 (defn blob-width
   "Returns the width of a blob or cluster."
