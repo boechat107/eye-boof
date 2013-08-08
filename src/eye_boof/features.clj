@@ -95,6 +95,7 @@
         pts))
 
 (defn group-by-box
+  ;; FIXME: Blobs with the same top-left x coordinate are not grouped together.
   "Groups close blobs in groups and returns a sequence of groups of blobs.
   Two blobs belong to the same group with theirs bounding box overlap."
   ([blobs tol] (group-by-box blobs tol tol))
@@ -111,7 +112,7 @@
                    r (rest ung-blobs)]
                (cond 
                  ;; There is no ungrouped and not visited blobs, neither ungrouped
-                 ;; and visited blobs.  
+                 ;; and visited blobs. The function returns its output.  
                  (and (empty? ung-visited) (nil? b1))
                  (if cur-group (cons cur-group groups) groups)
                  ;; All ungrouped blobs were visited, but some of them remain
