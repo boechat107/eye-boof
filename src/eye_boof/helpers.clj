@@ -60,20 +60,31 @@
   ^BufferedImage [^String filepath]
   (ImageIO/read (File. filepath)))
 
+;;source
+;;http://docs.oracle.com/javase/7/docs/api/java/awt/image/BufferedImage.html
 (defn to-img
   "Retuns an eye-boof Image from a given BufferedImage."
   [^BufferedImage buff]
-  (let [img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
-    (ConvertBufferedImage/orderBandsIntoRGB img buff)
-    (c/make-image 
-      img
-      (condp contains? (.getType buff)
-        #{BufferedImage/TYPE_INT_RGB, BufferedImage/TYPE_3BYTE_BGR
-          BufferedImage/TYPE_INT_BGR}
-        :rgb
+  (condp contains? (.getType buff)
+    #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB, BufferedImage/TYPE_4BYTE_ABGR_PRE BufferedImage/TYPE_INT_ARGB_PRE}
+    (let [img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
+      (ConvertBufferedImage/orderBandsIntoRGB img buff)
+      (c/make-image img :argb))
+    ;;;;
+    #{BufferedImage/TYPE_INT_RGB, BufferedImage/TYPE_3BYTE_BGR
+      BufferedImage/TYPE_INT_BGR}
+    (let [img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
+      (ConvertBufferedImage/orderBandsIntoRGB img buff)
+      (c/make-image img :rgb))
         ;;;;
-        #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB}
-        :argb))))
+    #{BufferedImage/TYPE_BYTE_GRAY}
+    (let [img (ConvertBufferedImage/convertFromSingle buff nil ImageUInt8)]
+      (c/make-image img :gray))
+
+    #{BufferedImage/TYPE_BYTE_BINARY}
+    (let [img (ConvertBufferedImage/convertFromSingle buff nil ImageUInt8)]
+      (c/make-image img :bw))
+    ))
 
 (defn load-file-image
   "Returns a RGB Image from a file image."
@@ -86,16 +97,18 @@
   Note that if img is a bw image, the output is a BufferedImage where 1s in img are
   255."
   ^BufferedImage [img]
-  (let [^ImageBase b (:mat img)]
+  (let [^ImageBase b (:mat img)
+        w (c/ncols img)
+        h (c/nrows img)]
     (case (c/get-type img)
       :argb
       (throw (Exception.  "Not implemented yet in boofcV"))
       :rgb
-      (ConvertBufferedImage/convertTo_U8 b nil)
+      (ConvertBufferedImage/convertTo_U8 b (create-buffered-image w h  BufferedImage/TYPE_3BYTE_BGR))
       :gray
-      (ConvertBufferedImage/convertTo b nil)
+      (ConvertBufferedImage/convertTo b (create-buffered-image w h BufferedImage/TYPE_BYTE_GRAY))
       :bw
-      (VisualizeBinaryData/renderBinary b nil))))
+      (VisualizeBinaryData/renderBinary b (create-buffered-image w h BufferedImage/TYPE_BYTE_BINARY)))))
 
 (defn create-buffered-image
   (^BufferedImage [width height] 
