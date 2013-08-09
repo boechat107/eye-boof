@@ -89,7 +89,7 @@
 
 (defn rgb-type?
   [img]
-  (= :argb (:type img)))
+  (= :rgb (:type img)))
 
 (defn gray-type?
   [img]
