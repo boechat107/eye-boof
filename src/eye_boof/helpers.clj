@@ -125,7 +125,7 @@
       :argb
       (throw (Exception.  "Not implemented yet in boofcV"))
       :rgb
-      (ConvertBufferedImage/convertTo_U8 b (create-buffered-image w h  BufferedImage/TYPE_3BYTE_BGR))
+      (ConvertBufferedImage/convertTo_U8 b (create-buffered-image w h  BufferedImage/TYPE_INT_RGB))
       :gray
       (ConvertBufferedImage/convertTo b (create-buffered-image w h BufferedImage/TYPE_BYTE_GRAY))
       :bw
