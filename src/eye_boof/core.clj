@@ -143,10 +143,16 @@
        (make-image type))))
 
 (defn new-gray-image
-  "Returns an empty grayscale image (single channel) with the given dimension."
+  "Returns an empty grayscale image (single channel)"
   [nr nc]
   (-> (new-channel-matrix nr nc (:gray color-dimensions))
       (make-image :gray)))
+
+(defn new-bw-image
+  "Returns an empty bw image (single channel)"
+  [nr nc]
+  (-> (new-channel-matrix nr nc (:bw color-dimensions))
+      (make-image :bw)))
 
 (defn into-bw
   "Given a sequence of byte values, creates a BW image with width 'width'
