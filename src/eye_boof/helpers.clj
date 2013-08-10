@@ -60,6 +60,23 @@
   ^BufferedImage [^String filepath]
   (ImageIO/read (File. filepath)))
 
+
+;;(TODO): implement this on BoofCv
+(defn- bw-buff-to-img
+  "Converts a BufferedImage/TYPE_BYTE_BINARY to an :bw img"
+  [buff]
+  {:pre [(= BufferedImage/TYPE_BYTE_BINARY
+            (.getType buff))]}
+  (let [w (.getWidth buff)
+        h (.getHeight buff)
+        bw-img (c/new-bw-image h w)
+        chn (c/get-channel bw-img)]
+    (c/for-xy [x y bw-img]
+              (when (= 255
+                       (b<-intcolor (.getRGB buff x y)))
+                (c/set-pixel! chn x y 1)))
+    bw-img))
+
 ;;source
 ;;http://docs.oracle.com/javase/7/docs/api/java/awt/image/BufferedImage.html
 (defn to-img
@@ -82,9 +99,7 @@
       (c/make-image img :gray))
 
     #{BufferedImage/TYPE_BYTE_BINARY}
-    (let [img (ConvertBufferedImage/convertFromSingle buff nil ImageUInt8)]
-      (c/make-image img :bw))
-    ))
+    (bw-buff-to-img buff)))
 
 (defn load-file-image
   "Returns a RGB Image from a file image."
