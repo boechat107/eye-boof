@@ -92,6 +92,12 @@
   (-> (load-file-buffImg filepath)
       (to-img)))
 
+(defn create-buffered-image
+  (^BufferedImage [width height] 
+   (create-buffered-image width height BufferedImage/TYPE_INT_RGB))
+  (^BufferedImage [width height c-type]
+   (BufferedImage. width height c-type)))
+
 (defn to-buffered-image
   "Converts an Image to a BufferedImage.
   Note that if img is a bw image, the output is a BufferedImage where 1s in img are
@@ -109,12 +115,6 @@
       (ConvertBufferedImage/convertTo b (create-buffered-image w h BufferedImage/TYPE_BYTE_GRAY))
       :bw
       (VisualizeBinaryData/renderBinary b (create-buffered-image w h BufferedImage/TYPE_BYTE_BINARY)))))
-
-(defn create-buffered-image
-  (^BufferedImage [width height] 
-   (create-buffered-image width height BufferedImage/TYPE_INT_RGB))
-  (^BufferedImage [width height c-type]
-   (BufferedImage. width height c-type)))
 
 (defn save-to-file!
   "Saves an image into a file. The default extension is PNG."
