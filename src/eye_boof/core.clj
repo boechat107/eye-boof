@@ -231,12 +231,14 @@
 
 (defn channel-to-vec
   "Returns an integer clojure vector of the pixels' value of a specific channel."
-  [img ch]
-  (let [ch-array (get-channel img ch)]
-    (if (sub-image? img)
-      (vec (for [x (range (ncols img)), y (range (nrows img))] 
-              (get-pixel ch-array x y)))
-      (mapv #(bit-and % 0xff) (seq (.data ch-array))))))
+  ([img]
+     (channel-to-vec img 0))
+  ([img ch]
+     (let [ch-array (get-channel img ch)]
+       (if (sub-image? img)
+         (vec (for [x (range (ncols img)), y (range (nrows img))] 
+                (get-pixel ch-array x y)))
+         (mapv #(bit-and % 0xff) (seq (.data ch-array)))))))
 
 (defmacro for-idx
   "Iterates over all pixels of img, binding the pixel's index to idx. The iteration
