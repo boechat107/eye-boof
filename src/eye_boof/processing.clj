@@ -9,6 +9,8 @@
     [boofcv.alg.filter.blur BlurImageOps]
     [boofcv.alg.filter.derivative GradientSobel]
     [boofcv.alg.filter.binary ThresholdImageOps]
+    [boofcv.alg.distort DistortImageOps]
+    [boofcv.alg.interpolate TypeInterpolate]
     [boofcv.alg.enhance EnhanceImageOps]
     [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
     [boofcv.alg.feature.detect.edge CannyEdge]
@@ -319,9 +321,12 @@
   "Returns a new image as a scaled version of the input image."
   ([img factor] (scale img factor factor))
   ([img xfactor yfactor]
-   (let [buff (h/to-buffered-image img)]
-     (-> (scale-buffImg buff xfactor yfactor)
-         (h/to-img)))))
+   (let [out (c/new-image (* yfactor (c/nrows img))
+                          (* xfactor (c/ncols img)) 
+                          (:type img))
+         s-type (TypeInterpolate/valueOf "BICUBIC")]
+     (DistortImageOps/scale (:mat img) (:mat out) s-type)
+     out)))
 
 ; (defn erode
 ;   "Erodes a Image, a basic operation in the area of the mathematical morphology.
