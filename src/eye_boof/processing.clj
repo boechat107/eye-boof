@@ -3,7 +3,8 @@
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
     [eye-boof.image-statistics :as stat]
-    [eye-boof.matrices :as m])
+    [eye-boof.matrices :as m]
+    [eye-boof.binary-ops :as bi])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
@@ -325,8 +326,14 @@
                           (* xfactor (c/ncols img)) 
                           (:type img))
          s-type (TypeInterpolate/valueOf "BICUBIC")]
-     (DistortImageOps/scale (:mat img) (:mat out) s-type)
-     out)))
+     (if (= :bw (:type img))
+       ;; Binary images suffer of numerical errors. Therefore img is converted to
+       ;; gray, scaled and then binarized again.
+       (let [img-gray (bi/render-binary img)]
+         (DistortImageOps/scale (:mat img-gray) (:mat out) s-type)
+         (binarize out 100))
+       (do (DistortImageOps/scale (:mat img) (:mat out) s-type)
+           out)))))
 
 ; (defn erode
 ;   "Erodes a Image, a basic operation in the area of the mathematical morphology.
