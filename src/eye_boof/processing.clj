@@ -335,6 +335,20 @@
        (do (DistortImageOps/scale (:mat img) (:mat out) s-type)
            out)))))
 
+(defn rotate 
+  "Rotates the image around its center."
+  [img ang]
+  (let [out (c/new-image (c/nrows img) (c/ncols img) (:type img))
+        s-type (TypeInterpolate/valueOf "BICUBIC")]
+    (if (= :bw (:type img))
+      ;; Binary images suffer of numerical errors. Therefore img is converted to
+      ;; gray, scaled and then binarized again.
+      (let [img-gray (bi/render-binary img)]
+        (DistortImageOps/rotate (:mat img-gray) (:mat out) s-type ang)
+        (binarize out 100))
+      (do (DistortImageOps/rotate (:mat img) (:mat out) s-type ang)
+          out))))
+
 ; (defn erode
 ;   "Erodes a Image, a basic operation in the area of the mathematical morphology.
 ;    http://homepages.inf.ed.ac.uk/rbf/HIPR2/erode.htm
