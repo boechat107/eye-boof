@@ -176,7 +176,7 @@
   [img]
   {:pre [(= :bw (:type img))]}
   (let [ch (c/get-channel img 0)
-        out (c/new-image (c/nrows img) (c/ncols img) (:type img))
+        out (c/new-image (c/nrows img) (c/ncols img) :gray)
         out-m (c/get-channel out 0)]
     (c/for-xy [x y img]
       (if (zero? (c/get-pixel ch x y))
