@@ -176,12 +176,6 @@
     (set! (.data chn) (into-array Byte/TYPE seq))
     (make-image chn :gray)))
 
-;(defn copy-image
-;  "Returns a copy of a given image."
-;  [img]
-;  (->> (mapv #(aclone ^ints %) (:mat img)) 
-;       (assoc img :mat)))
-
 (defmacro get-pixel
   "Returns a primitive integer value from a channel's array ach. If coordinates 
   [x, y] and ncols are provided, the array is handled as 2D matrix.
@@ -273,3 +267,14 @@
   [chs-imgs & body]
   `(let [])
   )
+
+(defn copy-image
+  "Returns a copy of a given image."
+  [img]
+  (let [out (new-image (nrows img) (ncols img) (:type img))]
+    (dotimes [ch (dimension img)]
+      (let [och (get-channel out ch)
+            ich (get-channel img ch)]
+        (for-xy [x y img]
+                (->> (get-pixel ich x y)
+                     (set-pixel! och x y)))))))
