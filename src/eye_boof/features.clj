@@ -87,6 +87,23 @@
     (* (blob-width pts)
        (blob-height pts))))
 
+(defn- blobs-sorter
+  [blobs f]
+  (->> blobs 
+       (map #(vector (bounding-box %) %))
+       (sort-by #(f (first (first %))))
+       (map second)))
+
+(defn sort-by-x
+  "Sorts the blobs in the x axis, left first."
+  [blobs]
+  (blobs-sorter blobs #(x %)))
+
+(defn sort-by-y
+  "Sorts the blobs in the y axis, top first."
+  [blobs]
+  (blobs-sorter blobs #(y %)))
+
 (defn pts-in-box?
   "Returns true if some point of the blob is inside the box [top-left bottom-right]."
   [pts [tl br]]
@@ -146,11 +163,7 @@
                  (recur r (cons b1 ung-visited) cur-group cur-bb groups))))]
      (group
        nil 
-       (->> blobs 
-            (map #(vector (bounding-box %) %))
-            (sort-by #(x (first (first %))))
-            (map second)
-            reverse)
+       (reverse (sort-by-x blobs))
        nil nil nil))))
 
 ;;(TODO) considering deleting this in the future...
