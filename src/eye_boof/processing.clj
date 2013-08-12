@@ -325,7 +325,8 @@
   ([buffImg factor] (scale-buffImg buffImg factor factor))
   ([^BufferedImage buffImg xfactor yfactor]
    (let [out-buff (h/create-buffered-image (* (.getWidth buffImg) xfactor)
-                                           (* (.getHeight buffImg) yfactor))]
+                                           (* (.getHeight buffImg) yfactor)
+                                           (.getType buffImg))]
      (-> (AffineTransformOp. (doto (AffineTransform.) (.scale xfactor yfactor))
                              AffineTransformOp/TYPE_BICUBIC)
          (.filter buffImg out-buff)))))
