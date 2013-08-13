@@ -128,6 +128,18 @@
                                  (int threshold) (boolean down))
     result))
 
+(defn quantize
+  "Quantizes the color information to n-levels."
+  [img n-levels]
+  (let [multp (/ 256 n-levels)]
+    (mult-ops 
+      [img ich och]
+      (c/for-xy [x y img]
+                (c/set-pixel! och x y
+                              (-> (c/get-pixel ich x y)
+                                  (quot multp)
+                                  (* multp)))))))
+
 (defn invert 
   "Inverts the value of each channel, i.e., pixels' values equal 255 become 0 and
   vice versa."
