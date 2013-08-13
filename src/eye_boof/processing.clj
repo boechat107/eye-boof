@@ -348,6 +348,15 @@
        (do (DistortImageOps/scale (:mat img) (:mat out) s-type)
            out)))))
 
+;;(TODO) try and converge to buff-img scaling
+(defn scale-with-buff
+  "Returns a new image as a scaled version of the input image."
+  ([img factor] (scale-with-buff img factor factor))
+  ([img xfactor yfactor]
+   (let [buff (h/to-buffered-image img)]
+     (-> (scale-buffImg buff xfactor yfactor)
+         (h/to-img)))))
+
 (defn rotate 
   "Rotates the image around its center."
   [img ang]
