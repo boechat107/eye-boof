@@ -1,4 +1,5 @@
 (ns eye-boof.image-statistics
+  (:refer-clojure :exclude [min max])
   (:require [eye-boof.core :as c])
   (:import 
     [boofcv.alg.misc ImageStatistics]
@@ -16,12 +17,34 @@
 ;; mean-diff-abs
 ;; histogram
 
-(defn mean
+(defmacro def-noargs-function
+  [fname doc f]
+  `(defn ~fname 
+     ~doc
+     ([~'img] (~fname ~'img 0))
+     ([~'img ~'ch]
+      (~f (c/get-channel ~'img ~'ch)))))
+
+(def-noargs-function 
+  min 
+  "Returns the minimum pixel intensity of the channel ch (default 0)."
+  ImageStatistics/min)
+
+(def-noargs-function
+  mean
   "Returns the mean pixel intensity of the channel ch (default 0) of the given
   image."
-  (^double [img] (mean img 0))
-  (^double [img ch]
-   (ImageStatistics/mean (c/get-channel img ch))))
+  ImageStatistics/mean)
+
+(def-noargs-function 
+  max
+  "Returns the maximum pixel intensity of the channel ch (default 0)."
+  ImageStatistics/max)
+
+(def-noargs-function 
+  sum
+  "Returns the sum of the pixels' intensity of the channel ch (default 0)."
+  ImageStatistics/max)
 
 (defn histogram* 
   "Like histogram, but computs its output directly from a channel matrix."
