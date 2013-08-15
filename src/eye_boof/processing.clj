@@ -287,18 +287,12 @@
         sx (c/new-channel-matrix h w 1)
         sy (c/new-channel-matrix h w 1)
         scaler! (fn [^ImageSInt16 mat ^ImageUInt8 out]
-                  (let [minv (ImageStatistics/min mat)
-                        _ (c/for-xy 
-                            [x y img]
-                            (->> (- (m/mget :sint16 mat x y) minv)
-                                 (c/set-pixel! out x y)))
-                        maxv (ImageStatistics/max out)]
-                    (c/for-xy 
-                      [x y img]
-                      (->> (/ (c/get-pixel out x y) maxv)
-                             (* 255)
-                             (c/set-pixel! out x y)))
-                    (c/make-image out :gray)))]
+                  (c/for-xy 
+                    [x y img]
+                    (->> (m/mget :sint16 mat x y)
+                         (Math/abs) 
+                         (c/set-pixel! out x y)))
+                  (c/make-image out :gray))]
     [(scaler! dx sx) (scaler! dy sy)]))
 
 (defn sobel-edge
