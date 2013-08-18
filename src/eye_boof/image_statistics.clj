@@ -44,7 +44,7 @@
 (def-noargs-function 
   sum
   "Returns the sum of the pixels' intensity of the channel ch (default 0)."
-  ImageStatistics/max)
+  ImageStatistics/sum)
 
 (defn histogram* 
   "Like histogram, but computs its output directly from a channel matrix."
