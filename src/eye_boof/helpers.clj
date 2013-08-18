@@ -64,7 +64,7 @@
 ;;(TODO): implement this on BoofCv
 (defn- bw-buff-to-img
   "Converts a BufferedImage/TYPE_BYTE_BINARY to an :bw img"
-  [buff]
+  [^BufferedImage buff]
   {:pre [(= BufferedImage/TYPE_BYTE_BINARY
             (.getType buff))]}
   (let [w (.getWidth buff)
