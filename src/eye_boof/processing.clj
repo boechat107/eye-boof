@@ -142,18 +142,20 @@
 
 (defn invert 
   "Inverts the value of each channel, i.e., pixels' values equal 255 become 0 and
-  vice versa."
+  vice versa. In the case of bw images, 0s become 1s and vice versa."
   [img]
-  (let [out-img (c/new-image (c/nrows img) (c/ncols img) (:type img))]
-    (dotimes [ch (c/dimension img)]
-      (let [out-ch (c/get-channel out-img ch)
-            img-ch (c/get-channel img ch)]
-        (c/for-xy
-          [x y img]
-          (->> (c/get-pixel img-ch x y)
-               (- 255)
-               (c/set-pixel! out-ch x y)))))
-    out-img))
+  (if (= :bw (:type img))
+    (bi/invert-pixels img)
+    (let [out-img (c/new-image (c/nrows img) (c/ncols img) (:type img))]
+      (dotimes [ch (c/dimension img)]
+        (let [out-ch (c/get-channel out-img ch)
+              img-ch (c/get-channel img ch)]
+          (c/for-xy
+            [x y img]
+            (->> (c/get-pixel img-ch x y)
+                 (- 255)
+                 (c/set-pixel! out-ch x y)))))
+      out-img)))
 
 (defn convolve
   "Applies a convolution mask over an image.
