@@ -94,7 +94,7 @@
       (ConvertBufferedImage/orderBandsIntoRGB img buff)
       (c/make-image img :rgb))
         ;;;;
-    #{BufferedImage/TYPE_BYTE_GRAY}
+    #{BufferedImage/TYPE_BYTE_GRAY BufferedImage/TYPE_BYTE_INDEXED}
     (let [img (ConvertBufferedImage/convertFromSingle buff nil ImageUInt8)]
       (c/make-image img :gray))
 
