@@ -354,7 +354,7 @@
          (h/to-img)))))
 
 (defn rotate 
-  "Rotates the image around its center."
+  "Rotates the image CW around its center."
   [img ang]
   (let [out (c/new-image (c/nrows img) (c/ncols img) (:type img))
         s-type (TypeInterpolate/valueOf "BICUBIC")]
