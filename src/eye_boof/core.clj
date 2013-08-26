@@ -111,6 +111,12 @@
   ^long [img]
   (let [b ^ImageBase (:mat img)] (.getWidth b)))
 
+(defn pix-exist?
+  "Returns true if the given coordinates are inside the boundaries of the image."
+  [img x y]
+  (and (> x 0) (< x (ncols img))
+       (> y 0) (< y (nrows img))))
+
 (defn new-channel-matrix 
   "Returns a matrix used to represent a color channel data."
   [nrows ncols dim] 
