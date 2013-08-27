@@ -70,7 +70,9 @@
     :sint32 [boofcv.struct.image.ImageSInt32 ints]
     :sint64 [boofcv.struct.image.ImageSInt64 longs]
     :uint8 [boofcv.struct.image.ImageUInt8 bytes]
-    :uint16 [boofcv.struct.image.ImageUInt16 shorts]})
+    :uint16 [boofcv.struct.image.ImageUInt16 shorts]
+    :float32 [boofcv.struct.image.ImageFloat32 float]
+    :float64 [boofcv.struct.image.ImageFloat64 double]})
 
 (defmacro mget
   "Returns a primitive integer value from a matrix's array mat. If coordinates [x, y],
