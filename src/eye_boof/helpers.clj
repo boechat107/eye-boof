@@ -1,6 +1,7 @@
 (ns eye-boof.helpers
   (:require 
     [eye-boof.core :as c]
+    [eye-boof.binary-ops :as bi :only [render-binary]]
     )
   (:import 
     [java.io File]
@@ -129,7 +130,7 @@
       :gray
       (ConvertBufferedImage/convertTo b (create-buffered-image w h BufferedImage/TYPE_BYTE_GRAY))
       :bw
-      (VisualizeBinaryData/renderBinary b (create-buffered-image w h BufferedImage/TYPE_BYTE_BINARY)))))
+      (to-buffered-image (bi/render-binary img)))))
 
 (defn save-to-file!
   "Saves an image into a file. The default extension is PNG."
