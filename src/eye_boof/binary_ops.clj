@@ -2,7 +2,6 @@
   (:require
     [eye-boof 
      [core :as c]
-     [helpers :as h]
      ])
   (:import
    [boofcv.alg.filter.binary Contour BinaryImageOps]
