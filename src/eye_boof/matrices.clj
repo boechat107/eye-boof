@@ -40,8 +40,8 @@
   (sub-mat [mat x0 y0 width height])
   (sub-mat? [mat])
   (dimension [mat])
-  (iget [mat idx] [mat x y])
-  (iset! [mat idx v] [mat x y v])
+  (iget [mat x y] [mat w x y])
+  (iset! [mat x y v] [mat w x y v])
   (origin [mat])
   (to-vec [mat]))
 
@@ -75,6 +75,22 @@
 (sing-protocol boofcv.struct.image.ImageFloat32)
 
 (sing-protocol boofcv.struct.image.ImageFloat64)
+
+(extend-protocol ImageMatrix 
+  (Class/forName "[I")
+  (iget [ar ^long width ^long x ^long y]
+    (aget ^ints ar (+ x (* y width))))
+  (iset! [ar width x y v]
+    (let [width (int width), x (int x), y (int y)]
+      (aset-int ar (+ x (* y width)) v))))
+
+(extend-protocol ImageMatrix 
+  (Class/forName "[F")
+  (iget [ar ^long width ^long x ^long y]
+    (aget ^floats ar (+ x (* y width))))
+  (iset! [ar width x y v]
+    (let [width (int width), x (int x), y (int y)]
+      (aset-float ar (+ x (* y width)) v))))
 
 (def image-data-type
   '{:sint8 [boofcv.struct.image.ImageSInt8 bytes]
