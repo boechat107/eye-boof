@@ -32,37 +32,60 @@
     `(let [~a-sym ~nested-array]
        (aset ~a-sym ~idx ~v))))
 
-#_(defprotocol ImageMatrix 
+;;; Defining a protocol to access matrices' basic properties.
+
+(defprotocol ImageMatrix 
   (width [mat])
   (height [mat])
+  (sub-mat [mat x0 y0 width height])
+  (sub-mat? [mat])
   (dimension [mat])
-  (mget [mat idx] [mat x y])
-  (mset! [mat idx v] [mat x y v])
-  (parent-point [mat])
+  (iget [mat idx] [mat x y])
+  (iset! [mat idx v] [mat x y v])
+  (origin [mat])
   (to-vec [mat]))
 
-#_(extend-protocol ImageMatrix 
-  boofcv.struct.image.ImageUInt8
-  (width [mat] (.getWidth mat))
-  (height [mat] (.getHeight mat))
-  (dimension [mat] 1)
-  (mget 
-    ([mat x y]
-     (-> (.unsafe_get mat x y) (bit-and 0xff)))
-    ([mat idx]
-     (-> (mult-aget bytes (.data mat) idx) (bit-and 0xff))))
-  (mset! 
-    ([mat x y v] (.unsafe_set mat x y v))
-    ([mat idx v] (mult-aset bytes mat idx v)))
-  (parent-point [mat] 
-    (let [start-idx (.startIndex mat)
-          stride (.stride mat)]
-      [(rem start-idx stride) (quot start-idx stride)]))
-  (to-vec [mat]
-    (if (= [0 0] (parent-point mat))
-      (mapv #(bit-and % 0xff) (seq (.data mat)))
-      (vec (for [x (range (width mat)), y (range (height mat))] 
-             (mget mat x y))))))
+(defmacro sing-protocol
+  [t & impls]
+  `(extend-protocol ImageMatrix
+     ~@(conj impls 
+         '(to-vec [mat]
+                  (vec (for [x (range (width mat)), y (range (height mat))] 
+                         (iget mat x y))))
+         '(parent-point [mat] 
+                        (let [start-idx (.startIndex mat)
+                              stride (.stride mat)]
+                          [(rem start-idx stride) (quot start-idx stride)]))
+         '(iget [mat x y] (.unsafe_get mat x y))
+         '(iset! [mat x y v] (.unsafe_set mat x y v))
+         '(sub-mat [mat x0 y0 width height] 
+                   (let [x0 (int x0), y0 (int y0), w (int width), h (int height)]
+                     (.subimage mat x0 y0 (+ x0 w) (+ y0 h))))
+         '(sub-mat? [mat] (.isSubimage mat))
+         '(width [mat] (.getWidth mat)) 
+         '(height [mat] (.getHeight mat))
+         '(dimension [mat] 1)
+         t)))
+
+(sing-protocol 
+    boofcv.struct.image.ImageUInt8
+    (this ^ImageUInt8 [mat] mat))
+
+(sing-protocol 
+    boofcv.struct.image.ImageSInt16
+    (this ^ImageSInt16 [mat] mat))
+
+(sing-protocol 
+    boofcv.struct.image.ImageUInt16
+    (this ^ImageUInt16 [mat] mat))
+
+(sing-protocol 
+    boofcv.struct.image.ImageFloat32
+    (this ^ImageFloat32 [mat] mat))
+
+(sing-protocol 
+    boofcv.struct.image.ImageFloat64
+    (this ^ImageFloat64 [mat] mat))
 
 (def image-data-type
   '{:sint8 [boofcv.struct.image.ImageSInt8 bytes]
