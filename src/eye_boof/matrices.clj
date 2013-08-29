@@ -46,46 +46,35 @@
   (to-vec [mat]))
 
 (defmacro sing-protocol
-  [t & impls]
+  [t]
   `(extend-protocol ImageMatrix
-     ~@(conj impls 
-         '(to-vec [mat]
-                  (vec (for [x (range (width mat)), y (range (height mat))] 
-                         (iget mat x y))))
-         '(parent-point [mat] 
+     ~t
+     ~@'((to-vec [mat]
+                 (vec (for [x (range (width mat)), y (range (height mat))] 
+                        (iget mat x y))))
+          (parent-point [mat] 
                         (let [start-idx (.startIndex mat)
                               stride (.stride mat)]
                           [(rem start-idx stride) (quot start-idx stride)]))
-         '(iget [mat x y] (.unsafe_get mat x y))
-         '(iset! [mat x y v] (.unsafe_set mat x y v))
-         '(sub-mat [mat x0 y0 width height] 
+          (iget [mat x y] (.unsafe_get mat x y))
+          (iset! [mat x y v] (.unsafe_set mat x y v))
+          (sub-mat [mat x0 y0 width height] 
                    (let [x0 (int x0), y0 (int y0), w (int width), h (int height)]
                      (.subimage mat x0 y0 (+ x0 w) (+ y0 h))))
-         '(sub-mat? [mat] (.isSubimage mat))
-         '(width [mat] (.getWidth mat)) 
-         '(height [mat] (.getHeight mat))
-         '(dimension [mat] 1)
-         t)))
+          (sub-mat? [mat] (.isSubimage mat))
+          (width [mat] (.getWidth mat)) 
+          (height [mat] (.getHeight mat))
+          (dimension [mat] 1))))
 
-(sing-protocol 
-    boofcv.struct.image.ImageUInt8
-    (this ^ImageUInt8 [mat] mat))
+(sing-protocol boofcv.struct.image.ImageUInt8)
 
-(sing-protocol 
-    boofcv.struct.image.ImageSInt16
-    (this ^ImageSInt16 [mat] mat))
+(sing-protocol boofcv.struct.image.ImageSInt16)
 
-(sing-protocol 
-    boofcv.struct.image.ImageUInt16
-    (this ^ImageUInt16 [mat] mat))
+(sing-protocol boofcv.struct.image.ImageUInt16)
 
-(sing-protocol 
-    boofcv.struct.image.ImageFloat32
-    (this ^ImageFloat32 [mat] mat))
+(sing-protocol boofcv.struct.image.ImageFloat32)
 
-(sing-protocol 
-    boofcv.struct.image.ImageFloat64
-    (this ^ImageFloat64 [mat] mat))
+(sing-protocol boofcv.struct.image.ImageFloat64)
 
 (def image-data-type
   '{:sint8 [boofcv.struct.image.ImageSInt8 bytes]
