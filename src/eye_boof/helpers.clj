@@ -154,3 +154,17 @@
   'BufferedImage/TYPE_USHORT_GRAY
   'BufferedImage/TYPE_BYTE_BINARY
   'BufferedImage/TYPE_BYTE_INDEXED])
+
+;;; Protocols for ImageMatrices <-> BufferedImage
+(defprotocol ImageMatrix 
+  (to-buff-img [mat])
+  (to-file! [mat filepath] [mat filepath ext]))
+
+(extend-protocol ImageMatrix
+  boofcv.struct.image.ImageBase
+  (to-buff-img [mat]
+    (ConvertBufferedImage/convertTo mat nil)) 
+  (to-file!
+    ([mat filepath] (to-file! mat filepath "png"))
+    ([mat ^String filepath ^String ext]
+     (ImageIO/write ^BufferedImage (to-buff-img mat) ext (File. filepath)))))
