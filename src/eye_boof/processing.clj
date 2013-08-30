@@ -355,9 +355,10 @@
 
 (defn rotate 
   "Rotates the image CW around its center."
-  [img ang]
+  [img ang & {:keys [interpolate] :or
+              {:interpolate "BICUBIC"}}]
   (let [out (c/new-image (c/nrows img) (c/ncols img) (:type img))
-        s-type (TypeInterpolate/valueOf "BICUBIC")]
+        s-type (TypeInterpolate/valueOf interpolate)]
     (if (= :bw (:type img))
       ;; Binary images suffer of numerical errors. Therefore img is converted to
       ;; gray, scaled and then binarized again.
