@@ -34,7 +34,7 @@
                :border 5
                :hgap 10 :vgap 10
                :columns (min (:cols *visualize-properties*) (count imgs))
-               :items (map #(w/label :icon %) buff-imgs))]
+               :items (map #(w/scrollable (w/label :icon %)) buff-imgs))]
     (doto @frame
       (.setContentPane grid)
       w/pack!
