@@ -63,12 +63,10 @@
   "Returns two points [tl br], top-left and bottom-right, of the bounding box of the
   given list of points."
   [pts]
-  (let [sy (sort-by #(y %) pts)
-        sx (sort-by #(x %) pts)]
-      [(make-2d-point (get-feature pts min x)
-                      (get-feature pts min y))
-       (make-2d-point (get-feature pts max x)
-                      (get-feature pts max y))]))
+  [(make-2d-point (get-feature pts min x)
+                  (get-feature pts min y))
+   (make-2d-point (get-feature pts max x)
+                  (get-feature pts max y))])
 
 (defn blob-width
   "Returns the width of a blob or cluster."
