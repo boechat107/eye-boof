@@ -356,7 +356,7 @@
 (defn rotate 
   "Rotates the image CW around its center."
   [img ang & {:keys [interpolate] :or
-              {:interpolate "BICUBIC"}}]
+              {interpolate "BICUBIC"}}]
   (let [out (c/new-image (c/nrows img) (c/ncols img) (:type img))
         s-type (TypeInterpolate/valueOf interpolate)]
     (if (= :bw (:type img))
