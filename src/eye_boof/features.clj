@@ -164,6 +164,12 @@
        (reverse (sort-by-x blobs))
        nil nil nil))))
 
+(defn group-by-box-as-features
+  ([blobs tol]
+     (map #(apply concat %) (group-by-box blobs tol)))
+  ([blobs tol-x tol-y]
+     (map #(apply concat %) (group-by-box blobs tol-x tol-y))))
+
 ;;(TODO) considering deleting this in the future...
 (defn extract-connected-features
   "Extracts the connected features from a bw-img.
