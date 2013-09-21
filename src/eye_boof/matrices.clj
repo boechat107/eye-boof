@@ -102,6 +102,11 @@
     :float32 [boofcv.struct.image.ImageFloat32 floats]
     :float64 [boofcv.struct.image.ImageFloat64 doubles]})
 
+(defmacro make-matrix [type-kw w h]
+  (if-let [[type _] (get image-data-type type-kw)]
+    `(new ~type ~w ~h)
+    (throw (IllegalArgumentException. (str "Unknown type " type-kw)))))
+
 (defmacro mget
   "Returns a primitive integer value from a matrix's array mat. If coordinates [x, y],
   the array is handled as 2D matrix.
