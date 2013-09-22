@@ -290,8 +290,4 @@
         nr (nrows img)]
     (dotimes [nchn (dimension img)]
       (println "Channel" nchn)
-      (let [chn (get-channel img nchn)]
-        (dotimes [y nr]
-          (dotimes [x nc]
-            (print (get-pixel chn x y) "" ))
-          (println))))))
+      (m/print-matrix (get-channel img nchn)))))

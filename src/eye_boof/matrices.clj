@@ -150,3 +150,13 @@
 (defmacro set-pixel!
   ([type mat idx val] `(mset! ~type ~mat ~idx ~val))
   ([type mat x y val] `(mset! ~type ~mat ~x ~y ~val)))
+
+(defn print-matrix
+  "Prints "
+  [m]
+  (let [nc (.getWidth m)
+        nr (.getHeight m)]
+    (dotimes [y nr]
+      (dotimes [x nc]
+        (print (iget m x y) "" ))
+      (println))))
