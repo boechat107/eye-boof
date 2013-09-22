@@ -284,3 +284,14 @@
         (for-xy [x y img]
                 (->> (get-pixel ich x y)
                      (set-pixel! och x y)))))))
+
+(defn print-img [img]
+  (let [nc (ncols img)
+        nr (nrows img)]
+    (dotimes [nchn (dimension img)]
+      (println "Channel" nchn)
+      (let [chn (get-channel img nchn)]
+        (dotimes [y nr]
+          (dotimes [x nc]
+            (print (get-pixel chn x y) "" ))
+          (println))))))
