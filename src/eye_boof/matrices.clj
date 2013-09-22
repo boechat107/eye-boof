@@ -68,9 +68,15 @@
 
 (sing-protocol boofcv.struct.image.ImageUInt8)
 
+(sing-protocol boofcv.struct.image.ImageUInt16)
+
+(sing-protocol boofcv.struct.image.ImageSInt8)
+
 (sing-protocol boofcv.struct.image.ImageSInt16)
 
-(sing-protocol boofcv.struct.image.ImageUInt16)
+(sing-protocol boofcv.struct.image.ImageSInt32)
+
+(sing-protocol boofcv.struct.image.ImageSInt64)
 
 (sing-protocol boofcv.struct.image.ImageFloat32)
 
