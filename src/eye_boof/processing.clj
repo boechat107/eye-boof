@@ -68,10 +68,11 @@
   "Retuns a grayscale image where the pixels' value are the average of the channels
   of the given image."
   [img]
-  {:pre [(> (c/dimension img) 1)]}
-  (let [gray (c/new-channel-matrix (c/nrows img) (c/ncols img) 1)]
-    (PixelMath/averageBand ^MultiSpectral (:mat img) ^ImageUInt8 gray)
-    (c/make-image gray :gray)))
+  (if (< (c/dimension img) 2)
+    img 
+    (let [gray (c/new-channel-matrix (c/nrows img) (c/ncols img) 1)]
+      (PixelMath/averageBand ^MultiSpectral (:mat img) ^ImageUInt8 gray)
+      (c/make-image gray :gray))))
 
 (defn gray-to-rgb
   "Repeats the only grayscale channel for each color channel and returns a new RGB
