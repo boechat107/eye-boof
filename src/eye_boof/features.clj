@@ -245,3 +245,25 @@
   [feature ch val]
   (doseq [p feature]
     (eyec/set-pixel! ch (.x p) (.y p) val)))
+
+(defn set-feature-pixels-on-image!
+  "Given an 'img', sets the 'feature' to 'val'.
+   If img is multidimensional, val can be a vector with the corresponding channels values"
+  [feature img val]
+  (let [dims (eyec/dimension img)]
+    (dotimes [c (eyec/dimension img)]
+      (let [v (if (seq? val)
+                (nth val)
+                val)]
+        (set-feature-pixels-on-channel! feature (eyec/get-channel img c) val)))
+    img))
+
+
+
+
+
+
+
+
+
+
