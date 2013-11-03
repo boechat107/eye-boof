@@ -56,3 +56,12 @@
     (is (== 4 (count groups1)))
     (is (== 2 (count groups2)))
     (is (== 1 (count groups3)))))
+
+(deftest set-feature-pixels-on-channel!-test
+  (let [img (eyec/into-bw 2 [0 0 1 1])
+        ft1 (list (Point2D_I32. 0 0) (Point2D_I32. 1 0))
+        ft2 (list (Point2D_I32. 0 1) (Point2D_I32. 1 1))]
+    (set-feature-pixels-on-channel! ft1 (eyec/get-channel img) 1)
+    (set-feature-pixels-on-channel! ft2 (eyec/get-channel img) 0)
+    (is (= [1 1 0 0]
+           (-> img :mat .data seq)))))

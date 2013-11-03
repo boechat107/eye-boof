@@ -239,3 +239,9 @@
   (for [x (range x0 (+ x0 w))
         y (range y0 (+ y0 h))]
     (make-2d-point x y)))
+
+(defn set-feature-pixels-on-channel!
+  "Given a 'ch'annel, sets the x-y coordinates of the 'feature' to 'val'"
+  [feature ch val]
+  (doseq [p feature]
+    (eyec/set-pixel! ch (.x p) (.y p) val)))
