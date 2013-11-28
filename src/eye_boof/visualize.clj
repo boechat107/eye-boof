@@ -1,5 +1,6 @@
 (ns eye-boof.visualize
   (:require 
+    [eye-boof.core :as c :only [image?]]
     [eye-boof.helpers :as h]
     [seesaw.core :as w]))
 
@@ -24,17 +25,26 @@
 (defonce frame (atom (new-frame)))
 
 (defn view 
-  "Shows the images on a grid-panel window."
+  "Shows the images on a grid-panel window. If each argument is composed of a
+  collection like [img 'title'], a grid panel with title and its title is showed.
+  Ex.:
+  (view i1 i2 i3) or (view [i1 'str1'] [i2 'str2'] ['str3' i3])"
   [& imgs]
-  (let [buff-imgs (map #(if (instance? java.awt.image.BufferedImage %)
-                          %
-                          (h/to-buffered-image %))
-                       imgs)
+  (let [;; Creates a sequence of [image label], both as w/label widgets. 
+        items (->> imgs
+                   (map #(if (c/image? %) [% ""] %))
+                   (map #(let [[i l] (if (string? (first %)) (reverse %) %)]
+                           (vector (w/label :text l) 
+                                   (->> (if (instance? java.awt.image.BufferedImage i)
+                                          i (h/to-buffered-image i))
+                                        (w/label :icon))))))
         grid (w/grid-panel
                :border 5
                :hgap 10 :vgap 10
                :columns (min (:cols *visualize-properties*) (count imgs))
-               :items (map #(w/scrollable (w/label :icon %)) buff-imgs))]
+               :items (map #(-> (w/vertical-panel :items %)
+                                (w/scrollable))
+                           items))]
     (doto @frame
       (.setContentPane grid)
       w/pack!
