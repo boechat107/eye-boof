@@ -329,21 +329,20 @@
          (.filter buffImg out-buff)))))
 
 (defn scale
-  "Returns a new image as a scaled version of the input image."
+  "Returns a new image as a scaled version of the input image. 
+  Binary images should be rendered before being scaled."
   ([img factor] (scale img factor factor))
   ([img xfactor yfactor]
    (let [out (c/new-image (* yfactor (c/nrows img))
                           (* xfactor (c/ncols img)) 
-                          (:type img))
+                          :gray)
          s-type (TypeInterpolate/valueOf "BICUBIC")]
      (if (= :bw (:type img))
        ;; Binary images suffer of numerical errors. Therefore img is converted to
-       ;; gray, scaled and then binarized again.
-       (let [img-gray (bi/render-binary img)]
-         (DistortImageOps/scale (:mat img-gray) (:mat out) s-type)
-         (binarize out 100))
-       (do (DistortImageOps/scale (:mat img) (:mat out) s-type)
-           out)))))
+       ;; gray, resized and then returned.
+       (DistortImageOps/scale (:mat (bi/render-binary img)) (:mat out) s-type)
+       (DistortImageOps/scale (:mat img) (:mat out) s-type))
+     out)))
 
 ;;(TODO) try and converge to buff-img scaling
 (defn scale-with-buff
