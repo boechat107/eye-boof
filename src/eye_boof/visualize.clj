@@ -32,10 +32,10 @@
   [& imgs]
   (let [;; Creates a sequence of [image label], both as w/label widgets. 
         items (->> imgs
-                   (map #(if (c/image? %) [% ""] %))
+                   (map #(if (or (h/is-buffImg? %) (c/image? %)) [% ""] %))
                    (map #(let [[i l] (if (string? (first %)) (reverse %) %)]
                            (vector (w/label :text l) 
-                                   (->> (if (instance? java.awt.image.BufferedImage i)
+                                   (->> (if (h/is-buffImg? i)
                                           i (h/to-buffered-image i))
                                         (w/label :icon))))))
         grid (w/grid-panel
