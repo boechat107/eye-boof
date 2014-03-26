@@ -1,50 +1,99 @@
 (ns eye-boof.core
-  (:require
-    [eye-boof.matrices :as m])
+  "Namespace that contains some basic functions to help to handle the BoofCV data 
+  structures.
+  An image is considered to be an ImageUInt8 or a MultiSpectral with n ImageUInt8
+  bands."
   (:import 
-    [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]))
+    [boofcv.struct.image ImageBase ImageUInt8 MultiSpectral]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
 
-(deftype Image [^ImageBase mat type])
-
-(def color-dimensions
-  {:rgb 3
-   :argb 4
-   :gray 1
-   :bw 1})
+(defn new-image
+  "Returns an ImageUInt8 or MultiSpectral object with the given width and height."
+  ([w h] (new-image w h 1))
+  ([w h nb]
+   (if (> nb 1)
+     (MultiSpectral. ImageUInt8 w h nb)
+     (ImageUInt8. w h))))
 
 (defn image?
+  "Returns true if the given object is an ImageUInt8 or MultiSpectral."
   [obj]
-  (instance? Image obj))
+  (or (instance? boofcv.struct.image.ImageUInt8 obj)
+      (instance? boofcv.struct.image.MultiSpectral obj)))
 
 (defn parent-origin
   "Returns the coordinates [x, y] of the first pixel of img in its parent image."
-  [^Image img]
-  (let [^ImageBase mat (.mat img)
-        start-idx (.startIndex mat)
-        stride (.stride mat)]
+  [^ImageBase img]
+  (let [start-idx (.startIndex img)
+        stride (.stride img)]
     [(rem start-idx stride) (quot start-idx stride)]))
 
-(defn dimension 
-  "Returns the number of the dimensions of the image's color space."
-  [^Image img]
-  (color-dimensions (.type img)))
+(defn nbands
+  "Returns the number of bands of the image."
+  [img]
+  (condp instance? img 
+    boofcv.struct.image.MultiSpectral (.getNumBands ^MultiSpectral img)
+    boofcv.struct.image.ImageUInt8 1))
 
 (defn height
   "Returns the number of rows of an Image."
-  [^Image img]
-  (.getHeight ^ImageBase (.mat img)))
+  [^ImageBase img]
+  (.getHeight img))
 
 (def nrows "Alias to height fn." height)
 
 (defn width
   "Returns the number of columns of an Image."
-  [^Image img]
-  (.getWidth ^ImageBase (.mat img)))
+  [^ImageBase img]
+  (.getWidth img))
 
 (def ncols "Alias to width fn." width)
+
+(defn sub-image
+  "Returns a sub-image from the given image, both sharing the same internal
+  data-array."
+  [^ImageBase img x0 y0 width height]
+  (.subimage img x0 y0 (+ x0 width) (+ y0 height)))
+
+(defn band
+  "Returns a specific image band from a MultiSpectral image.
+  idx starts from 0 until (nbands - 1)."
+  [img idx]
+  {:pre [(> (nbands img) 1)]}
+  (.getBand ^MultiSpectral img idx))
+
+(defmacro pixel*
+  "Returns the intensity of the pixel [x, y]. Only ImageUInt8 images are supported.
+  This macro is intended for high performance code."
+  [img x y]
+  `(.unsafe_get ~(vary-meta img assoc :tag 'ImageUInt8) ~x ~y))
+
+(defn pixel
+  "Returns the intensity of the pixel [x, y]. If the given image has more than one
+  band, a vector of the values for each band is returned.
+  This function is not intended for high performance."
+  [img x y]
+  (if (> (nbands img) 1)
+    (mapv #(pixel* (band img %) x y) (range (nbands img)))
+    (pixel* img x y)))
+
+(defmacro set-pixel!* 
+  "Sets the intensity of the pixel [x, y] to v. Only ImageUInt8 images are supported.
+  This macro is intended for high performance code."
+  [img x y v]
+  `(.unsafe_set ~(vary-meta img assoc :tag 'ImageUInt8) ~x ~y ~v))
+
+(defn set-pixel!
+ "Sets the intensity of the pixel [x, y] to v, for an ImageUInt8 image. For a
+ MultiSpectral image, the pixel of each band is set for the values vs." 
+  [img x y v & vs]
+  (if (> (nbands img) 1)
+    (dorun (map #(set-pixel!* (band img %1) x y %2)
+                (range (nbands img))
+                (conj v vs)))
+    (set-pixel!* img x y v)))
 
 ;(defn new-channel-matrix 
 ;  "Returns a matrix used to represent a color channel data."
@@ -150,13 +199,7 @@
 ;              idx 
 ;              val)))
 ;
-;(defn sub-image
-;  "Returns a sub-image from the given image, both sharing the same internal
-;  data-array."
-;  [img x0 y0 width height]
-;  (-> ^ImageBase (:mat img)
-;      (.subimage x0 y0 (+ x0 width) (+ y0 height))
-;      (make-image (:type img))))
+
 ;
 ;(defn channel-to-vec
 ;  "Returns an integer clojure vector of the pixels' value of a specific channel."
