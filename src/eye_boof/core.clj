@@ -4,7 +4,12 @@
   An image is considered to be an ImageUInt8 or a MultiSpectral with n ImageUInt8
   bands."
   (:import 
-    [boofcv.struct.image ImageBase ImageUInt8 MultiSpectral]))
+    [boofcv.struct.image
+     ImageBase
+     ImageInteger
+     ImageUInt8
+     ImageSingleBand
+     MultiSpectral]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -23,61 +28,11 @@
   (or (instance? boofcv.struct.image.ImageUInt8 obj)
       (instance? boofcv.struct.image.MultiSpectral obj)))
 
-(defn parent-origin
-  "Returns the coordinates [x, y] of the first pixel of img in its parent image."
-  [^ImageBase img]
-  (let [start-idx (.startIndex img)
-        stride (.stride img)]
-    [(rem start-idx stride) (quot start-idx stride)]))
-
-(defn nbands
-  "Returns the number of bands of the image."
-  [img]
-  (condp instance? img 
-    boofcv.struct.image.MultiSpectral (.getNumBands ^MultiSpectral img)
-    boofcv.struct.image.ImageUInt8 1))
-
-(defn height
-  "Returns the number of rows of an Image."
-  [^ImageBase img]
-  (.getHeight img))
-
-(def nrows "Alias to height fn." height)
-
-(defn width
-  "Returns the number of columns of an Image."
-  [^ImageBase img]
-  (.getWidth img))
-
-(def ncols "Alias to width fn." width)
-
-(defn sub-image
-  "Returns a sub-image from the given image, both sharing the same internal
-  data-array."
-  [^ImageBase img x0 y0 width height]
-  (.subimage img x0 y0 (+ x0 width) (+ y0 height)))
-
-(defn band
-  "Returns a specific image band from a MultiSpectral image.
-  idx starts from 0 until (nbands - 1)."
-  [img idx]
-  {:pre [(> (nbands img) 1)]}
-  (.getBand ^MultiSpectral img idx))
-
 (defmacro pixel*
   "Returns the intensity of the pixel [x, y]. Only ImageUInt8 images are supported.
   This macro is intended for high performance code."
   [img x y]
   `(.unsafe_get ~(vary-meta img assoc :tag 'ImageUInt8) ~x ~y))
-
-(defn pixel
-  "Returns the intensity of the pixel [x, y]. If the given image has more than one
-  band, a vector of the values for each band is returned.
-  This function is not intended for high performance."
-  [img x y]
-  (if (> (nbands img) 1)
-    (mapv #(pixel* (band img %) x y) (range (nbands img)))
-    (pixel* img x y)))
 
 (defmacro set-pixel!* 
   "Sets the intensity of the pixel [x, y] to v. Only ImageUInt8 images are supported.
@@ -85,120 +40,79 @@
   [img x y v]
   `(.unsafe_set ~(vary-meta img assoc :tag 'ImageUInt8) ~x ~y ~v))
 
-(defn set-pixel!
- "Sets the intensity of the pixel [x, y] to v, for an ImageUInt8 image. For a
- MultiSpectral image, the pixel of each band is set for the values vs." 
-  [img x y v & vs]
-  (if (> (nbands img) 1)
-    (dorun (map #(set-pixel!* (band img %1) x y %2)
-                (range (nbands img))
-                (conj v vs)))
-    (set-pixel!* img x y v)))
+(defn band 
+  "Returns a specific image band from a MultiSpectral image.
+  idx starts from 0 until (nbands - 1)." 
+  [^MultiSpectral img idx]
+  (.getBand img idx))
 
-;(defn new-channel-matrix 
-;  "Returns a matrix used to represent a color channel data."
-;  [nrows ncols dim] 
-;  (if (> dim 1)
-;    (MultiSpectral. ImageUInt8 ncols nrows dim)
-;    (ImageUInt8. ncols nrows)))
-;
-;(defn new-float-channel
-;  ^ImageFloat32 [nrows ncols dim]
-;  (if (> dim 1)
-;    (MultiSpectral. ImageFloat32 ncols nrows dim)
-;    (ImageFloat32. ncols nrows)))
-;
-;(defn make-image
-;  "Returns an instance of Image for a given image data, its number of columns of
-;  pixels and the color space of the image. 
-;  The image data is stored as different channels, each one as a clojure.matrix, and
-;  the value of each pixel a double value."
-;  ([data-chs type]
-;   {:pre [(valid-type? type) (mat? data-chs)]}
-;   (Image. data-chs type)))
-;
-;(defn new-image
-;  "Returns an empty image with the given size and color type. If an img is given,
-;  the returned image should have the same size."
-;  ([img type] (new-image (nrows img) (ncols img) type))
-;  ([nrows ncols type]
-;   {:pre [(contains? color-dimensions type)]}
-;   (-> (new-channel-matrix nrows ncols (type color-dimensions))
-;       (make-image type))))
-;
-;(defn new-gray-image
-;  "Returns an empty grayscale image (single channel)"
-;  [nr nc]
-;  (-> (new-channel-matrix nr nc (:gray color-dimensions))
-;      (make-image :gray)))
-;
-;(defn new-bw-image
-;  "Returns an empty bw image (single channel)"
-;  [nr nc]
-;  (-> (new-channel-matrix nr nc (:bw color-dimensions))
-;      (make-image :bw)))
-;
-;(defn into-bw
-;  "Given a sequence of byte values, creates a BW image with width 'width'
-;   e.g.
-;      => (into-bw 2 [0 1 1 0])
-;      ;=> #eye_boof.core.Image{:mat ... :type :bw, ...} "
-;  [width seq]
-;  {:pre [(= 0 (mod (count seq) width))]}
-;  (let [chn (ImageUInt8. width (quot (count seq) width))]
-;    (set! (.data chn) (into-array Byte/TYPE seq))
-;    (make-image chn :bw)))
-;
-;(defn into-gray
-;  "Given a sequence of byte values, creates a gray image with width 'width'
-;   e.g.
-;      => (into-gray 2 [10 20 30 40])
-;      ;=> #eye_boof.core.Image{:mat ... :type :gray, ...} "
-;  [width seq]
-;  {:pre [(= 0 (mod (count seq) width))]}
-;  (let [chn (ImageUInt8. width (quot (count seq) width))]
-;    (set! (.data chn) (into-array Byte/TYPE seq))
-;    (make-image chn :gray)))
-;
-;(defmacro get-pixel
-;  "Returns a primitive integer value from a channel's array ach. If coordinates 
-;  [x, y] and ncols are provided, the array is handled as 2D matrix.
-;  Warning: idx is relative to the original or parent image, so it is dangerous to use it
-;  for sub-images, give preference to x and y indexing."
-;  ([ch idx]
-;   `(-> (m/mget :uint8 ~ch ~idx)
-;        (bit-and ~0xff)))
-;  ([ch x y]
-;   `(-> (m/mget :uint8 ~ch ~x ~y)
-;        (bit-and ~0xff))))
-;
-;(defn get-pixel*
-;  "Returns the value of the pixel [x, y] for a given image channel."
-;  (^long [^ImageUInt8 ch x y]
-;   (.unsafe_get ch x y))
-;  (^long [^ImageUInt8 ch idx]
-;   (-> (m/mult-aget bytes (.data ch) idx)
-;       (bit-and 0xff))))
-;
-;(defmacro set-pixel! 
-;  "Sets the value of a pixel for a given channel's array. If coordinates [x, y] and
-;  ncols are provided, the array is handled as 2D matrix."
-;  ([ch idx val]
-;   `(m/mset! :uint8 ~ch ~idx ~val))
-;  ([ch x y val]
-;   `(m/mset! :uint8 ~ch ~x ~y ~val)))
-;
-;(defn set-pixel!*
-;  "Sets the value of the [x, y] pixel for a given channel."
-;  ([^ImageUInt8 ch x y val]
-;   (let [x (int x)
-;         y (int y)]
-;     (.unsafe_set ch x y val)))
-;  ([^ImageUInt8 ch idx val]
-;   (m/mult-aset bytes (.data ch)
-;              idx 
-;              val)))
-;
+(defprotocol PImage
+  (parent-origin [img] 
+                 "Returns the coordinates [x, y] of the first pixel of img in its
+                 parent image.")
+  (height [img] "Returns the number of rows of an Image.")
+  (width [img] "Returns the number of columns of an Image.")
+  (sub-image [img x0 y0 w h]
+             "Returns a sub-image from the given image, both sharing the same
+             internal data-array.")
+  (sub-image? [img])
+  (pixel [img x y]
+         "Returns the intensity of the pixel [x, y]. If the given image has more than
+         one band, a vector of the values for each band is returned.  This function
+         is not intended for high performance.")
+  (set-pixel! [img x y v] [img x y v & vs]
+              "Sets the intensity of the pixel [x, y] to v, for an ImageUInt8 image.
+              For a MultiSpectral image, the pixel of each band is set for the values
+              vs." )
+  (nbands [img] "Returns the number of bands of the image."))
+
+;; Protocol's implementations using maps to reuse code for inheritance.
+(let [base
+      {:width (fn [^ImageBase img] (.getWidth img))
+       :height (fn [^ImageBase img] (.getHeight img))
+       :parent-origin (fn [^ImageBase img]
+                        (let [start-idx (.startIndex img)
+                              stride (.stride img)]
+                          [(rem start-idx stride) (quot start-idx stride)]))
+       :sub-image? (fn [^ImageBase img] (.isSubimage img))}
+      single-band
+      {:sub-image (fn [img x0 y0 w h]
+                    (.subimage ^ImageSingleBand img x0 y0 (+ x0 w) (+ y0 h) nil))
+       :nbands (fn [img] 1)}
+      multispectral 
+      {:sub-image (fn [img x0 y0 w h]
+                    (.subimage ^MultiSpectral img x0 y0 (+ x0 w) (+ y0 h) nil))
+       :nbands (fn [^MultiSpectral img] (.getNumBands img))}]
+  (extend ImageUInt8
+    PImage
+    (merge base single-band
+           {:set-pixel! (fn [^ImageUInt8 img x y v] (set-pixel!* img x y v))
+            :pixel (fn [img x y] (pixel* img x y))}))
+  (extend MultiSpectral 
+    PImage
+    (merge base multispectral
+           {:pixel (fn [^MultiSpectral img x y]
+                     (mapv #(pixel* (band img %) x y) (range (nbands img))))
+            :set-pixel! (fn [img x y v & vs]
+                          (let [^MultiSpectral img img]
+                            (dorun
+                              (map #(set-pixel!* (band img %2) x y %1)
+                                   (conj vs v)
+                                   (range (nbands img))))))})))
+
+(def nrows "Alias to height fn." height)
+
+(def ncols "Alias to width fn." width)
+
+#_(defn vec 
+  "Returns a vector with the pixel intensities of an image."
+  [img]
+  )
+
+#_(defn print-matrix 
+  [^ImageInteger img]
+  (binding [*out* ])
+  )
 
 ;
 ;(defn channel-to-vec
