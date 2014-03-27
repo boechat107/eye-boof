@@ -1,5 +1,5 @@
 (ns eye-boof.core-test
-  (:use clojure.test)
+  (:refer-clojure :exclude [lazy-seq])
   (:require 
     [clojure.test :refer :all]
     [eye-boof.core :refer :all]))
@@ -14,6 +14,9 @@
       (is (not (sub-image? gray-img)))
       (set-pixel! gray-img 2 2 11)
       (is (== (pixel gray-img 2 2) 11))
+      (is (= (lazy-seq gray-img) [0 0 0 0
+                                  0 0 0 0
+                                  0 0 11 0]))
       (let [sub-gray (sub-image gray-img 1 1 2 2)
             [ox oy] (parent-origin sub-gray)]
         (is (== (width sub-gray) 2))
