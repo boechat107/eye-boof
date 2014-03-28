@@ -16,11 +16,13 @@
 
 ;; Used the Mikera's implementation for imagez
 ;; https://github.com/mikera/imagez/blob/develop/src/main/clojure/mikera/image/protocols.clj
-(defprotocol PImageResource
+(defprotocol PToBufferedImage
   "Coerce different image resource representations to BufferedImage."
-  (resource->buff-image [r] "Returns a BufferedImage from a given resource."))
+  (resource->buff-image [r] "Returns a BufferedImage from a given resource.")
+  (image->buff-image [img] 
+                     "Returns a BufferedImage from an ImageUInt8 or MultiSpectral."))
 
-(extend-protocol PImageResource 
+(extend-protocol PToBufferedImage 
   String
   (resource->buff-image [r] (ImageIO/read (io/as-file r)))
   
@@ -34,25 +36,36 @@
   (resource->buff-image [r] (ImageIO/read r))
   
   java.awt.image.BufferedImage
-  (resource->buff-image [r] r))
+  (resource->buff-image [r] r)
+  
+  boofcv.struct.image.ImageUInt8
+  (image->buff-image [img]
+    (ConvertBufferedImage/convertTo 
+      img 
+      (BufferedImage. (width img) (height img) BufferedImage/TYPE_BYTE_GRAY)))
+  
+  boofcv.struct.image.MultiSpectral
+  (image->buff-image [img]
+    ;; TODO: It works only for images with 3 channels for now.
+    (ConvertBufferedImage/convertTo_U8
+      img
+      (BufferedImage. (width img) (height img) BufferedImage/TYPE_INT_RGB)
+      true)))
 
 (defn load-image
   "Returns a MultiSpectral image, in RGB order, from the given resource. The resource
   can be a string, File, InputStream, URL or BufferedImage."
   [resource]
-  (ConvertBufferedImage/convertFromMulti 
-    ^BufferedImage (resource->buff-image resource)
-    nil ; output image.
-    true ; RGB ordering.
-    ImageUInt8))
-
-(defn to-buff-image
-  "Returns a BufferedImage TYPE_INT_RGB from the given Image."
-  [^ImageBase img]
-  (ConvertBufferedImage/convertTo 
-        img
-        (BufferedImage. (width img) (height img) BufferedImage/TYPE_INT_RGB)
-        true))
+  (let [^BufferedImage buff-image (resource->buff-image resource)]
+    (condp contains? (.getType buff-image)
+      #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB,
+        BufferedImage/TYPE_4BYTE_ABGR_PRE BufferedImage/TYPE_INT_ARGB_PRE,
+        BufferedImage/TYPE_INT_RGB, BufferedImage/TYPE_3BYTE_BGR,
+        BufferedImage/TYPE_INT_BGR}
+      (ConvertBufferedImage/convertFromMulti buff-image nil true ImageUInt8)
+      
+      #{BufferedImage/TYPE_BYTE_GRAY BufferedImage/TYPE_BYTE_INDEXED}
+      (ConvertBufferedImage/convertFromSingle buff-image nil ImageUInt8))))
 
 (defn save-image!
   "Saves an Image into a file in the disk. 
