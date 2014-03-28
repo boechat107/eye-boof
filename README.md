@@ -1,9 +1,27 @@
 # eye-boof
 
 This is a Clojure wrapper for the image processing library [BoofCV](http://boofcv.org/).
-Additionally there are complementary functions implemented in clojure
+Some algorithms, not implemented in BoofCV, are implemented in Clojure using the
+BoofCV data structures.
+
+## Installation
+
+The newest version of the library, `[org.clojars.boechat107/eye-boof "1.0.0"]`, is
+not compatible with the older versions. A lot of modifications and simplifications
+were made! It is better to forget about the previous versions.
+
+## Features
+
+* We are trying to provide wrappers for most of algorithms of 
+[BoofCV](http://boofcv.org/index.php?title=Manual).
 
 ## Usage
+
+Most of times we need to work with images that already exist, such files in the
+disk. So, to load a file from the disk, we write something like
+
+```clojure
+```
 
 ### Loading and viewing images
 
