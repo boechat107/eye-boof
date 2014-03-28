@@ -1,8 +1,9 @@
 (ns eye-boof.visualize
   (:require 
     [eye-boof.core :as c :only [image?]]
-    [eye-boof.helpers :as h]
-    [seesaw.core :as w]))
+    [eye-boof.io :as io :only [image->buff-image]]
+    [seesaw.core :as w :only [label frame grid-panel vertical-panel
+                              scrollable pack! show!]]))
 
 (def ^:dynamic *visualize-properties*
   {:cols 6
@@ -36,7 +37,7 @@
                    (map #(let [[i l] (if (string? (first %)) (reverse %) %)]
                            (vector (w/label :text l) 
                                    (->> (if (instance? java.awt.image.BufferedImage i)
-                                          i (h/to-buffered-image i))
+                                          i (io/image->buff-image i))
                                         (w/label :icon))))))
         grid (w/grid-panel
                :border 5
