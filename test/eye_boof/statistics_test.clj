@@ -1,23 +1,17 @@
 (ns eye-boof.statistics-test 
-  (:use clojure.test)
+  (:refer-clojure :exclude [min max])
   (:require 
-    [eye-boof 
-     [core :as c]
-     [image-statistics :as stat]
-     [helpers :as h]]))
-
-(def img
-  (let [ch (c/new-channel-matrix 4 4 1)]
-    (c/set-pixel! ch 0 0 50)
-    (c/set-pixel! ch 3 3 50)
-    (c/set-pixel! ch 0 3 100)
-    (c/set-pixel! ch 3 0 100)
-    (c/make-image ch :gray)))
+    [clojure.test :refer :all]
+    [eye-boof
+     [core :refer [width height]]
+     [image-statistics :refer :all]
+     [io :refer [load-image]]]))
 
 (deftest statistics 
-  (is (== (int (/ 300 16)) (int (stat/mean img))))
-  (let [hist (stat/histogram img)]
-    (is (== 255) (count hist))
-    (is (== (hist 0) 12))
-    (is (== (hist 50) 2))
-    (is (== (hist 100) 2))))
+  (let [img (-> "http://www.labbookpages.co.uk/software/imgProc/files/otsuExamples/harewood.jpg"
+                (java.net.URL.)
+                (load-image))]
+    (is (== (min img) 2))
+    (is (== (max img) 255))
+    (is (== (* (width img) (height img))
+            (reduce + (histogram img))))))

@@ -1,67 +1,40 @@
 (ns eye-boof.image-statistics
+  "Statistical functions that returns a value for a whole Image."
   (:refer-clojure :exclude [min max])
-  (:require [eye-boof.core :as c])
+  (:require
+    [eye-boof.utils :refer [def-noargs-function]])
   (:import 
     [boofcv.alg.misc ImageStatistics]
-    [boofcv.struct.image ImageUInt8 ImageSInt16 ImageFloat32]))
+    [boofcv.struct.image ImageUInt8]))
 
-
-;;(TODO) implement the remaining functions
-;; min
-;; max
-;; max-abs
-;; sum
-;; mean
-;; variance
-;; mean-diff-square
-;; mean-diff-abs
-;; histogram
-
-(defmacro def-noargs-function
-  [fname doc f]
-  `(defn ~fname 
-     ~doc
-     ([~'img] (~fname ~'img 0))
-     ([~'img ~'ch]
-      (~f (c/get-channel ~'img ~'ch)))))
+(set! *warn-on-reflection* true)
+(set! *unchecked-math* true)
 
 (def-noargs-function 
   min 
-  "Returns the minimum pixel intensity of the channel ch (default 0)."
+  "Returns the minimum pixel intensity of an Image."
   ImageStatistics/min)
 
 (def-noargs-function
   mean
-  "Returns the mean pixel intensity of the channel ch (default 0) of the given
-  image."
+  "Returns the mean pixel intensity of an Image."
   ImageStatistics/mean)
 
 (def-noargs-function 
   max
-  "Returns the maximum pixel intensity of the channel ch (default 0)."
+  "Returns the maximum pixel intensity of an Image."
   ImageStatistics/max)
 
 (def-noargs-function 
   sum
-  "Returns the sum of the pixels' intensity of the channel ch (default 0)."
+  "Returns the sum of the pixels' intensity of an Image."
   ImageStatistics/sum)
 
-(defn histogram* 
-  "Like histogram, but computs its output directly from a channel matrix."
-  ([ch] (histogram* ch 255))
-  ([ch nl]
-   (let [array (int-array nl)]
-     (ImageStatistics/histogram ch array)
+(defn histogram 
+  "Computes the histogram of an Image and returns the values as a vector. The number
+  of bins can be specified (default 256)."
+  ([img] (histogram img 256))
+  ([^ImageUInt8 img nbins]
+   (let [array (int-array nbins)]
+     (ImageStatistics/histogram img array)
      (vec array))))
-
-(defn histogram
-  "Returns a vector of nl elements (default 255) corresponding to the number of
-  occurences of a specific intensity value."
-  ([img] (histogram img 0 255))
-  ([img ch] (histogram img ch 255))
-  ([img ch nl]
-   (histogram* (c/get-channel img ch) nl)))
-
-;; vertical-histogram
-;; horizontal-histogram
-
