@@ -3,8 +3,7 @@
   the disk or as BufferedImages."
   (:require
     [eye-boof.core :refer [width height]]
-    [clojure.java.io :as io :only [as-file file]]
-    )
+    [clojure.java.io :as io :only [as-file file]])
   (:import 
     [javax.imageio ImageIO]
     [java.awt.image BufferedImage]
@@ -74,6 +73,6 @@
   Example:
   (save-image! img \"path/to/image.ext\" :png)"
   [img path]
-  (ImageIO/write ^BufferedImage (to-buff-image img)
+  (ImageIO/write ^BufferedImage (image->buff-image img)
                  (-> (re-find #"\.\w+$" path) (subs 1)) ; extension
                  (io/file path)))
