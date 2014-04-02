@@ -11,8 +11,8 @@
         hist-idx-sum (->> (map * hist-vec (range (count hist-vec)))
                           (reduce +)
                           long)]
-    (loop [th-idx 0, acc 0, i*acc 0, 
-           max-var 0, th-max -1]
+    (loop [th-idx 0, acc 0, i*acc 0.0, 
+           max-var 0.0, th-max -1]
       (let [idx-val (long (hist-vec th-idx))
             w1 (+ acc idx-val)
             w2 (- hist-sum w1)]
