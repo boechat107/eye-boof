@@ -4,7 +4,8 @@
     [eye-boof.helpers :as h]
     [eye-boof.image-statistics :as stat]
     [eye-boof.matrices :as m]
-    [eye-boof.binary-ops :as bi])
+    [eye-boof.binary-ops :as bi]
+    [eye-boof.segmentation.otsu :as otsu :only [compute-threshold]])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
@@ -119,6 +120,14 @@
       (->> (if (< (c/get-pixel img-ch x y) mean) 0 1)
            (c/set-pixel! out-ch x y)))
     (c/make-image out-ch :bw)))
+
+(defn otsu-threshold
+  "Binarizes a grayscale image using a threshold value calculated by the Otsu's
+  method."
+  [img]
+  (->> (stat/histogram img 0 256)
+       (otsu/compute-threshold)
+       (binarize img)))
 
 (defn threshold
   [img threshold & {:keys [down]}]
