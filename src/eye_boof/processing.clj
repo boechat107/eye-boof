@@ -5,7 +5,8 @@
     [eye-boof.image-statistics :as stat]
     [eye-boof.matrices :as m]
     [eye-boof.binary-ops :as bi]
-    [eye-boof.segmentation.otsu :as otsu :only [compute-threshold]])
+    [eye-boof.segmentation.otsu :as otsu :only [compute-threshold]]
+    [eye-boof.dev-tools :refer [block-apply]])
   (:import
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
     [boofcv.alg.filter.blur BlurImageOps]
@@ -121,13 +122,26 @@
            (c/set-pixel! out-ch x y)))
     (c/make-image out-ch :bw)))
 
-(defn otsu-threshold
+(defmulti otsu-threshold 
   "Binarizes a grayscale image using a threshold value calculated by the Otsu's
   method."
-  [img]
+  (fn ([img & opts] (when opts (first opts)))))
+
+(defmethod otsu-threshold :default otsu-global
+  [img & _]
   (->> (stat/histogram img 0 256)
        (otsu/compute-threshold)
        (binarize img)))
+
+(defmethod otsu-threshold :block otsu-block
+  [img & [_ size]]
+  (letfn [(th-fn [img-in img-out]
+            (let [th-val (-> (stat/histogram img-in 0 256)
+                             (otsu/compute-threshold)
+                             int)] 
+              (ThresholdImageOps/threshold 
+                ^ImageUInt8 (:mat img-in) ^ImageUInt8 (:mat img-out) th-val false)))]
+    (assoc (block-apply img size th-fn) :type :bw)))
 
 (defn threshold
   [img threshold & {:keys [down]}]
