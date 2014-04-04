@@ -3,7 +3,6 @@
   structures.
   An image is considered to be an ImageUInt8 or a MultiSpectral with n ImageUInt8
   bands."
-  (:refer-clojure :exclude [lazy-seq])
   (:import 
     [boofcv.struct.image
      ImageBase
@@ -104,12 +103,6 @@
 (def nrows "Alias to height fn." height)
 
 (def ncols "Alias to width fn." width)
-
-(defn lazy-seq
-  "Returns a lazy-seq of the pixels' intensities of an image, concatenating one
-  row after the other."
-  [^ImageUInt8 img]
-  (for [y (range (height img)), x (range (width img))] (pixel* img x y)))
 
 (defn print-matrix 
   "Prints the pixels intensities as a matrix."
