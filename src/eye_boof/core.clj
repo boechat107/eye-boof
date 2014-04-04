@@ -17,7 +17,7 @@
 
 (defn image?
   [obj]
-  (instance? Image obj))
+  (instance? eye_boof.core.Image obj))
 
 (defn one-dim?
   "Returns true if the image has just one channel."
@@ -137,7 +137,7 @@
   the value of each pixel a double value."
   ([data-chs type]
    {:pre [(valid-type? type) (mat? data-chs)]}
-   (Image. data-chs type)))
+   (->Image data-chs type)))
 
 (defn new-image
   "Returns an empty image with the given size and color type. If an img is given,
