@@ -9,7 +9,8 @@
      ImageInteger
      ImageUInt8
      ImageSingleBand
-     MultiSpectral]))
+     MultiSpectral]
+    [boofcv.alg.misc PixelMath]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -104,10 +105,18 @@
 
 (def ncols "Alias to width fn." width)
 
-(defn print-matrix 
+(defn print-matrix!
   "Prints the pixels intensities as a matrix."
   [^ImageInteger img]
   (.print img))
+
+(defn average-band
+  "Returns an ImageUInt8 as a result of averaging the values of a pixel across all
+  bands of a MultiSpectral image."
+  [^MultiSpectral img]
+  (let [^ImageUInt8 out-img (new-image (width img) (height img))]
+    (PixelMath/averageBand img out-img)
+    out-img))
 
 ;
 ;(defn channel-to-vec
