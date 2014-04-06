@@ -15,7 +15,5 @@
 
 (defmethod threshold :default simple
   [^ImageUInt8 img _ & opts]
-  (ThresholdImageOps/threshold img 
-                               ^ImageUInt8 (new-image (width img) (height img))
-                               (first opts)
-                               false))
+  (let [^ImageUInt8 output (new-image (width img) (height img))]
+    (ThresholdImageOps/threshold img output (int (first opts)) false)))
