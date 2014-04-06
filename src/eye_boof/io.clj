@@ -71,7 +71,7 @@
   Supported extensions: ImageIO.getWriterFormatNames()
   
   Example:
-  (save-image! img \"path/to/image.ext\" :png)"
+  (save-image! img \"path/to/image.png\")"
   [img path]
   (ImageIO/write ^BufferedImage (image->buff-image img)
                  (-> (re-find #"\.\w+$" path) (subs 1)) ; extension
