@@ -2,7 +2,7 @@
   "Functions to perform geometrical transformations of 2D images. They don't change 
   the image content but deform the pixel grid, mapping it to the output image."
   (:require 
-    [eye-boof.core :refer [nbands new-image]]
+    [eye-boof.core :refer [nbands new-image width height]]
     [clojure.string :as s :only [upper-case replace]])
   (:import 
     [boofcv.alg.distort DistortImageOps]
@@ -14,6 +14,7 @@
 
 (defprotocol PGeometricTransformations
   (resize [img new-width new-height interpolation]
+          [img factor interpolation]
           "Returns a resized version of the given input image.
           The possible interpolation algorithms are:
           :bicubic
@@ -21,7 +22,14 @@
           :nearest-neighbor
           :polynomial4"))
 
-(let [resize-fn (fn [out-fn img nw nh ialg]
+(let [resize-fn (fn resize-fn 
+                  ([out-fn img factor ialg]
+                   (resize-fn out-fn
+                              img 
+                              (* factor (width img))
+                              (* factor (height img))
+                              ialg))
+                  ([out-fn img nw nh ialg]
                   ;; Function that can be used for both types, ImageUInt8 and
                   ;; Multispectral. 
                   (let [^ImageBase img img
@@ -33,7 +41,7 @@
                       (TypeInterpolate/valueOf (-> (name ialg)
                                                    (s/replace \- \_)
                                                    (s/upper-case))))
-                    out-img))]
+                    out-img)))]
   (extend ImageUInt8 
     PGeometricTransformations 
     (let [get-single (fn ^ImageUInt8 [w h _] (new-image w h))]
