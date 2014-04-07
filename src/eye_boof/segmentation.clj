@@ -3,7 +3,7 @@
   (:require
     [eye-boof.segmentation.otsu :as otsu]
     [eye-boof
-     [core :refer [width height new-image]]
+     [core :refer [width height new-image pixel* set-pixel!*]]
      [image-statistics :refer [histogram]]])
   (:import 
     [boofcv.struct.image ImageUInt8]
@@ -47,3 +47,25 @@
   [^ImageUInt8 img _]
   (->> (otsu/compute-threshold (histogram img))
        (threshold img :default)))
+
+(defmethod threshold :local-otsu local-otsu 
+  [^ImageUInt8 img _ ^long radius]
+  (let [^ImageUInt8 out (new-image (width img) (height img))
+        hist (int-array 256 0)]
+    (dotimes [j (- (height img) (* 2 radius))]
+      (dotimes [i (- (width img) (* 2 radius))]
+        (let [x (+ i radius)
+              y (+ j radius)
+              xy-val (.unsafe_get img x y)]
+          ;; Local histogram calculation.
+          (dotimes [cj (inc radius)]
+            (dotimes [ci (inc radius)]
+              (let [wx (- (+ x ci) radius)
+                    wy (- (+ y cj) radius)
+                    gray-val (pixel* img wx wy)]
+                (->> (aget hist gray-val)
+                     inc
+                     (aset hist gray-val)))))
+          (set-pixel!* out x y
+           (if (< xy-val 100 #_(otsu/compute-threshold (into [] hist))) 0 1)))))
+    out))
