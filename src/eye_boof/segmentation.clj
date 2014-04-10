@@ -7,7 +7,8 @@
      [image-statistics :refer [histogram]]])
   (:import 
     [boofcv.struct.image ImageUInt8]
-    [boofcv.alg.filter.binary ThresholdImageOps]))
+    [boofcv.alg.filter.binary ThresholdImageOps]
+    [boofcv.alg.misc ImageStatistics]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -51,21 +52,27 @@
 (defmethod threshold :local-otsu local-otsu 
   [^ImageUInt8 img _ ^long radius]
   (let [^ImageUInt8 out (new-image (width img) (height img))
-        hist (int-array 256 0)]
-    (dotimes [j (- (height img) (* 2 radius))]
-      (dotimes [i (- (width img) (* 2 radius))]
-        (let [x (+ i radius)
-              y (+ j radius)
-              xy-val (.unsafe_get img x y)]
+        w (long (width img))
+        h (long (height img))]
+    (dotimes [j (- h (* 2 radius))]
+      (dotimes [i (- w (* 2 radius))]
+        (let [x (int (+ i radius))
+              y (int (+ j radius))
+              xy-val (pixel* img x y)
+              hist (int-array 256 0)]
           ;; Local histogram calculation.
-          (dotimes [cj (inc radius)]
-            (dotimes [ci (inc radius)]
-              (let [wx (- (+ x ci) radius)
-                    wy (- (+ y cj) radius)
+          (dotimes [cj (unchecked-inc-int radius)]
+            (dotimes [ci (unchecked-inc-int radius)]
+              (let [wx (int (- (+ x ci) radius))
+                    wy (int (- (+ y cj) radius))
                     gray-val (pixel* img wx wy)]
-                (->> (aget hist gray-val)
-                     inc
-                     (aset hist gray-val)))))
+                (->> (aget ^ints hist gray-val)
+                     unchecked-inc-int
+                     (aset ^ints hist gray-val)))))
+          ;; Thresholding.
           (set-pixel!* out x y
-           (if (< xy-val 100 #_(otsu/compute-threshold (into [] hist))) 0 1)))))
+                       (int (if (< xy-val (int (otsu/compute-threshold hist)))
+                              0 1)))
+          ))
+      )
     out))

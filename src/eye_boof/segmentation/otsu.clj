@@ -1,4 +1,6 @@
-(ns eye-boof.segmentation.otsu)
+(ns eye-boof.segmentation.otsu
+  (:require 
+    [hiphip.int :as hi :only [asum]]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -6,14 +8,13 @@
 (defn compute-threshold
   "Returns the threshold value that maximizes the between-class variance for a 
   given vector representing a histogram."
-  [hist-vec]
-  (let [hist-sum (long (reduce + hist-vec))
-        hist-idx-sum (->> (map * hist-vec (range (count hist-vec)))
-                          (reduce +)
-                          long)]
+  [^ints hist-array]
+  (let [hist-sum (long (hi/asum hist-array))
+        hist-idx-sum (long (areduce ^ints hist-array i ret 0 
+                                    (+ ret (* i (aget ^ints hist-array i)))))]
     (loop [th-idx 0, acc 0, i*acc 0.0, 
            max-var 0.0, th-max -1]
-      (let [idx-val (long (hist-vec th-idx))
+      (let [idx-val (aget ^ints hist-array th-idx)
             w1 (+ acc idx-val)
             w2 (- hist-sum w1)]
         (cond 
