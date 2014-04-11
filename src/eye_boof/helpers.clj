@@ -85,14 +85,12 @@
   [^BufferedImage buff]
   (condp contains? (.getType buff)
     #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB, BufferedImage/TYPE_4BYTE_ABGR_PRE BufferedImage/TYPE_INT_ARGB_PRE}
-    (let [img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
-      (ConvertBufferedImage/orderBandsIntoRGB img buff)
+    (let [img (ConvertBufferedImage/convertFromMulti buff nil true ImageUInt8)]
       (c/make-image img :argb))
     ;;;;
     #{BufferedImage/TYPE_INT_RGB, BufferedImage/TYPE_3BYTE_BGR
       BufferedImage/TYPE_INT_BGR}
-    (let [img (ConvertBufferedImage/convertFromMulti buff nil ImageUInt8)]
-      (ConvertBufferedImage/orderBandsIntoRGB img buff)
+    (let [img (ConvertBufferedImage/convertFromMulti buff nil true ImageUInt8)]
       (c/make-image img :rgb))
         ;;;;
     #{BufferedImage/TYPE_BYTE_GRAY BufferedImage/TYPE_BYTE_INDEXED}
@@ -119,16 +117,21 @@
   Note that if img is a bw image, the output is a BufferedImage where 1s in img are
   255."
   ^BufferedImage [img]
-  (let [^ImageBase b (:mat img)
+  (let [b (:mat img)
         w (c/ncols img)
         h (c/nrows img)]
     (case (c/get-type img)
       :argb
       (throw (Exception.  "Not implemented yet in boofcV"))
       :rgb
-      (ConvertBufferedImage/convertTo_U8 b (create-buffered-image w h  BufferedImage/TYPE_INT_RGB))
+      (ConvertBufferedImage/convertTo_U8 
+        ^MultiSpectral b 
+        (create-buffered-image w h  BufferedImage/TYPE_INT_RGB)
+        true)
       :gray
-      (ConvertBufferedImage/convertTo b (create-buffered-image w h BufferedImage/TYPE_BYTE_GRAY))
+      (ConvertBufferedImage/convertTo 
+        ^ImageUInt8 b 
+        (create-buffered-image w h BufferedImage/TYPE_BYTE_GRAY))
       :bw
       (to-buffered-image (bi/render-binary img)))))
 
@@ -161,7 +164,7 @@
   (to-file! [mat filepath] [mat filepath ext]))
 
 (extend-protocol ImageMatrix
-  boofcv.struct.image.ImageBase
+  boofcv.struct.image.ImageUInt8
   (to-buff-img [mat]
     (ConvertBufferedImage/convertTo mat nil)) 
   (to-file!

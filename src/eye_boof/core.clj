@@ -225,8 +225,8 @@
   "Returns a sub-image from the given image, both sharing the same internal
   data-array."
   [img x0 y0 width height]
-  (-> ^ImageBase (:mat img)
-      (.subimage x0 y0 (+ x0 width) (+ y0 height))
+  (-> (:mat img)
+      (.subimage x0 y0 (+ x0 width) (+ y0 height) nil)
       (make-image (:type img))))
 
 (defn channel-to-vec

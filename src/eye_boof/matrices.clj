@@ -60,7 +60,7 @@
           (iset! [mat x y v] (.unsafe_set mat x y v))
           (sub-mat [mat x0 y0 width height] 
                    (let [x0 (int x0), y0 (int y0), w (int width), h (int height)]
-                     (.subimage mat x0 y0 (+ x0 w) (+ y0 h))))
+                     (.subimage mat x0 y0 (+ x0 w) (+ y0 h) nil)))
           (sub-mat? [mat] (.isSubimage mat))
           (width [mat] (.getWidth mat)) 
           (height [mat] (.getHeight mat))

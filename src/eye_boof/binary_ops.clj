@@ -105,7 +105,7 @@
   {:pre [(= :bw (:type img))]}
   (let [^ImageSInt32 labels (ImageSInt32. (c/ncols img) (c/nrows img))
         contours (BinaryImageOps/contour (:mat img) rule labels)]
-    (BinaryImageOps/labelToClusters labels (count contours) nil)))
+    (BinaryImageOps/labelToClusters labels (int (count contours)) nil)))
 
 ;;(TODO) implement this function
 ;; (defn relabel [])
@@ -132,7 +132,7 @@
     (BinaryImageOps/clusterToBinary blobs (:mat out))
     out))
 
-(defn bufferedImage<-contours
+#_(defn bufferedImage<-contours
   [contours & {:keys [color-internal color-external image width height]
                :or {color-internal 0x0000FF color-external 0xFF0000}}]
   {:pre [(or image (and width height))]}
@@ -148,7 +148,7 @@
 ;; (defn view-contours [contours img & opts]
 ;;   (h/view (apply bufferedImage<-contours contours :img img opts)))
 
-(defn bufferedImage<-labeled-image
+#_(defn bufferedImage<-labeled-image
   "Renders a labeled image to a BufferedImage.
    Color-count indicates the amount of random colors to use"
   ([labeled-img]
