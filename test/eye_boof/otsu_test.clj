@@ -7,7 +7,10 @@
     ))
 
 (deftest threshold 
-  (let [histogram-url (fn [s] (-> s (java.net.URL.) (load-image) (histogram)))]
+  (let [histogram-url (fn [s] (->> (java.net.URL. s)
+                                   (load-image)
+                                   (histogram) 
+                                   (into-array Integer/TYPE)))]
     ;; The threshold values were calculated using Octave's graythres function. 
     (is (== 146 (compute-threshold
                   (histogram-url "http://www.labbookpages.co.uk/software/imgProc/files/otsuExamples/harewood.jpg"))))

@@ -46,8 +46,11 @@
 
 (defmethod threshold :global-otsu global-otsu 
   [^ImageUInt8 img _]
-  (->> (otsu/compute-threshold (histogram img))
-       (threshold img :default)))
+  (let [hist (int-array 256)]
+    ;; Faster histogram calculation.
+    (ImageStatistics/histogram img hist)
+    (->> (otsu/compute-threshold hist)
+         (threshold img :default))))
 
 (defmethod threshold :local-otsu local-otsu 
   [^ImageUInt8 img _ ^long radius]
