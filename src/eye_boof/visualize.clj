@@ -32,7 +32,7 @@
   [& imgs]
   (let [;; Creates a sequence of [image label], both as w/label widgets. 
         items (->> imgs
-                   (map #(if (or (h/is-buffImg? %) (c/image? %)) [% ""] %))
+                   (map #(if (or (h/is-buffImg? %) (:mat %)) [% ""] %))
                    (map #(let [[i l] (if (string? (first %)) (reverse %) %)]
                            (vector (w/label :text l) 
                                    (->> (if (h/is-buffImg? i)

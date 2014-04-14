@@ -143,6 +143,40 @@
                 ^ImageUInt8 (:mat img-in) ^ImageUInt8 (:mat img-out) th-val false)))]
     (assoc (block-apply img size th-fn) :type :bw)))
 
+(defmethod otsu-threshold :pix-win pixel-window
+  [img & [_ radius]]
+  (let [radius (long radius)
+        out (c/new-image (c/nrows img) (c/ncols img) :bw)
+        hist (int-array 256 0)
+        ^ImageUInt8 out-mat (:mat out)
+        ^ImageUInt8 img-mat (:mat img)]
+    (dotimes [j (- (c/nrows img) (* 2 radius))]
+      (dotimes [i (- (c/ncols img) (* 2 radius))]
+        (let [x (+ i radius)
+              y (+ j radius)
+              xy-val (.unsafe_get img-mat x y)]
+          ;; Local histogram calculation.
+          (dotimes [cj (inc radius)]
+            (dotimes [ci (inc radius)]
+              (let [wx (- (+ x ci) radius)
+                    wy (- (+ y cj) radius)
+                    gray-val (.unsafe_get img-mat wx wy)]
+                (->> (m/mult-aget ints hist gray-val)
+                     inc
+                     (m/mult-aset ints hist gray-val)))))
+          (if (< xy-val (int (otsu/compute-threshold (into [] hist)))) 
+            (.unsafe_set out-mat x y 0) (.unsafe_set out-mat x y 1))
+          )))
+    out))
+
+(defn adative-square
+  "Thresholds the image using an adaptive threshold that is computed using a local
+  square region centered on each pixel."
+  [img ^long radius ^long bias]
+  (-> (ThresholdImageOps/adaptiveSquare 
+        ^ImageUInt8 (:mat img) nil radius bias false nil nil)
+      (c/make-image :bw)))
+
 (defn threshold
   [img threshold & {:keys [down]}]
   (let [result (c/new-image (c/nrows img) (c/ncols img) :bw)
