@@ -74,6 +74,20 @@ Other way of doing this is taking the average of the RGB pixel values
 ;; <=
 ```
 
+To save an image into a disk file, we can use the function `save-image!`
+from the `eye-boof.io` namespace. The string path of the file tells the format
+representation of the image, like `jpg` or `png` for example. The supported
+formats are the same supported by `javax.imageio.ImageIO`, the underlying class
+to read/write image files.
+
+```clojure
+(save-image! color-img "color_eye.jpg")
+;; @@
+;; =>
+;;; true
+;; <=
+```
+
 ### Image segmentation
 
 [Image segmentation](http://en.wikipedia.org/wiki/Image_segmentation) is tipically used to locate objects and boundaries (lines, curves, etc.) in images. The simplest technique to achieve image segmentation is called [thresholding](thresholding), which is applied on a grayscale image and turns it into a binary image. Taking the Red band of our `color-img`, we can try to segment the pupil from the rest of the eye using the following code:
