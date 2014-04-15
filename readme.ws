@@ -107,6 +107,23 @@
 ;;; ![black-white eye](http://i58.tinypic.com/105nxwk.png)
 ;; **
 
+;; **
+;;; But there are some cases where the luminosity changes along the image and trying to segment it just using a single threshold value can result in undesired results. Let's see one example:
+;; **
+
+;; @@
+(def gray-sonnet (-> "http://homepages.inf.ed.ac.uk/rbf/HIPR2/images/son1.gif"
+                     (java.net.URL.)
+                     (load-image)))
+;; @@
+;; =>
+;;; #'user/gray-sonnet
+;; <=
+
+;; **
+;;; <img alt='sonnet for Lena' src='http://homepages.inf.ed.ac.uk/rbf/HIPR2/images/son1.gif' width='200'>
+;; **
+
 ;; @@
 
 ;; @@
