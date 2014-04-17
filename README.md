@@ -116,6 +116,40 @@ The above code results in a binary image, where most of the pupil is represented
 
 ![black-white eye](http://i58.tinypic.com/105nxwk.png)
 
+But there are some cases where the luminosity changes along the image and trying to segment it just using a single threshold value can result in undesired results. Let's see an example:
+
+```clojure
+(def gray-sonnet (-> "http://homepages.inf.ed.ac.uk/rbf/HIPR2/images/son1.gif"
+                     (java.net.URL.)
+                     (load-image)))
+
+(view gray-sonnet
+      (-> (threshold gray-sonnet :default 100) (m/* 255))
+      (-> (threshold gray-sonnet :default 150) (m/* 255)))
+```
+
+<div style='display:inline-block;width:100%;'>
+ <img alt='sonnet for Lena' src='http://homepages.inf.ed.ac.uk/rbf/HIPR2/images/son1.gif' width='200'> 
+ <img alt='sonnet for Lena' src='http://i60.tinypic.com/35k299t.png' width='200'>
+ <img alt='sonnet for Lena' src='http://i59.tinypic.com/27y1lyd.png' width='200'>
+</div>
+
+As we can see, there is not a global threshold value to achieve a good segmentation of the text. An alternative approach is to use local threshold values, like the `:adaptive-square` algorithm.
+
+```clojure
+
+(view gray-sonnet
+      (-> (threshold gray-sonnet :adaptive-square 15 -8) (m/* 255)))
+
+```
+
+<div style='display:inline-block;width:100%;'>
+ <img alt='sonnet for Lena' src='http://homepages.inf.ed.ac.uk/rbf/HIPR2/images/son1.gif' width='200'> 
+ <img alt='sonnet for Lena' src='http://i57.tinypic.com/29c2zrc.png' width='200'>
+</div>
+
+In the example above, the `:adaptive-square` threshold calculated a specific threshold value for each pixel of the image. The value was the result of calculating the average intensity of `15x15` square neighborhood and adding a bias of `-8`.
+
 ## License
 
 Copyright © 2013 Andre Boechat
