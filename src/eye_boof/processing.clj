@@ -3,7 +3,7 @@
     [eye-boof.core :as c]
     [eye-boof.helpers :as h]
     [eye-boof.image-statistics :as stat]
-    [eye-boof.matrices :as m]
+    [eye-boof.matrices :as m :only [mult-aget mult-aset]]
     [eye-boof.binary-ops :as bi]
     [eye-boof.segmentation.otsu :as otsu :only [compute-threshold]]
     [eye-boof.dev-tools :refer [block-apply]])
@@ -86,11 +86,11 @@
         gray (c/get-channel img 0)
         res (c/new-image nr nc :rgb)
         [rch gch bch] (c/get-channel res)]
-    (c/for-idx [idx img]
-      (let [p (c/get-pixel gray idx)]
-        (c/set-pixel! rch idx p)
-        (c/set-pixel! gch idx p)
-        (c/set-pixel! bch idx p)))
+    (c/for-xy [x y img]
+      (let [p (c/get-pixel gray x y)]
+        (c/set-pixel! rch x y p)
+        (c/set-pixel! gch x y p)
+        (c/set-pixel! bch x y p)))
     res))
 
 (defn binarize
@@ -169,7 +169,7 @@
           )))
     out))
 
-(defn adative-square
+(defn adaptive-square
   "Thresholds the image using an adaptive threshold that is computed using a local
   square region centered on each pixel."
   [img ^long radius ^long bias]
@@ -215,7 +215,7 @@
                  (c/set-pixel! out-ch x y)))))
       out-img)))
 
-(defn convolve
+#_(defn convolve
   "Applies a convolution mask over an image.
   mask is an one dimensional collection or array with (* mask-size mask-size)
   elements."
@@ -349,7 +349,7 @@
         scaler! (fn [^ImageSInt16 mat ^ImageUInt8 out]
                   (c/for-xy 
                     [x y img]
-                    (->> (m/mget :sint16 mat x y)
+                    (->> (.unsafe_get mat x y)
                          (Math/abs) 
                          (c/set-pixel! out x y)))
                   (c/make-image out :gray))]
@@ -369,8 +369,8 @@
     (GradientSobel/process (c/get-channel img 0) dx dy nil)
     (c/for-xy 
       [x y img]
-      (->> (Math/sqrt (+ (sq (m/mget :sint16 dx x y))
-                         (sq (m/mget :sint16 dy x y))))
+      (->> (Math/sqrt (+ (sq (.unsafe_get dx x y))
+                         (sq (.unsafe_get dy x y))))
            (c/set-pixel! out-ch x y)))
     (c/make-image out-ch :gray)))
 

@@ -1,6 +1,6 @@
 (ns eye-boof.core
   (:require
-    [eye-boof.matrices :as m])
+    [eye-boof.matrices :as m :only [mult-aset mult-aget]])
   (:import 
     [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]))
 
@@ -187,12 +187,9 @@
   [x, y] and ncols are provided, the array is handled as 2D matrix.
   Warning: idx is relative to the original or parent image, so it is dangerous to use it
   for sub-images, give preference to x and y indexing."
-  ([ch idx]
-   `(-> (m/mget :uint8 ~ch ~idx)
-        (bit-and ~0xff)))
-  ([ch x y]
-   `(-> (m/mget :uint8 ~ch ~x ~y)
-        (bit-and ~0xff))))
+  [ch x y]
+  `(.unsafe_get ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)
+                ~x ~y))
 
 (defn get-pixel*
   "Returns the value of the pixel [x, y] for a given image channel."
@@ -205,10 +202,9 @@
 (defmacro set-pixel! 
   "Sets the value of a pixel for a given channel's array. If coordinates [x, y] and
   ncols are provided, the array is handled as 2D matrix."
-  ([ch idx val]
-   `(m/mset! :uint8 ~ch ~idx ~val))
-  ([ch x y val]
-   `(m/mset! :uint8 ~ch ~x ~y ~val)))
+  [ch x y v]
+  `(.unsafe_set ~(vary-meta ch assoc :tag 'boofcv.struct.image.ImageUInt8)
+                ~x ~y ~v))
 
 (defn set-pixel!*
   "Sets the value of the [x, y] pixel for a given channel."
@@ -225,7 +221,7 @@
   "Returns a sub-image from the given image, both sharing the same internal
   data-array."
   [img x0 y0 width height]
-  (-> (:mat img)
+  (-> ^ImageUInt8 (:mat img)
       (.subimage x0 y0 (+ x0 width) (+ y0 height) nil)
       (make-image (:type img))))
 
@@ -285,9 +281,3 @@
                 (->> (get-pixel ich x y)
                      (set-pixel! och x y)))))))
 
-(defn print-img [img]
-  (let [nc (ncols img)
-        nr (nrows img)]
-    (dotimes [nchn (dimension img)]
-      (println "Channel" nchn)
-      (m/print-matrix (get-channel img nchn)))))
