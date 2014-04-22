@@ -1,0 +1,188 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+*	src/eye_boof/math.clj	/^(defn *$/;"	f
+aprox-area	src/eye_boof/features.clj	/^(defn aprox-area$/;"	f
+argb	src/eye_boof/helpers.clj	/^(defn argb<-intcolor$/;"	f
+asd	src/eye_boof/features.clj	/^;; ss-ocr.license-plate> (def asd (doall (repeatedly 1000000 #(rand-int 10000))))$/;"	d
+average-band	src/eye_boof/core.clj	/^(defn average-band$/;"	f
+average-channels	src/eye_boof/processing.clj	/^(defn average-channels$/;"	f
+b	src/eye_boof/helpers.clj	/^(defn b<-intcolor $/;"	f
+band	src/eye_boof/core.clj	/^(defn band $/;"	f
+benchmark	test/eye_boof/matrices_test.clj	/^(defn benchmark []$/;"	f
+big-blur	src/eye_boof/processing.clj	/^; (defn big-blur $/;"	f
+bin-img	test/eye_boof/binary_ops_test.clj	/^(def bin-img$/;"	d
+binarize	src/eye_boof/processing.clj	/^(defn binarize$/;"	f
+blob-height	src/eye_boof/features.clj	/^(defn blob-height$/;"	f
+blob-width	src/eye_boof/features.clj	/^(defn blob-width$/;"	f
+blobs-sorter	src/eye_boof/features.clj	/^(defn- blobs-sorter$/;"	f
+boofcv-logo	src/eye_boof/resources.clj	/^(def boofcv-logo$/;"	d
+bounding-box	src/eye_boof/drawing.clj	/^(defn bounding-box $/;"	f
+bounding-box	src/eye_boof/features.clj	/^(defn bounding-box$/;"	f
+buff-img-types	src/eye_boof/helpers.clj	/^(def buff-img-types$/;"	d
+bufferedImage	src/eye_boof/binary_ops.clj	/^(defn bufferedImage<-contours$/;"	f
+bufferedImage	src/eye_boof/binary_ops.clj	/^(defn bufferedImage<-labeled-image$/;"	f
+bw-buff-to-img	src/eye_boof/helpers.clj	/^(defn- bw-buff-to-img$/;"	f
+canny	test/eye_boof/canny_test.clj	/^(defn canny [] $/;"	f
+canny-edge	src/eye_boof/processing.clj	/^(defn canny-edge$/;"	f
+canny-edge	test/eye_boof/canny_test.clj	/^(defn canny-edge$/;"	f
+channel-to-vec	src/eye_boof/core.clj	/^;(defn channel-to-vec$/;"	f
+closing	src/eye_boof/binary_ops.clj	/^(defn closing $/;"	f
+clusters	src/eye_boof/binary_ops.clj	/^(defn clusters $/;"	f
+clusters-to-binary	src/eye_boof/binary_ops.clj	/^(defn clusters-to-binary$/;"	f
+compute-threshold	src/eye_boof/segmentation/otsu.clj	/^(defn compute-threshold$/;"	f
+contours	src/eye_boof/binary_ops.clj	/^(defn contours$/;"	f
+convolve	src/eye_boof/processing.clj	/^(defn convolve$/;"	f
+copy-image	src/eye_boof/core.clj	/^;(defn copy-image$/;"	f
+create-buffered-image	src/eye_boof/helpers.clj	/^(defn create-buffered-image$/;"	f
+crop	src/eye_boof/features.clj	/^(defn crop [feat]$/;"	f
+def-noargs-function	src/eye_boof/utils.clj	/^(defmacro def-noargs-function$/;"	m
+diff-abs	src/eye_boof/pixel_math.clj	/^(defn diff-abs [img1 img2]$/;"	f
+dilate	src/eye_boof/binary_ops.clj	/^(defn dilate [image rule]$/;"	f
+edge	src/eye_boof/binary_ops.clj	/^(defn edge [image rule]$/;"	f
+eq-histogram	src/eye_boof/processing.clj	/^(defn eq-histogram$/;"	f
+eq-local-histogram	src/eye_boof/processing.clj	/^(defn eq-local-histogram$/;"	f
+equal-images?	test/eye_boof/helpers_test.clj	/^(defn equal-images? [img1 img2]$/;"	f
+erode	src/eye_boof/binary_ops.clj	/^(defn erode [image rule]$/;"	f
+erode	src/eye_boof/processing.clj	/^; (defn erode$/;"	f
+extract-connected-features	src/eye_boof/features.clj	/^(defn extract-connected-features$/;"	f
+eye-boof.binary-ops	src/eye_boof/binary_ops.clj	/^(ns eye-boof.binary-ops$/;"	n
+eye-boof.canny-test	test/eye_boof/canny_test.clj	/^(ns eye-boof.canny-test$/;"	n
+eye-boof.core	src/eye_boof/core.clj	/^(ns eye-boof.core$/;"	n
+eye-boof.core-test	test/eye_boof/core_test.clj	/^(ns eye-boof.core-test$/;"	n
+eye-boof.drawing	src/eye_boof/drawing.clj	/^(ns eye-boof.drawing$/;"	n
+eye-boof.features	src/eye_boof/features.clj	/^(ns eye-boof.features $/;"	n
+eye-boof.geometric-transformations	src/eye_boof/geometric_transformations.clj	/^(ns eye-boof.geometric-transformations$/;"	n
+eye-boof.helpers	src/eye_boof/helpers.clj	/^(ns eye-boof.helpers$/;"	n
+eye-boof.image-border-test	test/eye_boof/image_border_test.clj	/^(ns eye-boof.image-border-test$/;"	n
+eye-boof.image-statistics	src/eye_boof/image_statistics.clj	/^(ns eye-boof.image-statistics$/;"	n
+eye-boof.io	src/eye_boof/io.clj	/^(ns eye-boof.io$/;"	n
+eye-boof.math	src/eye_boof/math.clj	/^(ns eye-boof.math$/;"	n
+eye-boof.matrices	src/eye_boof/matrices.clj	/^(ns eye-boof.matrices$/;"	n
+eye-boof.otsu-test	test/eye_boof/otsu_test.clj	/^(ns eye-boof.otsu-test$/;"	n
+eye-boof.pixel-math	src/eye_boof/pixel_math.clj	/^(ns eye-boof.pixel-math$/;"	n
+eye-boof.plate-test	test/eye_boof/plate_test.clj	/^(ns eye-boof.plate-test$/;"	n
+eye-boof.processing	src/eye_boof/processing.clj	/^(ns eye-boof.processing $/;"	n
+eye-boof.pyramid-test	test/eye_boof/pyramid_test.clj	/^(ns eye-boof.pyramid-test$/;"	n
+eye-boof.resources	src/eye_boof/resources.clj	/^(ns eye-boof.resources$/;"	n
+eye-boof.segmentation	src/eye_boof/segmentation.clj	/^(ns eye-boof.segmentation$/;"	n
+eye-boof.segmentation.otsu	src/eye_boof/segmentation/otsu.clj	/^(ns eye-boof.segmentation.otsu)$/;"	n
+eye-boof.statistics-test	test/eye_boof/statistics_test.clj	/^(ns eye-boof.statistics-test $/;"	n
+eye-boof.test.binary-ops-test	test/eye_boof/binary_ops_test.clj	/^(ns eye-boof.test.binary-ops-test$/;"	n
+eye-boof.test.helpers-test	test/eye_boof/helpers_test.clj	/^(ns eye-boof.test.helpers-test$/;"	n
+eye-boof.test.matrices-test	test/eye_boof/matrices_test.clj	/^(ns eye-boof.test.matrices-test$/;"	n
+eye-boof.utils	src/eye_boof/utils.clj	/^(ns eye-boof.utils$/;"	n
+eye-boof.vin-test	test/eye_boof/vin_test.clj	/^(ns eye-boof.vin-test$/;"	n
+eye-boof.visualize	src/eye_boof/visualize.clj	/^(ns eye-boof.visualize$/;"	n
+fit-polygon	src/eye_boof/features.clj	/^(defn fit-polygon$/;"	f
+fitting-polygons	test/eye_boof/canny_test.clj	/^(defn fitting-polygons []$/;"	f
+for-chs	src/eye_boof/core.clj	/^;(defmacro for-chs$/;"	m
+for-idx	src/eye_boof/core.clj	/^;(defmacro for-idx$/;"	m
+for-xy	src/eye_boof/core.clj	/^;(defmacro for-xy$/;"	m
+frame	src/eye_boof/visualize.clj	/^(defonce frame (atom (new-frame)))$/;"	c
+g	src/eye_boof/helpers.clj	/^(defn g<-intcolor $/;"	f
+gaussian-blur	src/eye_boof/processing.clj	/^(defn gaussian-blur$/;"	f
+get-external-contour	src/eye_boof/binary_ops.clj	/^(defn get-external-contour$/;"	f
+get-feature	src/eye_boof/features.clj	/^(defmacro get-feature [feature fn from]$/;"	m
+get-internal-contour	src/eye_boof/binary_ops.clj	/^(defn get-internal-contour$/;"	f
+get-pixel	src/eye_boof/matrices.clj	/^(defmacro get-pixel$/;"	m
+get-raster-array	src/eye_boof/helpers.clj	/^(defn get-raster-array$/;"	f
+gray-to-rgb	src/eye_boof/processing.clj	/^(defn gray-to-rgb$/;"	f
+grid-apply!	test/eye_boof/image_border_test.clj	/^(defn grid-apply!$/;"	f
+group-by-box	src/eye_boof/features.clj	/^(defn group-by-box$/;"	f
+group-by-box-as-features	src/eye_boof/features.clj	/^(defn group-by-box-as-features$/;"	f
+histogram	src/eye_boof/image_statistics.clj	/^(defn histogram $/;"	f
+image-data-type	src/eye_boof/matrices.clj	/^(def image-data-type$/;"	d
+image?	src/eye_boof/core.clj	/^(defn image?$/;"	f
+img	test/eye_boof/canny_test.clj	/^(def img (h\/load-file-image "test\/black_plate.jpg"))$/;"	d
+img-small-connected	src/eye_boof/resources.clj	/^(def img-small-connected$/;"	d
+img-test	test/eye_boof/plate_test.clj	/^(def img-test$/;"	d
+img-test	test/eye_boof/pyramid_test.clj	/^(def img-test (h\/load-file-image "test\/plate.jpg"))$/;"	d
+imgs	test/eye_boof/vin_test.clj	/^(def imgs $/;"	d
+indexes	test/eye_boof/image_border_test.clj	/^(defn indexes$/;"	f
+intcolor	src/eye_boof/helpers.clj	/^(defn intcolor<-argb$/;"	f
+invert	src/eye_boof/processing.clj	/^(defn invert $/;"	f
+invert-pixels	src/eye_boof/binary_ops.clj	/^(defn invert-pixels$/;"	f
+is-buffImg?	src/eye_boof/helpers.clj	/^(defn is-buffImg?$/;"	f
+label-to-binary	src/eye_boof/binary_ops.clj	/^;; (defn label-to-binary [])$/;"	f
+label-to-cluster	src/eye_boof/binary_ops.clj	/^;; (defn label-to-cluster [])$/;"	f
+labeled-image	src/eye_boof/binary_ops.clj	/^(defn labeled-image$/;"	f
+load-file-buffImg	src/eye_boof/helpers.clj	/^(defn load-file-buffImg$/;"	f
+load-file-image	src/eye_boof/helpers.clj	/^(defn load-file-image$/;"	f
+load-image	src/eye_boof/io.clj	/^(defn load-image$/;"	f
+logic-and	src/eye_boof/binary_ops.clj	/^(defn logic-and$/;"	f
+logic-or	src/eye_boof/binary_ops.clj	/^(defn logic-or [image1 image2]$/;"	f
+logic-xor	src/eye_boof/binary_ops.clj	/^(defn logic-xor [image1 image2]$/;"	f
+make-2d-point	src/eye_boof/features.clj	/^(defn make-2d-point$/;"	f
+make-matrix	src/eye_boof/matrices.clj	/^(defmacro make-matrix [type-kw w h]$/;"	m
+mean-binarize	src/eye_boof/processing.clj	/^(defn mean-binarize$/;"	f
+mean-blur	src/eye_boof/processing.clj	/^(defn mean-blur$/;"	f
+median-blur	src/eye_boof/processing.clj	/^(defn median-blur$/;"	f
+mget	src/eye_boof/matrices.clj	/^(defmacro mget$/;"	m
+mset!	src/eye_boof/matrices.clj	/^(defmacro mset! $/;"	m
+mult-aget	src/eye_boof/matrices.clj	/^(defmacro mult-aget$/;"	m
+mult-aset	src/eye_boof/matrices.clj	/^(defmacro mult-aset$/;"	m
+mult-chs-ops	src/eye_boof/processing.clj	/^(defn- mult-chs-ops$/;"	f
+mult-ops	src/eye_boof/processing.clj	/^(defmacro mult-ops$/;"	m
+ncols	src/eye_boof/core.clj	/^(def ncols "Alias to width fn." width)$/;"	d
+new-frame	src/eye_boof/visualize.clj	/^(defn- new-frame$/;"	f
+new-image	src/eye_boof/core.clj	/^(defn new-image$/;"	f
+nrows	src/eye_boof/core.clj	/^(def nrows "Alias to height fn." height)$/;"	d
+opening	src/eye_boof/binary_ops.clj	/^(defn opening $/;"	f
+pixel*	src/eye_boof/core.clj	/^(defmacro pixel*$/;"	m
+pre	test/eye_boof/vin_test.clj	/^(defn pre $/;"	f
+print-img	src/eye_boof/core.clj	/^;(defn print-img [img]$/;"	f
+print-matrix	src/eye_boof/matrices.clj	/^(defn print-matrix$/;"	f
+print-matrix!	src/eye_boof/core.clj	/^(defn print-matrix!$/;"	f
+pt-getter	src/eye_boof/features.clj	/^(defmacro pt-getter$/;"	m
+pts-in-box?	src/eye_boof/features.clj	/^(defn pts-in-box?$/;"	f
+pts-to-vec	src/eye_boof/features.clj	/^(defn pts-to-vec$/;"	f
+quantize	src/eye_boof/processing.clj	/^(defn quantize$/;"	f
+r	src/eye_boof/helpers.clj	/^(defn r<-intcolor $/;"	f
+rectangle-as-feature	src/eye_boof/features.clj	/^(defn rectangle-as-feature$/;"	f
+relabel	src/eye_boof/binary_ops.clj	/^;; (defn relabel [])$/;"	f
+remove-point-noise	src/eye_boof/binary_ops.clj	/^(defn remove-point-noise$/;"	f
+render-binary	src/eye_boof/binary_ops.clj	/^(defn render-binary$/;"	f
+rgb-to-gray	src/eye_boof/processing.clj	/^(defn rgb-to-gray$/;"	f
+rotate	src/eye_boof/processing.clj	/^(defn rotate $/;"	f
+save-image!	src/eye_boof/io.clj	/^(defn save-image!$/;"	f
+save-to-file!	src/eye_boof/helpers.clj	/^(defn save-to-file!$/;"	f
+scale	src/eye_boof/processing.clj	/^(defn scale$/;"	f
+scale-buffImg	src/eye_boof/processing.clj	/^(defn scale-buffImg$/;"	f
+scale-with-buff	src/eye_boof/processing.clj	/^(defn scale-with-buff$/;"	f
+set-feature-pixels-on-channel!	src/eye_boof/features.clj	/^(defn set-feature-pixels-on-channel!$/;"	f
+set-feature-pixels-on-image!	src/eye_boof/features.clj	/^(defn set-feature-pixels-on-image!$/;"	f
+set-pixel!	src/eye_boof/matrices.clj	/^(defmacro set-pixel!$/;"	m
+set-pixel!*	src/eye_boof/core.clj	/^(defmacro set-pixel!* $/;"	m
+sharpen-4	src/eye_boof/processing.clj	/^(defn sharpen-4$/;"	f
+sharpen-8	src/eye_boof/processing.clj	/^(defn sharpen-8$/;"	f
+sing-protocol	src/eye_boof/matrices.clj	/^(defmacro sing-protocol$/;"	m
+small-blur	src/eye_boof/processing.clj	/^; (defn small-blur $/;"	f
+smoothing	src/eye_boof/processing.clj	/^; ;(defn smoothing$/;"	f
+sobel-edge	src/eye_boof/processing.clj	/^(defn sobel-edge$/;"	f
+sobel-edges	src/eye_boof/processing.clj	/^(defn sobel-edges $/;"	f
+sobel-edges*	src/eye_boof/processing.clj	/^(defn sobel-edges*$/;"	f
+sort-by-x	src/eye_boof/features.clj	/^(defn sort-by-x$/;"	f
+sort-by-y	src/eye_boof/features.clj	/^(defn sort-by-y$/;"	f
+ss-ocr.test.features-test	test/eye_boof/features_test.clj	/^(ns ss-ocr.test.features-test$/;"	n
+threshold	src/eye_boof/processing.clj	/^(defn threshold$/;"	f
+threshold	src/eye_boof/segmentation.clj	/^(defmethod threshold :adaptive-square adaptive-square $/;"	b
+threshold	src/eye_boof/segmentation.clj	/^(defmethod threshold :default simple$/;"	b
+threshold	src/eye_boof/segmentation.clj	/^(defmethod threshold :global-otsu global-otsu $/;"	b
+threshold	src/eye_boof/segmentation.clj	/^(defmulti threshold$/;"	a
+to-buffered-image	src/eye_boof/helpers.clj	/^(defn to-buffered-image$/;"	f
+to-gray	src/eye_boof/processing.clj	/^(def to-gray rgb-to-gray)$/;"	d
+to-image	src/eye_boof/features.clj	/^(defn to-image$/;"	f
+to-img	src/eye_boof/helpers.clj	/^(defn to-img$/;"	f
+trapezoid?	src/eye_boof/features.clj	/^(defn trapezoid?$/;"	f
+view	src/eye_boof/visualize.clj	/^(defn view $/;"	f
+view*	src/eye_boof/visualize.clj	/^(defn view*$/;"	f
+view-contours	src/eye_boof/binary_ops.clj	/^;; (defn view-contours [contours img & opts]$/;"	f
+view-labeled-image	src/eye_boof/binary_ops.clj	/^;; (defn view-labeled-image$/;"	f
+view-new	src/eye_boof/visualize.clj	/^(defn view-new [& imgs]$/;"	f
+with-view-props	src/eye_boof/visualize.clj	/^(defmacro with-view-props$/;"	m
+x	src/eye_boof/features.clj	/^(defmacro x$/;"	m
+y	src/eye_boof/features.clj	/^(defmacro y $/;"	m
