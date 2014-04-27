@@ -63,7 +63,8 @@
         BufferedImage/TYPE_INT_BGR}
       (ConvertBufferedImage/convertFromMulti buff-image nil true ImageUInt8)
       
-      #{BufferedImage/TYPE_BYTE_GRAY BufferedImage/TYPE_BYTE_INDEXED}
+      #{BufferedImage/TYPE_BYTE_GRAY BufferedImage/TYPE_BYTE_INDEXED
+        BufferedImage/TYPE_BYTE_BINARY BufferedImage/TYPE_USHORT_GRAY}
       (ConvertBufferedImage/convertFromSingle buff-image nil ImageUInt8))))
 
 (defn save-image!
