@@ -154,3 +154,93 @@
 ;; **
 ;;; In the example above, the `:adaptive-square` threshold calculated a specific threshold value for each pixel of the image. The value was the result of calculating the average intensity of `15x15` square neighborhood and adding a bias of `-8`.
 ;; **
+
+;; **
+;;; ### Binary images
+;;; 
+;;; Binary images are images where each pixel can assume just two possible values, zero or one. One values are used to represent objects and zero values to represent the background. To use some standard techniques for binary image, we can use the `eye-boof.binary-ops` namespace.
+;; **
+
+;; @@
+(require '[eye-boof
+           [core :refer :all]
+           [io :refer [load-image]]
+           [visualize :refer [view]]
+           [math :as m]
+           [binary-ops :refer :all]])
+
+(def img (-> "http://upload.wikimedia.org/wikipedia/commons/1/19/Binary_coins.png"
+             (java.net.URL.)
+             load-image))
+;; @@
+;; =>
+;;; #'user/img
+;; <=
+
+;; **
+;;; <img src='http://upload.wikimedia.org/wikipedia/commons/1/19/Binary_coins.png' width='300'>
+;; **
+
+;; **
+;;; Although it seems a binary image, it is probably not using standard values (ones and zeros) to represent the object (the three circles) and the background because the number 1 is generally rendered almost as black as zero values. To prepare the image for binary operations, we can follow some steps:
+;;; 
+;;; * check the number of bands of the image.
+;; **
+
+;; @@
+(nbands img)
+;; @@
+;; =>
+;;; 1
+;; <=
+
+;; **
+;;; It's not good, a binary image should have just one band. As we can see, the image doesn't have colors, only gray intensities (probably zeros for black and 255 for white), which means that the pixels of each band should have the same intensity value and we can use just one band of the image, whatever band.
+;; **
+
+;; @@
+(band img 0)
+;; @@
+;; =>
+;;; #<ImageUInt8 boofcv.struct.image.ImageUInt8@27ebadf3>
+;; <=
+
+;; **
+;;; The new image looks like the original image, but it has just a single band. Now we can go to the next step...
+;;; 
+;;; * convert gray intensities to binary intensities.
+;; **
+
+;; @@
+(m// (band img 0) 255)
+;; @@
+;; =>
+;;; #<ImageUInt8 boofcv.struct.image.ImageUInt8@62b1fb50>
+;; <=
+
+;; **
+;;; The code above divides the pixels values by 255, which means that zero values are kept as zeros and 255 values become ones. If we try to visualize the result image, we'll see just a black image (we could check it by doing the opposite operation, multiplying the image by 255).
+;;; 
+;;; Let's go to the final step...
+;;; 
+;;; * invert the pixels values to represent objects by one values.
+;;; 
+;;; In our case, we already have the object correctly represented by ones since the object is white on the original image. So, we are ready to use the binary operations.
+;;; 
+;;; Let's start by applying the [erosion](http://en.wikipedia.org/wiki/Erosion_(morphology)) operation:
+;; **
+
+;; @@
+(-> (band img 0)
+    (m// 255)
+    (erode8)
+    (m/* 255)
+    (view img))
+;; @@
+;; =>
+;;; #<JFrame$Tag$fd407141 seesaw.core.proxy$javax.swing.JFrame$Tag$fd407141[frame0,683,0,1010x416,layout=java.awt.BorderLayout,title=Image Viewer,resizable,normal,defaultCloseOperation=HIDE_ON_CLOSE,rootPane=javax.swing.JRootPane[,2,18,1006x396,layout=javax.swing.JRootPane$RootLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=16777673,maximumSize=,minimumSize=,preferredSize=],rootPaneCheckingEnabled=true]>
+;; <=
+
+;; @@
+
+;; @@
