@@ -1,6 +1,6 @@
 (ns eye-boof.pixel-math
   (:require
-   [eye-boof.image-statistics :refer [def-noargs-function]]
+   [eye-boof.utils :refer [def-noargs-function]]
    [eye-boof.core :as c])
   (:import
    [boofcv.alg.misc PixelMath]))
