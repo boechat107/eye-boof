@@ -2,6 +2,9 @@
   (:require 
     [eye-boof.core :refer [new-image ncols nrows sub-image]]))
 
+(set! *warn-on-reflection* true)
+(set! *unchecked-math* true)
+
 (defn into-blocks
   "Divides an image into blocks of size x size and returns them as a lazy sequence."
   [img size]
@@ -23,3 +26,21 @@
            (into-blocks img size)
            (into-blocks out-img size)))
     out-img))
+
+(defmacro do-loop
+  "Initializes SYM as INIT and, if CHECK is true, executes the code and iterates 
+  again applying change to SYM. Intended to be used for side effects."
+  [[sym init check change] & code]
+  `(loop [~sym ~init]
+     (when ~check
+       (do ~@code (recur ~change)))))
+
+(defmacro for-loop
+  "Initializes SYM as INIT and, if CHECK is true, executes the code and iterates 
+  again applying change to SYM. OUT is used to store the result of code for each
+  iteration."
+  [[sym init check change] [out out-init] & code]
+  `(loop [~sym ~init, ~out ~out-init]
+     (if ~check
+       (recur ~change (do ~@code))
+       ~out)))
