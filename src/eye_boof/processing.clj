@@ -1,25 +1,22 @@
-(ns eye-boof.processing 
-  (:require 
-    [eye-boof.core :as c]
-    [eye-boof.helpers :as h]
-    [eye-boof.image-statistics :as stat]
-    [eye-boof.matrices :as m :only [mult-aget mult-aset]]
-    [eye-boof.binary-ops :as bi]
-    [eye-boof.segmentation.otsu :as otsu :only [compute-threshold]]
-    [eye-boof.dev-tools :refer [block-apply]])
-  (:import
-    [boofcv.struct.image ImageBase ImageUInt8 ImageSInt16 ImageFloat32 MultiSpectral]
-    [boofcv.alg.filter.blur BlurImageOps]
-    [boofcv.alg.filter.derivative GradientSobel]
-    [boofcv.alg.filter.binary ThresholdImageOps]
-    [boofcv.alg.distort DistortImageOps]
-    [boofcv.alg.interpolate TypeInterpolate]
-    [boofcv.alg.enhance EnhanceImageOps]
-    [boofcv.factory.feature.detect.edge FactoryEdgeDetectors]
-    [boofcv.alg.feature.detect.edge CannyEdge]
-    [boofcv.alg.misc PixelMath ImageStatistics]
-    [java.awt.geom AffineTransform]
-    [java.awt.image BufferedImage AffineTransformOp]))
+(ns eye-boof.processing
+  (:require [eye-boof.binary-ops :as bi]
+            [eye-boof.core :as c]
+            [eye-boof.dev-tools :refer [block-apply]]
+            [eye-boof.helpers :as h]
+            [eye-boof.image-statistics :as stat]
+            [eye-boof.matrices :as m]
+            [eye-boof.segmentation.otsu :as otsu])
+  (:import (boofcv.alg.distort DistortImageOps)
+           (boofcv.alg.enhance EnhanceImageOps)
+           (boofcv.alg.filter.binary ThresholdImageOps)
+           (boofcv.alg.filter.blur BlurImageOps)
+           (boofcv.alg.filter.derivative GradientSobel)
+           (boofcv.alg.interpolate TypeInterpolate)
+           (boofcv.alg.misc PixelMath)
+           (boofcv.factory.feature.detect.edge FactoryEdgeDetectors)
+           (boofcv.struct.image ImageSInt16 ImageUInt8 MultiSpectral)
+           (java.awt.geom AffineTransform)
+           (java.awt.image AffineTransformOp BufferedImage)))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -142,6 +139,10 @@
               (ThresholdImageOps/threshold 
                 ^ImageUInt8 (:mat img-in) ^ImageUInt8 (:mat img-out) th-val false)))]
     (assoc (block-apply img size th-fn) :type :bw)))
+
+(defmethod otsu-threshold :local otsu-local
+  [img & [_ radius]]
+  (c/make-image (otsu/local-threshold (:mat img) (long radius)) :bw))
 
 (defmethod otsu-threshold :pix-win pixel-window
   [img & [_ radius]]
