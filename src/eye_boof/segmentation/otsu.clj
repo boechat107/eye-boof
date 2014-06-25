@@ -48,13 +48,13 @@
     hist-ar))
 
 (defmacro partial-square
-  [[fix-axis x, mov-axis y] radius hist-ar & code]
+  [[fix-axis xc, mov-axis yc] radius hist-ar & code]
   (let [hist-ar (vary-meta hist-ar assoc :tag 'longs)]
     `(do
-       (do-loop [~mov-axis (- ~y ~radius) (<= ~y (+ ~y ~radius)) (inc ~y)]
-                (let [~fix-axis (- ~x ~radius)
+       (do-loop [~mov-axis (- ~yc ~radius) (<= ~mov-axis (+ ~yc ~radius)) (inc ~mov-axis)]
+                (let [~fix-axis (- ~xc ~radius)
                       dec-val# ~@code
-                      ~fix-axis (+ ~x ~radius)
+                      ~fix-axis (+ ~xc ~radius)
                       inc-val# ~@code]
                   (aset ~hist-ar dec-val# (dec (aget ~hist-ar dec-val#)))
                   (aset ~hist-ar inc-val# (inc (aget ~hist-ar inc-val#)))))
@@ -68,7 +68,7 @@
         w (.getWidth mat)
         h (.getHeight mat)
         out (ImageUInt8. w h)]
-    (for-loop [y radius (<= y (- h radius)) (inc y)] 
+    (for-loop [y radius (< y (- h radius)) (inc y)] 
               [vhist (fs! (long-array 256) radius radius)]
       ;; Calculating the histogram for a pixel of the first image's column.
       (let [updated-vhist (partial-square [i radius, j y] radius vhist
@@ -78,7 +78,7 @@
                             (compute-threshold (vec updated-vhist)))
                        0 1))
         ;; Loop to calculate the pixels of the other columns of the same row.
-        (for-loop [x (inc radius) (<= x (- w radius)) (inc x)]
+        (for-loop [x (inc radius) (< x (- w radius)) (inc x)]
                   [xhist (aclone ^longs vhist)]
           (let [updated-xhist (partial-square [j y, i x] radius xhist 
                                               (.unsafe_get mat i j))]
