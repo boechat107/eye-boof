@@ -42,21 +42,22 @@
   [^ImageUInt8 mat ^long radius]
   (fn full-square! [^longs hist-ar ^long x ^long y]
     (do-loop [i (- x radius) (<= i (+ x radius)) (inc i)]
-             (do-loop [j (- y radius) (<= j (+ y radius)) (inc j)]
+             (do-loop [j (- y radius) (< j (+ y radius)) (inc j)]
                       (let [pix-val (.unsafe_get mat i j)]
                         (aset hist-ar pix-val (inc (aget hist-ar pix-val))))))
     hist-ar))
 
 (defmacro partial-square
-  [[fix-axis xc, mov-axis yc] radius hist-ar & code]
+  [[fix-sym xc, mov-sym yc] radius hist-ar & code]
   (let [hist-ar (vary-meta hist-ar assoc :tag 'longs)]
     `(do
-       (do-loop [~mov-axis (- ~yc ~radius) (<= ~mov-axis (+ ~yc ~radius)) (inc ~mov-axis)]
-                (let [~fix-axis (- ~xc ~radius)
+       (do-loop [~mov-sym (- ~yc ~radius) (<= ~mov-sym (+ ~yc ~radius)) (inc ~mov-sym)]
+                (let [~fix-sym (- ~xc (inc ~radius))
                       dec-val# ~@code
-                      ~fix-axis (+ ~xc ~radius)
+                      ~fix-sym (+ ~xc ~radius)
                       inc-val# ~@code]
-                  (aset ~hist-ar dec-val# (dec (aget ~hist-ar dec-val#)))
+                  (when (pos? dec-val#)
+                    (aset ~hist-ar dec-val# (dec (aget ~hist-ar dec-val#))))
                   (aset ~hist-ar inc-val# (inc (aget ~hist-ar inc-val#)))))
        ~hist-ar)))
 
@@ -71,16 +72,16 @@
     (for-loop [y radius (< y (- h radius)) (inc y)] 
               [vhist (fs! (long-array 256) radius radius)]
       ;; Calculating the histogram for a pixel of the first image's column.
-      (let [updated-vhist (partial-square [i radius, j y] radius vhist
-                                          (.unsafe_get mat i j))]
+      (let [updated-vhist (partial-square [j y, i radius] radius vhist
+                                          (if (neg? j) -1 (.unsafe_get mat i j)))]
         (.unsafe_set out radius y 
                      (if (< (.unsafe_get mat radius y)
                             (compute-threshold (vec updated-vhist)))
                        0 1))
         ;; Loop to calculate the pixels of the other columns of the same row.
         (for-loop [x (inc radius) (< x (- w radius)) (inc x)]
-                  [xhist (aclone ^longs vhist)]
-          (let [updated-xhist (partial-square [j y, i x] radius xhist 
+                  [xhist (aclone ^longs updated-vhist)]
+          (let [updated-xhist (partial-square [i x, j y] radius xhist 
                                               (.unsafe_get mat i j))]
             (.unsafe_set out x y (if (< (.unsafe_get mat x y)
                                         (compute-threshold (vec updated-xhist)))
