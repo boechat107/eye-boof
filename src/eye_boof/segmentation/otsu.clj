@@ -37,15 +37,18 @@
                    (if (> bvar max-var) th-idx th-max))))))))
 
 (defn full-square-fn
-  "Returns a function that calculates the histogram of a square neighbor considering
+  "Returns a function that returns the histogram of a square neighbor considering
   all its pixels."
   [^ImageUInt8 mat ^long radius]
-  (fn full-square! [^longs hist-ar ^long x ^long y]
-    (do-loop [i (- x radius) (<= i (+ x radius)) (inc i)]
-             (do-loop [j (- y radius) (< j (+ y radius)) (inc j)]
-                      (let [pix-val (.unsafe_get mat i j)]
-                        (aset hist-ar pix-val (inc (aget hist-ar pix-val))))))
-    hist-ar))
+  (fn full-square 
+    ([^long x ^long y] (full-square x y 0))
+    ([^long x ^long y ^long offset-y]
+     (let [hist-ar (long-array 256)]
+       (do-loop [i (- x radius) (<= i (+ x radius)) (inc i)]
+                (do-loop [j (- y radius) (<= j (+ offset-y (+ y radius))) (inc j)]
+                         (let [pix-val (.unsafe_get mat i j)]
+                           (aset hist-ar pix-val (inc (aget hist-ar pix-val))))))
+       hist-ar))))
 
 (defmacro partial-square
   [[fix-sym xc, mov-sym yc] radius hist-ar & code]
@@ -65,12 +68,12 @@
   "Applies the Otsu method locally, pixel based. For each pixel, the threshold value
   depends on its square neighbor of (radius+1)x(radius+1) size."
   [^ImageUInt8 mat ^long radius]
-  (let [fs! (full-square-fn mat radius)
+  (let [fs (full-square-fn mat radius)
         w (.getWidth mat)
         h (.getHeight mat)
         out (ImageUInt8. w h)]
     (for-loop [y radius (< y (- h radius)) (inc y)] 
-              [vhist (fs! (long-array 256) radius radius)]
+              [vhist (fs radius radius -1)]
       ;; Calculating the histogram for a pixel of the first image's column.
       (let [updated-vhist (partial-square [j y, i radius] radius vhist
                                           (if (neg? j) -1 (.unsafe_get mat i j)))]
