@@ -1,16 +1,9 @@
 (ns eye-boof.drawing
-  (:require 
-    [eye-boof 
-     [core :as c :only [make-image]]
-     [features :as ft]
-     [processing :as p :only [gray-to-rgb]]
-     [helpers :as h :only [to-buffered-image]]
-     [binary-ops :as bi :only [render-binary]]])
-  (:import 
-    [boofcv.gui.feature VisualizeShapes]
-    [boofcv.alg.feature.shapes ShapeFittingOps]
-    [java.awt Graphics2D BasicStroke Color]
-    [java.awt.image BufferedImage]))
+  (:require [eye-boof.features :as ft]
+            [eye-boof.helpers :as h])
+  (:import (boofcv.gui.feature VisualizeShapes)
+           (java.awt BasicStroke Color)
+           (java.awt.image BufferedImage)))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -37,17 +30,17 @@
      buff)))
 
 (defn draw-polygons
-  "Returns an image where the given polygons (sequence of points) is painted on the
-  image. The RGB color (vector) of the painting should be specified. If the end
-  points are connected, closed? must be true."
-  [img color closed? dist-tol ang-tol & polys]
-  (let [buff (-> (bi/render-binary img) p/gray-to-rgb h/to-buffered-image)
+  "Returns an image where the given polygons is painted on the image with the [r g b]
+  color. If the end points are connected, closed? must be true.
+  Each polygon is a sequence of Point2D_I32 and, if it has a loop, they are
+  considered in counterclockwise."
+  [img color closed? & polys]
+  (let [buff (h/to-buffered-image img)
         graph (.createGraphics buff)
         [^int r ^int g ^int b] color
         c (Color. r g b)]
     (.setStroke graph (BasicStroke. 2))
     (.setColor graph (Color. r g b))
-    (doseq [poly polys]
-      (-> (ShapeFittingOps/fitPolygon poly closed? dist-tol ang-tol 100)
-          (VisualizeShapes/drawPolygon closed? graph)))
+    (doseq [p polys]
+      (VisualizeShapes/drawPolygon p closed? graph))
     (h/to-img buff)))
