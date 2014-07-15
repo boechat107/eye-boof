@@ -1,35 +1,41 @@
 (ns eye-boof.segmentation.otsu
-  (:require [eye-boof.dev-tools :refer [do-loop for-loop]])
+  (:require [eye-boof.dev-tools :refer [do-loop for-loop]]
+            [hiphip.long :as hi :only [asum]]
+            [primitive-math :refer [use-primitive-operators]]
+            )
   (:import (boofcv.struct.image ImageUInt8)))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
 
+(use-primitive-operators)
+
 (defn compute-threshold
   "Returns the threshold value that maximizes the between-class variance for a 
   given vector representing a histogram."
-  ^long [hist-vec]
-  (let [hist-sum (long (reduce + hist-vec))
-        hist-idx-sum (->> (map * hist-vec (range (count hist-vec)))
-                          (reduce +)
-                          long)]
+  ^long [^longs hist-ar]
+  (let [hist-sum (long (hi/asum hist-ar))
+        hist-idx-sum (double 
+                       (areduce hist-ar i
+                                ret 0
+                                (-> (aget hist-ar i) (* i) (+ ret))))]
     (loop [th-idx 0, acc 0, i*acc 0.0, 
            max-var 0.0, th-max -1]
-      (let [idx-val (long (hist-vec th-idx))
+      (let [idx-val (aget hist-ar th-idx)
             w1 (+ acc idx-val)
             w2 (- hist-sum w1)]
         (cond 
           ;; At the last possible th-idx, w1 should equal to hist-sum.
           (zero? w2) th-max
-          (zero? w1) (recur (inc th-idx) w1 i*acc max-var th-max)
+          (zero? w1) (recur (inc th-idx) (int w1) i*acc max-var th-max)
           :else
-          (let [new-i*acc (+ i*acc (* th-idx idx-val))
-                mu1 (/ new-i*acc w1)
-                mu2 (/ (- hist-idx-sum new-i*acc) w2)
+          (let [new-i*acc (+ i*acc (double (* th-idx idx-val)))
+                mu1 (/ new-i*acc (double w1))
+                mu2 (/ (- hist-idx-sum new-i*acc) (double w2))
                 diff-mu (- mu1 mu2)
                 bvar (-> (* diff-mu diff-mu)
-                         (* w1)
-                         (* w2))]
+                         (* (double w1))
+                         (* (double w2)))]
             (recur (inc th-idx)
                    w1
                    new-i*acc 
@@ -79,7 +85,7 @@
                                           (if (neg? j) -1 (.unsafe_get mat i j)))]
         (.unsafe_set out radius y 
                      (if (< (.unsafe_get mat radius y)
-                            (compute-threshold (vec updated-vhist)))
+                            (compute-threshold updated-vhist))
                        0 1))
         ;; Loop to calculate the pixels of the other columns of the same row.
         (for-loop [x (inc radius) (< x (- w radius)) (inc x)]
@@ -87,7 +93,7 @@
           (let [updated-xhist (partial-square [i x, j y] radius xhist 
                                               (.unsafe_get mat i j))]
             (.unsafe_set out x y (if (< (.unsafe_get mat x y)
-                                        (compute-threshold (vec updated-xhist)))
+                                        (compute-threshold updated-xhist))
                                    0 1))
             updated-xhist))
         updated-vhist))

@@ -9,5 +9,8 @@
                  [org.boofcv/visualize "0.16"]
                  [org.boofcv/geo "0.16"]
                  [org.ddogleg/ddogleg "0.4"]
-                 [seesaw "1.4.3"]]
+                 [seesaw "1.4.3"]
+                 [prismatic/hiphip "0.2.0"]
+                 [primitive-math "0.1.3"]
+                 ]
   )

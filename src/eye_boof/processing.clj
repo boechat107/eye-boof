@@ -12,7 +12,7 @@
            (boofcv.alg.filter.blur BlurImageOps)
            (boofcv.alg.filter.derivative GradientSobel)
            (boofcv.alg.interpolate TypeInterpolate)
-           (boofcv.alg.misc PixelMath)
+           (boofcv.alg.misc ImageStatistics PixelMath)
            (boofcv.factory.feature.detect.edge FactoryEdgeDetectors)
            (boofcv.struct.image ImageSInt16 ImageUInt8 MultiSpectral)
            (java.awt.geom AffineTransform)
@@ -126,9 +126,9 @@
 
 (defmethod otsu-threshold :default otsu-global
   [img & _]
-  (->> (stat/histogram img 0 256)
-       (otsu/compute-threshold)
-       (binarize img)))
+  (let [hist (int-array 256)]
+    (ImageStatistics/histogram ^ImageUInt8 (:mat img) hist)
+    (binarize img (otsu/compute-threshold hist))))
 
 (defmethod otsu-threshold :block otsu-block
   [img & [_ size]]
