@@ -1,7 +1,8 @@
 (ns eye-boof.segmentation.otsu
   (:require [eye-boof.dev-tools :refer [do-loop for-loop]]
-            [hiphip.long :as hi :only [asum]]
-            [primitive-math :refer [use-primitive-operators]]
+            [hiphip.int :as hi :only [asum]]
+            [primitive-math :refer [use-primitive-operators 
+                                    unuse-primitive-operators]]
             )
   (:import (boofcv.struct.image ImageUInt8)))
 
@@ -13,13 +14,13 @@
 (defn compute-threshold
   "Returns the threshold value that maximizes the between-class variance for a 
   given vector representing a histogram."
-  ^long [^longs hist-ar]
-  (let [hist-sum (long (hi/asum hist-ar))
+  ^long [^ints hist-ar]
+  (let [hist-sum (int (hi/asum hist-ar))
         hist-idx-sum (double 
                        (areduce hist-ar i
                                 ret 0
                                 (-> (aget hist-ar i) (* i) (+ ret))))]
-    (loop [th-idx 0, acc 0, i*acc 0.0, 
+    (loop [th-idx 0, acc 0, i*acc 0, 
            max-var 0.0, th-max -1]
       (let [idx-val (aget hist-ar th-idx)
             w1 (+ acc idx-val)
@@ -27,11 +28,11 @@
         (cond 
           ;; At the last possible th-idx, w1 should equal to hist-sum.
           (zero? w2) th-max
-          (zero? w1) (recur (inc th-idx) (int w1) i*acc max-var th-max)
+          (zero? w1) (recur (inc th-idx) w1 i*acc max-var th-max)
           :else
-          (let [new-i*acc (+ i*acc (double (* th-idx idx-val)))
-                mu1 (/ new-i*acc (double w1))
-                mu2 (/ (- hist-idx-sum new-i*acc) (double w2))
+          (let [new-i*acc (+ i*acc (* th-idx idx-val))
+                mu1 (/ (double new-i*acc) (double w1))
+                mu2 (/ (- hist-idx-sum (double new-i*acc)) (double w2))
                 diff-mu (- mu1 mu2)
                 bvar (-> (* diff-mu diff-mu)
                          (* (double w1))
@@ -49,7 +50,7 @@
   (fn full-square 
     ([^long x ^long y] (full-square x y 0))
     ([^long x ^long y ^long offset-y]
-     (let [hist-ar (long-array 256)]
+     (let [hist-ar (int-array 256)]
        (do-loop [i (- x radius) (<= i (+ x radius)) (inc i)]
                 (do-loop [j (- y radius) (<= j (+ offset-y (+ y radius))) (inc j)]
                          (let [pix-val (.unsafe_get mat i j)]
@@ -58,7 +59,7 @@
 
 (defmacro partial-square
   [[fix-sym xc, mov-sym yc] radius hist-ar & code]
-  (let [hist-ar (vary-meta hist-ar assoc :tag 'longs)]
+  (let [hist-ar (vary-meta hist-ar assoc :tag 'ints)]
     `(do
        (do-loop [~mov-sym (- ~yc ~radius) (<= ~mov-sym (+ ~yc ~radius)) (inc ~mov-sym)]
                 (let [~fix-sym (- ~xc (inc ~radius))
@@ -89,7 +90,7 @@
                        0 1))
         ;; Loop to calculate the pixels of the other columns of the same row.
         (for-loop [x (inc radius) (< x (- w radius)) (inc x)]
-                  [xhist (aclone ^longs updated-vhist)]
+                  [xhist (aclone ^ints updated-vhist)]
           (let [updated-xhist (partial-square [i x, j y] radius xhist 
                                               (.unsafe_get mat i j))]
             (.unsafe_set out x y (if (< (.unsafe_get mat x y)
