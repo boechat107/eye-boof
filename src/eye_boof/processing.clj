@@ -133,11 +133,11 @@
 (defmethod otsu-threshold :block otsu-block
   [img & [_ size]]
   (letfn [(th-fn [img-in img-out]
-            (let [th-val (-> (stat/histogram img-in 0 256)
-                             (otsu/compute-threshold)
-                             int)] 
+            (let [hist (int-array 256)]
+              (ImageStatistics/histogram (:mat img-in) hist)
               (ThresholdImageOps/threshold 
-                ^ImageUInt8 (:mat img-in) ^ImageUInt8 (:mat img-out) th-val false)))]
+                ^ImageUInt8 (:mat img-in) ^ImageUInt8 (:mat img-out)
+                (int (otsu/compute-threshold hist)) false)))]
     (assoc (block-apply img size th-fn) :type :bw)))
 
 (defmethod otsu-threshold :local otsu-local
@@ -148,24 +148,24 @@
   [img & [_ radius]]
   (let [radius (long radius)
         out (c/new-image (c/nrows img) (c/ncols img) :bw)
-        hist (int-array 256 0)
         ^ImageUInt8 out-mat (:mat out)
         ^ImageUInt8 img-mat (:mat img)]
     (dotimes [j (- (c/nrows img) (* 2 radius))]
       (dotimes [i (- (c/ncols img) (* 2 radius))]
         (let [x (+ i radius)
               y (+ j radius)
+              hist (int-array 256 0)
               xy-val (.unsafe_get img-mat x y)]
           ;; Local histogram calculation.
-          (dotimes [cj (inc radius)]
-            (dotimes [ci (inc radius)]
+          (dotimes [cj (* 2 radius)]
+            (dotimes [ci (* 2 radius)]
               (let [wx (- (+ x ci) radius)
                     wy (- (+ y cj) radius)
                     gray-val (.unsafe_get img-mat wx wy)]
                 (->> (m/mult-aget ints hist gray-val)
                      inc
                      (m/mult-aset ints hist gray-val)))))
-          (if (< xy-val (int (otsu/compute-threshold (into [] hist)))) 
+          (if (< xy-val (int (otsu/compute-threshold hist))) 
             (.unsafe_set out-mat x y 0) (.unsafe_set out-mat x y 1))
           )))
     out))
