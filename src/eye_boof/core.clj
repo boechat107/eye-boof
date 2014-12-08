@@ -8,6 +8,8 @@
      ImageBase
      ImageInteger
      ImageUInt8
+     ImageFloat32
+     ImageSInt16
      ImageSingleBand
      MultiSpectral]
     [boofcv.alg.misc PixelMath]))
@@ -16,18 +18,26 @@
 (set! *unchecked-math* true)
 
 (defn new-image
-  "Returns an ImageUInt8 or MultiSpectral object with the given width and height."
-  ([w h] (new-image w h 1))
-  ([w h nb]
-   (if (> nb 1)
-     (MultiSpectral. ImageUInt8 w h nb)
-     (ImageUInt8. w h))))
+  "Returns an SingleBand or MultiSpectral images with the given width, height and
+  type. MultiSpectral images are created with nb bands greater than 1. 
+  Available image types:
+  * :float32
+  * :sint16
+  * :uint8"
+  ([w h itype] (new-image w h itype 1))
+  ([w h itype nb]
+   (let [img-class (case itype
+                     :float32 ImageFloat32
+                     :sint16 ImageSInt16
+                     :uint8 ImageUInt8)]
+     (if (> nb 1)
+       (MultiSpectral. img-class w h nb)
+       (clojure.lang.Reflector/invokeConstructor img-class (into-array Object [w h]))))))
 
 (defn image?
-  "Returns true if the given object is an ImageUInt8 or MultiSpectral."
+  "Returns true if the given object is a BoofCV data structure."
   [obj]
-  (or (instance? boofcv.struct.image.ImageUInt8 obj)
-      (instance? boofcv.struct.image.MultiSpectral obj)))
+  (instance? ImageBase obj))
 
 (defmacro pixel*
   "Returns the intensity of the pixel [x, y]. Only ImageUInt8 images are supported.
@@ -117,67 +127,3 @@
   (let [^ImageUInt8 out-img (new-image (width img) (height img))]
     (PixelMath/averageBand img out-img)
     out-img))
-
-;
-;(defn channel-to-vec
-;  "Returns an integer clojure vector of the pixels' value of a specific channel."
-;  ([img]
-;     (channel-to-vec img 0))
-;  ([img ch]
-;     (let [ch-array (get-channel img ch)]
-;       (if (sub-image? img)
-;         (vec (for [x (range (ncols img)), y (range (nrows img))] 
-;                (get-pixel ch-array x y)))
-;         (mapv #(bit-and % 0xff) (seq (.data ch-array)))))))
-;
-;(defmacro for-idx
-;  "Iterates over all pixels of img, binding the pixel's index to idx. The iteration
-;  runs over row after row.
-;  Ex.:
-;  (for-idx [idx img]
-;    body)"
-;  ;; fixme: use stride and startindex
-;  ;; Make a single one macro for-img which embodies for-idx and for-xy
-;  [[idx img] & body]
-;  `(let [nr# (nrows ~img)
-;         nc# (ncols ~img)]
-;     (dotimes [y# nr#]
-;       (dotimes [x# nc#]
-;         (let [~idx (+ x# (* y# nc#))]
-;           ~@body)))))
-;
-;(defmacro for-xy
-;  "Iterates over all pixels of an image, binding the pixels' index to [x, y]."
-;  [[x y img] & body]
-;  `(let [nr# (nrows ~img)
-;         nc# (ncols ~img)]
-;     (dotimes [~x nc#]
-;       (dotimes [~y nr#]
-;         ~@body))))
-;
-;(defmacro for-chs
-;  "Binds the channels of images to a local variable.
-;  Ex.:
-;  (for-chs [img-ch img, res-ch res]
-;    body)"
-;  [chs-imgs & body]
-;  `(let [])
-;  )
-;
-;(defn copy-image
-;  "Returns a copy of a given image."
-;  [img]
-;  (let [out (new-image (nrows img) (ncols img) (:type img))]
-;    (dotimes [ch (dimension img)]
-;      (let [och (get-channel out ch)
-;            ich (get-channel img ch)]
-;        (for-xy [x y img]
-;                (->> (get-pixel ich x y)
-;                     (set-pixel! och x y)))))))
-;
-;(defn print-img [img]
-;  (let [nc (ncols img)
-;        nr (nrows img)]
-;    (dotimes [nchn (dimension img)]
-;      (println "Channel" nchn)
-;      (m/print-matrix (get-channel img nchn)))))
