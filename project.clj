@@ -1,4 +1,4 @@
-(defproject org.clojars.boechat107/eye-boof "1.1.0"
+(defproject eye-boof/eye-boof "1.2.0-SNAPSHOT"
   :description "Clojure image processing library using BoofCV."
   :url "https://github.com/boechat107/eye-boof"
   :license {:name "Eclipse Public License"
