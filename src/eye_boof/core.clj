@@ -63,9 +63,9 @@
                  parent image.")
   (height [img] "Returns the number of rows of an Image.")
   (width [img] "Returns the number of columns of an Image.")
-  (sub-image [img x0 y0 w h]
+  (sub-image [img x0 y0 x1 y1]
              "Returns a sub-image from the given image, both sharing the same
-             internal data-array.")
+             internal data-array. The coordinates [x1, y1] are not inclusive.")
   (sub-image? [img])
   (pixel [img x y]
          "Returns the intensity of the pixel [x, y]. If the given image has more than
@@ -86,13 +86,15 @@
                               stride (.stride img)]
                           [(rem start-idx stride) (quot start-idx stride)]))
        :sub-image? (fn [^ImageBase img] (.isSubimage img))}
+      ;; Implementations for SingleBand images.
       single-band
-      {:sub-image (fn [img x0 y0 w h]
-                    (.subimage ^ImageSingleBand img x0 y0 (+ x0 w) (+ y0 h) nil))
+      {:sub-image (fn [img x0 y0 x1 y1]
+                    (.subimage ^ImageSingleBand img x0 y0 x1 y1 nil))
        :nbands (fn [img] 1)}
+      ;; Implementations for MultiSpectral images.
       multispectral 
-      {:sub-image (fn [img x0 y0 w h]
-                    (.subimage ^MultiSpectral img x0 y0 (+ x0 w) (+ y0 h) nil))
+      {:sub-image (fn [img x0 y0 x1 y1]
+                    (.subimage ^MultiSpectral img x0 y0 x1 y1 nil))
        :nbands (fn [^MultiSpectral img] (.getNumBands img))}]
   (extend ImageUInt8
     PImage
