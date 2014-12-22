@@ -101,6 +101,20 @@
     (merge base single-band
            {:set-pixel! (fn [^ImageUInt8 img x y v] (set-pixel!* img x y v))
             :pixel (fn [img x y] (pixel* img x y))}))
+  (extend ImageSInt16 
+    PImage
+    (merge base single-band
+           {:set-pixel! (fn [^ImageSInt16 img x y v] 
+                          (.unsafe_set img x y v))
+            :pixel (fn [^ImageSInt16 img x y] 
+                     (.unsafe_get img x y))}))
+  (extend ImageFloat32
+    PImage
+    (merge base single-band
+           {:set-pixel! (fn [^ImageFloat32 img x y v] 
+                          (.unsafe_set img x y v))
+            :pixel (fn [^ImageFloat32 img x y] 
+                     (.unsafe_get img x y))}))
   (extend MultiSpectral 
     PImage
     (merge base multispectral
