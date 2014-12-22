@@ -7,5 +7,6 @@
                  [org.boofcv/ip "0.16"]
                  [seesaw "1.4.3"]
                  [net.mikera/clojure-utils "0.5.0"]
-                 [prismatic/hiphip "0.2.0"]]
+                 [prismatic/hiphip "0.2.0"]
+                 [org.clojure/algo.generic "0.1.2"]]
   :java-source-paths ["java"])

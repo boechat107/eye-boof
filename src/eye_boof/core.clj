@@ -3,6 +3,8 @@
   structures.
   An image is considered to be an ImageUInt8 or a MultiSpectral with n ImageUInt8
   bands."
+  (:require [clojure.algo.generic.arithmetic :refer [* /]])
+  (:refer-clojure :exclude [* /])
   (:import 
     [boofcv.struct.image
      ImageBase
@@ -143,3 +145,44 @@
   (let [^ImageUInt8 out-img (new-image (width img) (height img))]
     (PixelMath/averageBand img out-img)
     out-img))
+
+;; ===================================================
+;; Arithmetic operations with images
+;; ===================================================
+
+(defn- g* 
+  [^ImageBase img ^double x itype]
+  (condp = itype
+    :uint8 (let [^ImageUInt8 out (new-image (width img) (height img) :uint8)]
+             (PixelMath/multiply ^ImageUInt8 img x out)
+             out)
+    :float32 (let [^ImageFloat32 out (new-image (width img) (height img) :float32)]
+               (PixelMath/multiply ^ImageFloat32 img x out)
+               out)
+    :sint16 (let [^ImageSInt16 out (new-image (width img) (height img) :sint16)]
+               (PixelMath/multiply ^ImageSInt16 img x out)
+               out)))
+
+(defmethod * [boofcv.struct.image.ImageUInt8 java.lang.Number]
+  [img x]
+  (g* img x :uint8))
+
+(defmethod * [java.lang.Number boofcv.struct.image.ImageUInt8]
+  [x img]
+  (g* img x :uint8))
+
+(defmethod * [boofcv.struct.image.ImageSInt16 java.lang.Number]
+  [img x]
+  (g* img x :sint16))
+
+(defmethod * [java.lang.Number boofcv.struct.image.ImageSInt16]
+  [x img]
+  (g* img x :sint16))
+
+(defmethod * [boofcv.struct.image.ImageFloat32 java.lang.Number]
+  [img x]
+  (g* img x :float32))
+
+(defmethod * [java.lang.Number boofcv.struct.image.ImageFloat32]
+  [x img]
+  (g* img x :float32))
