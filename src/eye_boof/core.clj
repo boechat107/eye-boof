@@ -19,6 +19,12 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
 
+(def types-map
+  (let [m {:float32 ImageFloat32
+           :sint16 ImageSInt16
+           :uint8 ImageUInt8}]
+    (merge m (clojure.set/map-invert m))))
+
 (defn new-image
   "Returns an SingleBand or MultiSpectral images with the given width, height and
   type. MultiSpectral images are created with nb bands greater than 1. 
@@ -28,10 +34,7 @@
   * :uint8"
   ([w h itype] (new-image w h itype 1))
   ([w h itype nb]
-   (let [img-class (case itype
-                     :float32 ImageFloat32
-                     :sint16 ImageSInt16
-                     :uint8 ImageUInt8)]
+   (let [img-class (types-map itype)]
      (if (> nb 1)
        (MultiSpectral. img-class w h nb)
        (clojure.lang.Reflector/invokeConstructor img-class (into-array Object [w h]))))))
