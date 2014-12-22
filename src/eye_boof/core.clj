@@ -189,3 +189,15 @@
 (defmethod * [java.lang.Number boofcv.struct.image.ImageFloat32]
   [x img]
   (g* img x :float32))
+
+(defmethod * [boofcv.struct.image.ImageFloat32 boofcv.struct.image.ImageFloat32]
+  [^ImageFloat32 imgx ^ImageFloat32 imgy]
+  (let [^ImageFloat32 out (new-image (width img) (height img) :float32)]
+    (PixelMath/multiply imgx imgy out)
+    out))
+
+(defmethod / [boofcv.struct.image.ImageUInt8 java.lang.Number]
+  [^ImageUInt8 img ^double x]
+  (let [^ImageUInt8 out (new-image (width img) (height img) :uint8)]
+    (PixelMath/divide img x out)
+    out))
