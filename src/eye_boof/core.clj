@@ -145,7 +145,7 @@
   "Returns an ImageUInt8 as a result of averaging the values of a pixel across all
   bands of a MultiSpectral image."
   [^MultiSpectral img]
-  (let [^ImageUInt8 out-img (new-image (width img) (height img))]
+  (let [out-img (new-image (width img) (height img) :uint8)]
     (PixelMath/averageBand img out-img)
     out-img))
 
