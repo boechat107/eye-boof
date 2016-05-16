@@ -192,7 +192,7 @@
 
 (defmethod * [boofcv.struct.image.ImageFloat32 boofcv.struct.image.ImageFloat32]
   [^ImageFloat32 imgx ^ImageFloat32 imgy]
-  (let [^ImageFloat32 out (new-image (width img) (height img) :float32)]
+  (let [^ImageFloat32 out (new-image (width imgx) (height imgx) :float32)]
     (PixelMath/multiply imgx imgy out)
     out))
 
