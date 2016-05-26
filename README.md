@@ -1,5 +1,7 @@
 # eye-boof
 
+[![Build Status](https://travis-ci.org/boechat107/eye-boof.svg?branch=develop)](https://travis-ci.org/boechat107/eye-boof)
+
 This is a Clojure wrapper for the image processing library [BoofCV](http://boofcv.org/).
 Some algorithms, not implemented in BoofCV, are implemented in Clojure using the
 BoofCV data structures.
