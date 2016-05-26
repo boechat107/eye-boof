@@ -10,4 +10,5 @@
                  [org.clojure/algo.generic "0.1.2"]]
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.8.0"]]
                    :plugins [[lein-codox "0.9.4"]]}}
-  :java-source-paths ["java"])
+  :java-source-paths ["java"]
+  :aliases {"test" ["test" ":only" "eye-boof.test.io"]})
