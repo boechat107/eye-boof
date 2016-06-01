@@ -3,7 +3,8 @@
   structures.
   An image is considered to be an ImageUInt8 or a MultiSpectral with n ImageUInt8
   bands."
-  (:require [clojure.algo.generic.arithmetic :refer [* /]])
+  (:require [clojure.algo.generic.arithmetic :refer [* /]]
+            [clojure.set :refer [map-invert]])
   (:refer-clojure :exclude [* /])
   (:import 
     [boofcv.struct.image
@@ -23,7 +24,7 @@
   (let [m {:float32 ImageFloat32
            :sint16 ImageSInt16
            :uint8 ImageUInt8}]
-    (merge m (clojure.set/map-invert m))))
+    (merge m (map-invert m))))
 
 (defn new-image
   "Returns an SingleBand or MultiSpectral images with the given width, height and
