@@ -15,13 +15,13 @@
 
 ;; Used the Mikera's implementation for imagez
 ;; https://github.com/mikera/imagez/blob/develop/src/main/clojure/mikera/image/protocols.clj
-(defprotocol PToBufferedImage
+(defprotocol ToBufferedImage
   "Coerce different image resource representations to BufferedImage."
   (resource->buff-image [r] "Returns a BufferedImage from a given resource.")
   (image->buff-image [img] 
                      "Returns a BufferedImage from an ImageUInt8 or MultiSpectral."))
 
-(extend-protocol PToBufferedImage 
+(extend-protocol ToBufferedImage 
   String
   (resource->buff-image [r] (ImageIO/read (io/as-file r)))
   
