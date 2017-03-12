@@ -10,5 +10,7 @@
               ;;
               resource->buff-image
               load-image->gray-u8]
+             ;;
              [eye-boof.core.visualization
+              ;;
               show-image])
