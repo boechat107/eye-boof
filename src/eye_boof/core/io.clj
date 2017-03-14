@@ -3,7 +3,7 @@
   into files."
   (:import boofcv.io.image.UtilImageIO
            boofcv.io.image.ConvertBufferedImage
-           boofcv.struct.image.GrayU8
+           [boofcv.struct.image ImageBase GrayU8]
            [javax.imageio ImageIO]
            [java.awt.image BufferedImage]))
 
@@ -46,32 +46,15 @@
    nil ; an existent BoofCV image used for mutation.
    GrayU8))
 
-#_(defn load-image
-  "Returns a MultiSpectral image, in RGB order, from the given resource. The resource
-  can be a string, File, InputStream, URL or BufferedImage."
-  [resource]
-  (let [^BufferedImage buff-image (resource->buff-image resource)]
-    (condp contains? (.getType buff-image)
-      #{BufferedImage/TYPE_4BYTE_ABGR, BufferedImage/TYPE_INT_ARGB,
-        BufferedImage/TYPE_4BYTE_ABGR_PRE BufferedImage/TYPE_INT_ARGB_PRE,
-        BufferedImage/TYPE_INT_RGB, BufferedImage/TYPE_3BYTE_BGR,
-        BufferedImage/TYPE_INT_BGR}
-      (ConvertBufferedImage/convertFromMulti buff-image nil true ImageUInt8)
-
-      #{BufferedImage/TYPE_BYTE_GRAY BufferedImage/TYPE_BYTE_INDEXED
-        BufferedImage/TYPE_BYTE_BINARY BufferedImage/TYPE_USHORT_GRAY}
-      (ConvertBufferedImage/convertFromSingle buff-image nil ImageUInt8))))
-
 (defprotocol ImageDiskPersistence
-  (save-image! [img] "Saves the given image representation."))
+  "Persistence of image data as files."
+  (save-image! [img filepath] "Saves the given image representation."))
 
-#_(defn save-image!
-  "Saves an Image into a file in the disk.
-  Supported extensions: ImageIO.getWriterFormatNames()
-
-  Example:
-  (save-image! img \"path/to/image.png\")"
-  [img path]
-  (ImageIO/write ^BufferedImage (image->buff-image img)
-                 (-> (re-find #"\.\w+$" path) (subs 1)) ; extension
-                 (io/file path)))
+(extend-protocol ImageDiskPersistence
+  ImageBase
+  (save-image! [img ^String filepath]
+    (UtilImageIO/saveImage img filepath))
+  ;;
+  BufferedImage
+  (save-image! [img ^String filepath]
+    (UtilImageIO/saveImage img filepath)))
