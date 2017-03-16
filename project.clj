@@ -8,5 +8,6 @@
                  [org.clojure/algo.generic "0.1.2"]
                  ;; Used to expose definitions of other namespaces.
                  [potemkin "0.4.3"]]
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.8.0"]]
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.8.0"]
+                                  [criterium "0.4.4"]]
                    :plugins [[lein-codox "0.10.3"]]}})

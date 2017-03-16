@@ -19,3 +19,14 @@
   pixel values <= f(img) are set to 1."
   [^GrayU8 img f down1?]
   (threshold img ^long (f img) down1?))
+
+(defn otsu-threshold
+  "Computes the variance based threshold using the Otsu's method."
+  [img min-val max-val]
+  (GThresholdImageOps/computeOtsu ^GrayU8 img (int min-val) (int max-val)))
+
+(defn entropy-threshold
+  "Computes a threshold which maximizes the entropy between the foreground and
+  background regions."
+  [img min-val max-val]
+  (GThresholdImageOps/computeEntropy ^GrayU8 img (int min-val) (int max-val)))
