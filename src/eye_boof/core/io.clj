@@ -3,7 +3,7 @@
   into files."
   (:import boofcv.io.image.UtilImageIO
            boofcv.io.image.ConvertBufferedImage
-           [boofcv.struct.image ImageBase GrayU8]
+           [boofcv.struct.image ImageBase GrayU8 Planar]
            [javax.imageio ImageIO]
            [java.awt.image BufferedImage]))
 
@@ -39,11 +39,22 @@
 
 (defn load-image->gray-u8
   "Returns a BoofCV GrayU8 image from a given resource, which can be a String
-  (file path), File, InputStream or URL."
+  (file path), File, InputStream or URL. If the resource represents a color
+  image, the intensities of each channel are averaged together."
   [resource]
   (ConvertBufferedImage/convertFromSingle
    (resource->buff-image resource)
    nil ; an existent BoofCV image used for mutation.
+   GrayU8))
+
+(defn load-image->planar-u8
+  "Returns a BoofCV Planar<GrayU8> image from a given resource, which can be a
+  String (file path), File, InputStream or URL."
+  [resource]
+  (ConvertBufferedImage/convertFromMulti
+   ^BufferedImage (resource->buff-image resource)
+   nil
+   true
    GrayU8))
 
 (defprotocol ImageDiskPersistence
