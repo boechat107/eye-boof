@@ -34,8 +34,13 @@
   ;;
   java.awt.image.BufferedImage
   (resource->buff-image [r] r)
-  ;; TODO: BoofCV images to BufferedImage.
-  )
+  ;;
+  GrayU8
+  (resource->buff-image [r] (ConvertBufferedImage/convertTo r nil))
+  ;;
+  Planar
+  (resource->buff-image [r] (ConvertBufferedImage/convertTo_U8 r nil true)))
+
 
 (defn load-image->gray-u8
   "Returns a BoofCV GrayU8 image from a given resource, which can be a String
