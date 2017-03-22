@@ -1,11 +1,13 @@
-(defproject org.clojars.boechat107/eye-boof "1.1.0"
-  :description "Clojure image processing library using BoofCV."
+(defproject eye-boof/eye-boof "2.0.0"
+  :description "Clojure image processing library based on BoofCV."
   :url "https://github.com/boechat107/eye-boof"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.boofcv/ip "0.16"]
-                 [seesaw "1.4.3"]
-                 [net.mikera/clojure-utils "0.5.0"]
-                 [prismatic/hiphip "0.2.0"]]
-  :java-source-paths ["java"])
+  :dependencies [[org.boofcv/core "0.26"]
+                 [prismatic/hiphip "0.2.1"]
+                 [org.clojure/algo.generic "0.1.2"]
+                 ;; Used to expose definitions of other namespaces.
+                 [potemkin "0.4.3"]]
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.8.0"]
+                                  [criterium "0.4.4"]]
+                   :plugins [[lein-codox "0.10.3"]]}})

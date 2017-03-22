@@ -1,0 +1,7 @@
+language: clojure
+branches:
+    only:
+        - develop
+jdk:
+    - oraclejdk7
+    - openjdk7
