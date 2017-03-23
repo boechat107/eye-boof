@@ -10,4 +10,5 @@
                  [potemkin "0.4.3"]]
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.8.0"]
                                   [criterium "0.4.4"]]
-                   :plugins [[lein-codox "0.10.3"]]}})
+                   :plugins [[lein-codox "0.10.3"]
+                             [lein-cloverage "1.0.9"]]}})
