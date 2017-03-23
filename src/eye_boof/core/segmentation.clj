@@ -17,18 +17,21 @@
   (ThresholdImageOps/threshold img nil n ^boolean down1?))
 
 (defn threshold-f
-  "Global threshold with the value calculated from f(img). If down1? is true,
+  "GrayU8 -> (GrayU8 -> int) -> boolean -> GrayU8
+  Global threshold with the value calculated from f(img). If down1? is true,
   pixel values <= f(img) are set to 1."
   [^GrayU8 img f down1?]
   (threshold img ^long (f img) down1?))
 
 (defn otsu-threshold
-  "Computes the variance based threshold using the Otsu's method."
+  "GrayU8 -> int -> int -> int
+  Computes the variance based threshold using the Otsu's method."
   [img min-val max-val]
   (GThresholdImageOps/computeOtsu ^GrayU8 img (int min-val) (int max-val)))
 
 (defn entropy-threshold
-  "Computes a threshold which maximizes the entropy between the foreground and
+  "GrayU8 -> int -> int -> int
+  Computes a threshold which maximizes the entropy between the foreground and
   background regions."
   [img min-val max-val]
   (GThresholdImageOps/computeEntropy ^GrayU8 img (int min-val) (int max-val)))
