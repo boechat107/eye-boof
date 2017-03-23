@@ -1,4 +1,6 @@
 (ns eye-boof.core.segmentation
+  "Set of image segmentation techniques.
+  Ref.: http://boofcv.org/index.php?title=Tutorial_Image_Segmentation"
   (:import [boofcv.struct.image GrayU8]
            [boofcv.alg.filter.binary ThresholdImageOps GThresholdImageOps]))
 
@@ -30,3 +32,32 @@
   background regions."
   [img min-val max-val]
   (GThresholdImageOps/computeEntropy ^GrayU8 img (int min-val) (int max-val)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Local methods ;;
+;;;;;;;;;;;;;;;;;;;
+
+(defn local-square-threshold
+  "GrayU8 -> int -> boolean -> GrayU8
+  Locally adaptive threshold computed using a square region centered on each
+  pixel. The threshold value is equal the average intensity of the square region
+  times the optional scale (default to 1.0).
+  Ref.: https://goo.gl/nQn90i"
+  [img radius down1? & [scale]]
+  (GThresholdImageOps/localSquare
+   img
+   nil ; optional output
+   radius
+   (or scale 1.0)
+   down1?
+   ;; Optional internal workspaces.
+   nil
+   nil))
+
+(defn local-sauvola-threshold
+  "GrayU8 -> int -> boolean -> GrayU8
+  Applies Sauvola thresholding algorithm to the input image. k is a tuning
+  parameter whose default value is 0.3.
+  Refs.: https://goo.gl/hhyGyc, https://goo.gl/1iRba2"
+  [img radius down1? & [k]]
+  (GThresholdImageOps/localSauvola img nil radius (or k 0.3) down1?))

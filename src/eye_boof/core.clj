@@ -26,4 +26,6 @@
               threshold
               threshold-f
               otsu-threshold
-              entropy-threshold])
+              entropy-threshold
+              local-square-threshold
+              local-sauvola-threshold])
