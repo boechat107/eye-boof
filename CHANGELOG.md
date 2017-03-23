@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+* Locally adaptive thresholding functions.
+
 ## [2.0.0] - 2017-03-21
 
 ### Added
