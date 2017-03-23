@@ -1,6 +1,7 @@
 # eye-boof
 
 [![Build Status](https://travis-ci.org/boechat107/eye-boof.svg?branch=develop)](https://travis-ci.org/boechat107/eye-boof)
+[![codecov](https://codecov.io/gh/boechat107/eye-boof/branch/develop/graph/badge.svg)](https://codecov.io/gh/boechat107/eye-boof)
 [![Clojars Project](https://img.shields.io/clojars/v/eye-boof.svg)](https://clojars.org/eye-boof)
 
 **eye-boof** is a small library of image processing algorithms completely based
