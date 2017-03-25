@@ -35,7 +35,7 @@ list panel is generated."))
 
 (defn show-grid
   "Shows images in a grid pattern."
-  [ncols imgs]
+  [ncols & imgs]
   (ShowImages/showGrid
    ncols "Images" (into-array (map resource->buff-image imgs))))
 
