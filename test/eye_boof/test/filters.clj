@@ -16,4 +16,5 @@
     (check #(gaussian-blur % 0.5 -1))
     ;;
     (check #(mean-blur % 5))
-    ))
+    ;;
+    (check #(median-blur % 5))))

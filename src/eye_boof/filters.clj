@@ -12,19 +12,24 @@
   radius <= 0, it's selected based on sigma.")
   (mean-blur [img radius]
     "Image -> int -> Image
-     Applies a mean box filter."))
+     Applies a mean box filter.")
+  (median-blur [img radius]
+    "Image -> int -> Image
+     Applies median filter."))
 
 (defmacro impl-protocol
-  [& body]
-  `(extend-protocol BlurOps
+  [protocol & body]
+  `(extend-protocol ~protocol
      ;;
      GrayU8
      ~@body
      Planar
      ~@body))
 
-(impl-protocol
+(impl-protocol BlurOps
  (gaussian-blur [img sigma radius]
                 (BlurImageOps/gaussian img nil (double sigma) (int radius) nil))
  (mean-blur [img radius]
-            (BlurImageOps/mean img nil (int radius) nil)))
+            (BlurImageOps/mean img nil (int radius) nil))
+ (median-blur [img radius]
+              (BlurImageOps/median img nil (int radius))))
