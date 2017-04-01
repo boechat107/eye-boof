@@ -1,4 +1,4 @@
-(defproject eye-boof/eye-boof "2.1.0-SNAPSHOT"
+(defproject eye-boof/eye-boof "2.1.0"
   :description "Clojure image processing library based on BoofCV."
   :url "https://github.com/boechat107/eye-boof"
   :license {:name "Eclipse Public License"
