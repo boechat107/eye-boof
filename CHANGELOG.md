@@ -1,3 +1,12 @@
+## [2.1.0] - 2017-04-01
+
+### Added
+
+* Locally adaptive thresholding functions.
+* Support to multiple images visualization (grid and panel).
+* Blur filters
+* Morphological operations (erode, dilate) for binary images.
+
 ## [2.0.0] - 2017-03-21
 
 ### Added
