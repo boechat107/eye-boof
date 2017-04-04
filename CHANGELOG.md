@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Core functions: get/set pixel values.
+
 ## [2.1.0] - 2017-04-01
 
 ### Added
