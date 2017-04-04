@@ -5,18 +5,36 @@
 (set! *unchecked-math* true)
 
 (defprotocol BasicImageHandlers
-  (width [img] "Returns the image's width.")
-  (height [img] "Returns the image's height.")
   (as-seq [img] "Returns the image's data as a Clojure sequence."))
 
 (extend-protocol BasicImageHandlers
-  ImageBase
-  (width [img] (.getWidth img))
-  (height [img] (.getHeight img))
   ;;
   GrayU8
   (as-seq [img]
     (map #(bit-and % 0xff) (.data img))))
+
+(defn width
+  "Returns the image's width."
+  [img]
+  (.getWidth ^ImageBase img))
+
+(defn height
+  "Returns the image's height."
+  [img]
+  (.getHeight ^ImageBase img))
+
+(defn get-pixel
+  "GrayU8 -> int -> int -> int
+  Returns the intensity value of a pixel."
+  [img x y]
+  (.unsafe_get ^GrayU8 img x y))
+
+(defn set-pixel!
+  "GrayU8 -> int -> int -> int -> GrayU8
+  Mutates the given image by setting a new value for the given pixel."
+  [img x y intensity]
+  (.unsafe_set ^GrayU8 img x y intensity)
+  img)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Color image handlers ;;

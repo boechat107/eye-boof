@@ -19,6 +19,8 @@
               width
               height
               as-seq
+              get-pixel
+              set-pixel!
               num-of-bands
               band!]
              [eye-boof.core.segmentation
