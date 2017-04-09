@@ -22,7 +22,10 @@
               get-pixel
               set-pixel!
               num-of-bands
-              band!]
+              band!
+              sub-image
+              sub-image!
+              sub-image?]
              [eye-boof.core.segmentation
               ;;
               threshold

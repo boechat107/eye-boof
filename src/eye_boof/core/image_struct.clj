@@ -36,6 +36,27 @@
   (.unsafe_set ^GrayU8 img x y intensity)
   img)
 
+(defn sub-image
+  "Image -> int -> int -> int -> int -> Image
+  Returns a new image from a rectangular area of the given image. They don't
+  share the internal data."
+  [img x0 y0 x1 y1]
+  (let [^ImageBase img img]
+    (.subimage (.clone img) x0 y0 x1 y1)))
+
+(defn sub-image!
+  "Image -> int -> int -> int -> int -> Image
+  Returns a new image from a rectangular area of the given image. The images share
+  the internal representation; so, mutating one changes the other."
+  [img x0 y0 x1 y1]
+  (.subimage ^ImageBase img x0 y0 x1 y1))
+
+(defn sub-image?
+  "Image -> boolean
+  Returns true if the given image was created as a subimage."
+  [img]
+  (.isSubimage ^ImageBase img))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Color image handlers ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
