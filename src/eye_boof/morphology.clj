@@ -37,3 +37,10 @@
           "GrayU8 -> int -> GrayU8
   Dilates an image using a 8-neighborhood. n is the number of times the operation
   will be applied.")
+
+(defn remove-point-noise
+  "GrayU8 -> GrayU8
+  If a pixel is connected to less than 2 neighbors, then its value zero; if it's
+  connected to more than 6, then its value is one."
+  [img]
+  (BinaryImageOps/removePointNoise ^GrayU8 img nil))

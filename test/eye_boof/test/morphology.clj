@@ -16,4 +16,5 @@
     (check dilate4)
     (check #(dilate4 % 4))
     (check dilate8)
-    (check #(dilate8 % 4))))
+    (check #(dilate8 % 4))
+    (check remove-point-noise)))
