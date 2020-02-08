@@ -1,6 +1,6 @@
 (ns eye-boof.visualization
   "Provides functions to visualize images using JFrame."
-  (require [eye-boof.core.io :refer [resource->buff-image]])
+  (:require [eye-boof.core.io :refer [resource->buff-image]])
   (:import boofcv.gui.image.ShowImages
            boofcv.gui.ListDisplayPanel
            boofcv.gui.binary.VisualizeBinaryData
